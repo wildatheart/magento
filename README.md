@@ -12,7 +12,7 @@ magento
  * CSE now working for the onestepcheckout modules as well
  * CSE ie8 Fix
  * Possible to make Cash payments
-    
+
  Older versions:
  
  1.0.0.8
