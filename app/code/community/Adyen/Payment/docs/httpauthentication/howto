@@ -1,0 +1,7 @@
+INTRODUCTION (Only if you are using Apache in CGI Mode):
+HTTP AUTHENTICATION on Apache CGI Mode is known not to work out of the Box, use the patch in the directory to get around the problem.
+
+WALK AROUND:
+Upload the patch to the <web_root>, followed by the following bash commands
+$ cd <web_root>
+$ patch -p0 < cgihtaccess.patch

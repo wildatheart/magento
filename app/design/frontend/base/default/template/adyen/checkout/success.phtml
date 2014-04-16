@@ -1,0 +1,7 @@
+<br /><br />
+
+
+<?php if ($this->isBoletoPayment()): ?>
+    <?php echo Mage::helper('downloadable')->__('<a href="%s">Click here to download the Boleto payment PDF</a>', $this->getUrlBoletoPDF()) ?>
+<?php endif; ?>
+

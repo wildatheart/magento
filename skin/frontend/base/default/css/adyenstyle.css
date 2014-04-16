@@ -1,0 +1,50 @@
+/* @override http://adyen.local/adyen_community_1_6_2_0/skin/frontend/base/default/css/adyenstyle.css */
+
+/**
+ * Adyen Payment Module
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category	Adyen
+ * @package	Adyen_Payment
+ * @copyright	Copyright (c) 2011 Adyen (http://www.adyen.com)
+ * @license	http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/**
+ * @category   Payment Gateway
+ * @package    Adyen_Payment
+ * @author     Adyen
+ * @property   Adyen B.V
+ * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
+ */
+
+/* Adyen Customs */
+
+/* Checkout */
+.sp-methods #payment_form_adyen_hpp { }
+.sp-methods #payment_form_adyen_hpp .input-box table { margin-bottom: 5px; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal { margin-top: 48px; margin-left: -129px; width: 160px; display: block; position: relative; z-index: 1; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal label.required { border: 0; padding: 0; background: none; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal label { }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal table.banks { padding: 5px; border: 1px solid #bebebe; width: 175px; margin-bottom: 5px; background: #fff; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal table.banks label { font-weight: normal; line-height: 42px; float: none; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal table.banks td.label_hpp_ideal_type { width: 100px; }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal table td input { margin-top: 15px; margin-left: 4px; /*margin-top: -38px; margin-left: 2px; position: relative; z-index: 1;*/ }
+.sp-methods #payment_form_adyen_hpp #payment_form_ideal table td img { /*margin-left: -25px;*/ }
+
+/* pos redirect page */
+.redirect-body-adyen { margin:0; padding:0;}
+#pos-redirect-page .logo { margin:10px 0 0 10px; width:336px; height:111px; background:url(../images/adyen/adyen_logo_large.png) left top no-repeat; }
+#pos-redirect-page .grey-header { background-color: #4C4C4C;  width:100%; margin:10px 0;}
+	#pos-redirect-page .grey-header h1 { padding: 16px 10px; font-family: 'Open Sans', sans-serif; font-size:24px;color:white; }
+#pos-redirect-page .amount-box { width:300px; height:150px; padding-top:75px; margin:50px auto; border:1px solid #797c83; color:#797c83; text-align:center; font-weight:bold; font-size:34px; background-color: #f5f5f5; box-shadow: 0 0 2px 2px #888;}
+#pos-redirect-page #launchlink { margin-top:10px; clear:both; display:block; color:#797C83; text-decoration:none; }
+	

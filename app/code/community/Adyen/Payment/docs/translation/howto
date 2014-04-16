@@ -1,0 +1,12 @@
+USAGE:
+File:Mage_Checkout.csv
+Copy the content of the file Mage_Checkout.csv and paste it into locale/nl_NL/ or other language dir.
+
+File name:Adyen_Payment.csv
+Translate this file into your language by separating the strings in the quote and separate them by comma.
+
+Example:
+"You will be redirected to Adyen website when you place an order.","U wordt doorverwezen naar Adyen na het plaatsen van de order."
+
+Notice:
+The first line has been done for you as an example on how to translate.Available samples ready for use are also available under their country code e.g nl_NL

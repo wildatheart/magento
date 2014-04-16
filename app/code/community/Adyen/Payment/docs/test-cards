@@ -1,0 +1,47 @@
+TESTING THE PLUGIN:
+**Use the data on this url https://support.adyen.com/index.php?_m=knowledgebase&_a=viewarticle&kbarticleid=2
+**Sample used in testing:
+
+CC:
+5555444433331111
+MasterCard
+CVC 737
+Date:12/2012
+
+VISA
+4111111111111111 (Consumer)
+4444333322221111 (Corporate)
+
+Elv
+Account Number / Kontonummer: 1234567890
+Bank Location ID/Bankleitzahl: 12345678
+
+
+MAGENTO CC TO ADYEN:
+   	magento cc
+    [AE] => American Express
+    [VI] => Visa
+    [MC] => Master Card
+    [DI] => Discover
+    [DC] => Diners Club
+    [SS] => Switch/Solo
+    [MO] => Maestro
+    [JC] => JCB
+    [CB] => CarteBleue
+    
+    adyen cc
+	American Express   	 amex  	   	
+	Bank Transfer (NL) 		bankTransfer_NL 
+	DIRECTebanking  	directEbanking
+	Direct Debit (NL) / Eenmalige machtiging directdebit_NL 	
+	Electronic Direct Debit (DE) / Lastschrift (ELV) elv 	
+	iDEAL 	iDEAL 	ideal 
+	Maestro UK 	Maestro UK 	maestrouk 
+	MasterCard 	MasterCard 	mc 	
+	Solo 	Solo 	solo 	
+	VISA 	VISA 	visa 
+
+
+Openinvoice
+43.27.366.70
+12.34.567.89

@@ -1,0 +1,221 @@
+/**
+ * Adyen Payment Module
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category	Adyen
+ * @package	Adyen_Payment
+ * @copyright	Copyright (c) 2011 Adyen (http://www.adyen.com)
+ * @license	http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/**
+ * @category   Payment Gateway
+ * @package    Adyen_Payment
+ * @author     Adyen
+ * @property   Adyen B.V
+ * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
+ */
+
+USAGE:
+1.Authorize only:
+Authorize only, if set via the backend it means the plugin will just authorize and nothing more.That means users will have to place invoice manually and adyen backoffice manually
+capture payments.
+
+2.Authorize and Capture:
+This can be set via the backend of the Adyen CC.If set to this option, order will be placed and capture in adyen will be started.
+Simply might means Automatic capture payment.
+
+
+Log changes 
+##0.0.1
+1.Adding Direct payment methods Elv && Cc support via
+
+##0.0.2
+1.Configurations on backend classified to add efficiency
+2.Landing pages on Adyen System on HPP
+3.Refund reviewed or added
+4.Capture && Authorization reviewe
+
+
+##0.0.3
+See 0004208 
+
+Date 8th November 2010
+##v0.0.4
+
+##Fixes Notification fixes for elv && cc
+##Fixes Elv exchange of bank code && bank name
+##Order status for both cc
+##Added limit on text fields on ELV PM
+
+Date 18-02-2011
+Version 007
+##Fixes the Customer edit error on the backend of magento
+##Compatibility/tests with 1.4.1.2
+
+
+Date 22-03-2011
+Version 008
+@todo
+1.Re-write hpp model
+2.Re-write controller and fix all notification issues
+
+
+Date 31-03-2011
+Version 009
+##Fixes 
+
+
+Date 04-04-2011
+Version 0091
+##Added mail notifications in order states
+##Added manual capture support
+##Added payment method in customer mails && Backend
+##Fixes the auto_capture
+##Fixes cgi authentication failures
+##Fixes bank transfer notifications
+##Fixes several confussions backend configuration settings
+##Fixes auto capture, now more magento friendliness
+
+Date 05-04-2011
+0.0.9.2
+##Added partial refund support from Magento to Adyen psp
+##Fixes redundant requests in offline refund
+##Fixes cancelation request from Adyen psp
+##Removal of complex backend settings, more magento friendly work flow
+
+
+Date 19-04-2011
+Version 0.0.9.4
+##Fixes order status
+
+Date 02-05-2011
+Version 0.0.9.5
+##Fixes the translation on the checkout
+##Fixes the order overview on the psp
+
+Date : 04-05-2011
+
+Version 0.0.9.6
+##Adding locale info under docs
+
+Version 0.0.9.7
+##Adding adding nl_NL as standard translation file on locale
+
+Date : 12-05-2011
+Version 0.0.9.8
+##Adding PENDING notifications support, now 'pending_payment' status for bank transfers
+##Adding ONECLICK payment support on hpp
+##Modifying the notifications to include Payment method and amphasizing notifications vs posts responses
+##Adds logs on unsupported posts events
+
+
+Date : 29-09-2011
+Version 0.0.9.9
+##Enterprise 1.11.x compatibility
+##Testing 1.6.x
+##MC 2.x compatibility
+##Adding pre-fix support
+
+Date:29-09-2011
+Version:0.0.9.9r1
+##Adding order link to Adyen Backoffice using search
+
+Version:0.1.0.0
+##Adding partial refund from Adyen backoffice
+##Adding Soap support in the notifications
+##Adding pre-select payment methods in the HPP.
+##Adding fallbacks for shopperReference && shopperEmail
+
+Version:0.1.0.3
+Date:10-11-2011
+##Fixes missing some of the missing payment methods
+##Improves payment methods configurations
+##Fixes few post data in order comments
+##Testing compatibility with 1.6.1.0
+
+Version:0.1.0.3r1-r2
+##Addressing hard order state changes
+##Fixing country settings/config
+
+Version:0.1.0.3r3
+##Fixes creditmemo && refund on the observer.
+
+Version:0.1.0.4
+##Fixes duplicate notifications, now robust mechanism
+##Adding disable button for checkout options
+##Removing the add to history deprecated method by magento 1.4.0.0-alpha3
+##Fixes address street + housenr
+##Fixes dummy items on the invoiceline
+##Fixes provincie field on the billing address
+##Added Openinvoice implimentation on hpp and standalone
+
+Version:0.1.0.5
+Date:02-01-2012
+##Fixes manual/complete payment status notifications processing
+##Adding pre-authorise configu for manual mode
+##Fixes broken psp on admin panel
+
+Version:0.1.0.6
+Date:05-01-2012
+##Fixes success flag on the HTTP notification mode.
+
+Version:0.1.0.7
+Date:06-01-2012
+##Fixes the back button from a browser, now continue shopping in this case.
+
+Version:0.1.0.8
+Date:11-01-2012
+##Adding 2 extra status configurations for refund and pre refund authorisation
+##Detection of refund-received will skip creditmemmo from Adyen.
+##Adding an exceptional to failed refunds on holdCancel events
+
+Version:v0.1.0.8r1
+##Fixes the broken configuration in handling URL result 'REFUSED' 'CANCELLED' 'ERROR'
+##Fixes some pdf paths in templates
+0.1.0.8r2
+##Code refactoring, introducing adyen/process
+0.1.0.8r3-r4
+##Adding an exception to the CANCEL on bankTransfer
+
+Date:23-04-2012
+Vesion:0.1.0.9
+##Adding Admin Sales Adyen Status Column
+##Adding ideal bank selection in the checkout
+##Adding a stylesheet for styling
+
+Fixes:
+##Fixed orderData
+
+Version:v0.1.0.9r1
+Date 29-05-2012
+#Fixing demoMode configuration
+#Fixing default configuration demoMode
+#Fixing ideal list on file_get_contents, now using curl
+#Compatibility test on enteriprise 1.12.x.x && community 1.7.0.0
+
+Version:0.1.0.10v
+Date:13-07-2012
+#Fixing broken grid update in 1.7.x.x
+#Code refactoring in process model
+#Adding better authorisation detection on the return url
+#Improving redirect action by internal record check
+
+Version:v0.1.0.11
+Date:13-09-2012
+##Fixing demo-mode configuration handling
+
+Version:0.1.0.11r1
+##Fixing spelling in the configuration fields
+##Remove sort order in the default group configuration
+
+Version:0.1.0.12
+##Migrating upgrade user from previous demoMode (namely production), back to their original setting.
