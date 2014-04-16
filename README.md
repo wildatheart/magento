@@ -8,7 +8,7 @@ magento
  Features & Fixes
  
  * HPP payment method selection now automatically loaded from the selected skin (Adyen calls this directory lookup)
- * Module now 100% Adyen. Module namespace and module name is now Adyen/Payment instead of Madia/Adyen
+ * Module namespace and module name is now Adyen/Payment instead of Madia/Adyen
  * CSE now better support for the onestepcheckout modules as well
  * CSE IE8 Fix
  * Possible to make Cash payments
