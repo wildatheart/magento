@@ -61,7 +61,7 @@
     		$extra_paramaters = urlencode("/?originalCustomCurrency=".$adyFields['currencyCode']."&originalCustomAmount=".$adyFields['paymentAmount']. "&originalCustomMerchantReference=".$adyFields['merchantReference'] . "&originalCustomSessionId=".session_id());
     		
     		// add recurring
-    		$extra_paramaters .= "&recurringContract=".$adyFields['recurringContract']."&shopperReference=".$adyFields['shopperReference']. "&shopperEmail=".$adyFields['shopperEmail'];
+    		$extra_paramaters .= urlencode("&recurringContract=".$adyFields['recurringContract']."&shopperReference=".$adyFields['shopperReference']. "&shopperEmail=".$adyFields['shopperEmail']);
     		
     		// important url must be the latest parameter before extra parameters! otherwise extra parameters won't return in return url
     		if($android !== false) { // && stripos($ua,'mobile') !== false) {
