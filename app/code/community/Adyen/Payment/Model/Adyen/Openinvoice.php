@@ -209,10 +209,12 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         	// add to fields
         	$adyFields[$key] = $value;
         	
-        	// craetes sign
+        	// create sign
         	$sign_additional_data_keys .= $key;
         	$sign_additional_data_values .= $value;
-        	if(end(array_keys($additional_data_sign)) != $key) {
+        	
+			$keys = array_keys($additional_data_sign);
+        	if(end($keys) != $key) {
         		$sign_additional_data_keys .= ":";
         		$sign_additional_data_values .= ":";
         	}
