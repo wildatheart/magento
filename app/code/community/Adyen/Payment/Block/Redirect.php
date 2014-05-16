@@ -110,7 +110,7 @@
     					$html .= 'window.onfocus = function(){setTimeout("checkStatus()", 500);};';
     				} else {
     					$html .= 'document.getElementById(\'launchlink\').click();';
-    					$html .= 'setTimeout("checkStatus()", 1000);';
+    					$html .= 'setTimeout("checkStatus()", 5000);';
     				}
     				$html .= '</script></div>';
     	} else {
