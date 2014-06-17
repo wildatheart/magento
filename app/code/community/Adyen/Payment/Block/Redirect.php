@@ -34,9 +34,9 @@
     protected function _getOrder() {
         if ($this->getOrder()) {
             return $this->getOrder();
-        } elseif ($orderIncrementId == $this->_getCheckout()->getLastRealOrderId()) {
-            return Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
         } else {
+            // log the exception
+            Mage::log("Redirect exception could not load the order:", Zend_Log::DEBUG, "adyen_notification.log", true);
             return null;
         }
     }
