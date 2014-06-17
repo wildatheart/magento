@@ -156,6 +156,18 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
         //blocked methods
         $adyFields['blockedMethods'] = "";
+
+  		$openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
+         if($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") {
+         	$adyFields['billingAddressType'] = "1";
+         	$adyFields['deliveryAddressType'] = "1";
+         	$adyFields['shopperType'] = "1";
+         } else {
+         	$adyFields['billingAddressType'] = "";
+         	$adyFields['deliveryAddressType'] = "";
+         	$adyFields['shopperType'] = "";
+         }
+     
         //the data that needs to be signed is a concatenated string of the form data 
         $sign = $adyFields['paymentAmount'] .
                 $adyFields['currencyCode'] .
@@ -167,7 +179,10 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 $adyFields['shopperEmail'] .
                 $adyFields['shopperReference'] .
                 $adyFields['recurringContract'] .
-                $adyFields['blockedMethods'];
+                $adyFields['blockedMethods'] .
+                $adyFields['billingAddressType'] .
+                $adyFields['deliveryAddressType'] .
+                $adyFields['shopperType'];
         
         //Generate HMAC encrypted merchant signature
         $secretWord = $this->_getSecretWord();
@@ -175,8 +190,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $adyFields['merchantSig'] = base64_encode(pack('H*', $signMac));
         
 		// get extra fields
-       	$adyFields = Mage::getModel('adyen/adyen_openinvoice')->getOptionalFormFields($adyFields,$this->_order);
-
+        $adyFields = Mage::getModel('adyen/adyen_openinvoice')->getOptionalFormFields($adyFields,$this->_order);
+        
         //IDEAL
         if (strpos($this->getInfoInstance()->getCcType(),"ideal") !== false) {
             $bankData = $this->getInfoInstance()->getPoNumber();
