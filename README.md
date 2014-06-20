@@ -2,8 +2,10 @@ magento
 =======
 
  Adyen Payment plugin for Magento.
+
+ This is development version 2.1.0
  
- Current version is 2.0.2
+ Current release version is 2.0.3
  
  Features & Fixes
  
