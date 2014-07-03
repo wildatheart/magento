@@ -33,7 +33,15 @@ class Adyen_Payment_Block_Adminhtml_Sales_Order_Filter_Adyen extends Mage_Adminh
             array('label' => '', 'value' => null),
         );
         foreach ($events as $event) {
-            $select[] = array('label' => $event['adyen_event_result'], 'value' => $event['adyen_event_result']);
+            if($event['adyen_event_result'] == "AUTHORISATION") {
+                // add the true and false in the filter
+                $eventNameTrue = $event['adyen_event_result'] . " : " . "TRUE";
+                $eventNameFalse = $event['adyen_event_result'] . " : " . "FALSE";
+                $select[] = array('label' => $eventNameTrue, 'value' => $eventNameTrue);
+                $select[] = array('label' => $eventNameFalse, 'value' => $eventNameFalse);
+            } else {
+                $select[] = array('label' => $event['adyen_event_result'], 'value' => $event['adyen_event_result']);
+            }
         }
         return $select;
     }
