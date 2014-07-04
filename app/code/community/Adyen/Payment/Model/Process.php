@@ -34,7 +34,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @throws Exception
      */
     public function processResponse($soapItem = null) {
-        
+
     	$response = (!empty($soapItem)) ? $soapItem : $this->getRequest()->getParams();
         Mage::getResourceModel('adyen/adyen_debug')->assignData($response);
 		$actionName = $this->getRequest()->getActionName();
@@ -232,7 +232,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 			    			}
 			    				
 			    		} else {
-			    			$this->_addStatusHistoryComment($order, $params, $order->getStatus());
+			    			$this->_addStatusHistoryComment($order, $varienObj, $order->getStatus());
 			    			$status = true;
 			    		}
 			    	}
@@ -407,7 +407,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @param Varien_Object $params
      */
     protected function _processPostSuccess($order, $params) {
-    	
+
     	//set these attributes here
         $this->_addAdyenAttributes($order, $params, false);
         $status = false;
