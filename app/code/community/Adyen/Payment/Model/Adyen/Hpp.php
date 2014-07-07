@@ -323,7 +323,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 //         		$countryCode = file_get_contents('http://api.hostip.info/country.php?ip='.$ip);
         	}
         }
-        
+
         // directory lookup to search for available payment methods
         $adyFields = array(
         		"paymentAmount" => $amount,
@@ -333,6 +333,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         		"merchantAccount" => $merchantAccount,
         		"sessionValidity" => $sessionValidity,
         		"countryCode" => $countryCode,
+                "shopperLocale" => $countryCode,
         		"merchantSig" => "",
         );
         
