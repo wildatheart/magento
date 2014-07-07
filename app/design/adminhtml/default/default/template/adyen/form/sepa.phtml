@@ -1,0 +1,117 @@
+<?php
+/**
+ * Adyen Payment Module
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category	Adyen
+ * @package	Adyen_Payment
+ * @copyright	Copyright (c) 2011 Adyen (http://www.adyen.com)
+ * @license	http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/**
+ * @category   Payment Gateway
+ * @package    Adyen_Payment
+ * @author     Adyen
+ * @property   Adyen B.V
+ * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
+ */
+$_code=$this->getMethodCode();
+?>
+
+<ul id="payment_form_<?php echo $_code ?>" style="display:none">
+
+    <li>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_account_number"><?php echo $this->__('Bank account holder name') ?> <span class="required">*</span></label><br />
+            <input
+                type="text" id="<?php echo $_code ?>_account_name" name="payment[account_name]"
+                title="<?php echo $this->__('Bank account holder name') ?>"
+                class="validate-ipayment-sepa-account-name required-entry input-text"
+                value="" autocomplete="off"
+                />
+        </div>
+    </li>
+    <li>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_iban"><?php echo $this->__('IBAN') ?> <span class="required">*</span></label><br />
+            <input
+                type="text" id="<?php echo $_code ?>_iban" name="payment[iban]"
+                title="<?php echo $this->__('IBAN') ?>"
+                class="validate-ipayment-sepa-iban required-entry input-text"
+                value="" autocomplete="off"
+                />
+        </div>
+    </li>
+
+    <li>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_bic"><?php echo $this->__('BIC') ?> <span class="required">*</span></label><br />
+            <input type="text" id="<?php echo $_code ?>_bic" name="payment[bic]" title="<?php echo $this->__('BIC') ?>" class="validate-ipayment-sepa-bic required-entry input-text" value="" />
+        </div>
+    </li>
+
+    <li>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_country"><?php echo $this->__('Country') ?> <span class="required">*</span></label><br />
+
+
+            <select id="<?php echo $_code ?>_country" name="payment[country]" name="payment[country]" title="<?php echo $this->__('Country') ?>" class="validate-ipayment-sepa-country required-entry input-select">
+                <option value="">--</option>
+                <option value="AT">Austria</option>
+                <option value="BE">Belgium</option>
+                <option value="BG">Bulgaria</option>
+                <option value="CH">Switzerland</option>
+                <option value="CY">Cyprus</option>
+                <option value="CZ">Czech Republic</option>
+                <option value="DE">Germany</option>
+                <option value="DK">Denmark</option>
+                <option value="EE">Estonia</option>
+                <option value="ES">Spain</option>
+                <option value="FI">Finland</option>
+                <option value="FR">France</option>
+                <option value="GB">United Kingdom</option>
+                <option value="GF">French Guiana</option>
+                <option value="GI">Gibraltar</option>
+                <option value="GP">Guadeloupe</option>
+                <option value="GR">Greece</option>
+                <option value="HR">Croatia</option>
+                <option value="HU">Hungary</option>
+                <option value="IE">Ireland</option>
+                <option value="IS">Iceland</option>
+                <option value="IT">Italy</option>
+                <option value="LI">Liechtenstein</option>
+                <option value="LT">Lithuania</option>
+                <option value="LU">Luxembourg</option>
+                <option value="LV">Latvia</option>
+                <option value="MC">Monaco</option>
+                <option value="MQ">Martinique</option>
+                <option value="MT">Malta</option>
+                <option value="NL">Netherlands</option>
+                <option value="NO">Norway</option>
+                <option value="PL">Poland</option>
+                <option value="PT">Portugal</option>
+                <option value="RE">Réunion</option>
+                <option value="RO">Romania</option>
+                <option value="SE">Sweden</option>
+                <option value="SI">Slovenia</option>
+                <option value="SK">Slovakia</option>
+            </select>
+        </div>
+    </li>
+</ul>
+
+<div>
+<span id="ipayment-sepa-please-wait" style="display:none;" class="opc-please-wait">
+    <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Submitting payment information...') ?> &nbsp;
+</span>
+</div>
+

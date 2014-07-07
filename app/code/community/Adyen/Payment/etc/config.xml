@@ -239,7 +239,14 @@
                 <order_status>processing</order_status>
                 <title>Adyen Boleto</title>
                 <delivery_days>5</delivery_days>
-            </adyen_boleto>        
+            </adyen_boleto>
+            <adyen_sepa translate="title" module="adyen">
+                <active>0</active>
+                <model>adyen/adyen_sepa</model>
+                <group>adyen</group>
+                <order_status>processing</order_status>
+                <title>Adyen SEPA</title>
+            </adyen_sepa>
         </payment>  
         <adyen>
             <payment>

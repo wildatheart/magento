@@ -96,7 +96,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
     public function authorize(Varien_Object $payment, $amount) {
     	parent::authorize($payment, $amount);
         $payment->setLastTransId($this->getTransactionId())->setIsTransactionPending(true);
-        if ($this->getCode() == 'adyen_boleto' || $this->getCode() == 'adyen_cc' || $this->getCode() == 'adyen_elv') {
+        if ($this->getCode() == 'adyen_boleto' || $this->getCode() == 'adyen_cc' || $this->getCode() == 'adyen_elv' || $this->getCode() == 'adyen_sepa') {
             $_authorizeResponse = $this->_processRequest($payment, $amount, "authorise");
         }
         return $this;

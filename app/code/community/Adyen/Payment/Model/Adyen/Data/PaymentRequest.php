@@ -61,6 +61,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->elv = new Adyen_Payment_Model_Adyen_Data_Elv();
         $this->additionalData = new Adyen_Payment_Model_Adyen_Data_AdditionalData();
         $this->shopperName = new Adyen_Payment_Model_Adyen_Data_ShopperName(); // for boleto
+        $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
     }
 
     public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null) {
@@ -78,8 +79,8 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->shopperEmail = $customerEmail;
         $this->shopperIP = $order->getRemoteIp();
         $this->shopperReference = $customerId;
-        
-        
+
+
         /**
          * Browser info
          * @var unknown_type
@@ -92,6 +93,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $elv = unserialize($payment->getPoNumber());
                 $this->card = null;
                 $this->shopperName = null;
+                $this->bankAccount = null;
                 $this->elv->accountHolderName = $elv['account_owner'];
                 $this->elv->bankAccountNumber = $elv['account_number'];
                 $this->elv->bankLocation = $elv['bank_location'];
@@ -101,7 +103,8 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
             case "cc":
             	$this->shopperName = null;
             	$this->elv = null;
-            	
+                $this->bankAccount = null;
+
 				if (Mage::getModel('adyen/adyen_cc')->isCseEnabled()) {
 					$this->card = null;
 					$kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
@@ -116,7 +119,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 					$this->card->holderName = $payment->getCcOwner();
 					$this->card->number = $payment->getCcNumber();
 				}
-                
+
                 // installments
                 if(Mage::helper('adyen/installments')->isInstallmentsEnabled()){
                     $kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
@@ -129,12 +132,24 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
             	$boleto = unserialize($payment->getPoNumber());
             	$this->card = null;
             	$this->elv = null;
+                $this->bankAccount = null;
             	$this->socialSecurityNumber = $boleto['social_security_number'];
             	$this->selectedBrand = $boleto['selected_brand'];
             	$this->shopperName->firstName = $boleto['firstname'];
             	$this->shopperName->lastName = $boleto['lastname'];
             	$this->deliveryDate = $boleto['delivery_date'];
             	break;
+            case "sepa":
+                $sepa = unserialize($payment->getPoNumber());
+                $this->card = null;
+                $this->elv = null;
+                $this->shopperName = null;
+                $this->bankAccount->bic = $sepa['bic'];
+                $this->bankAccount->iban = $sepa['iban'];
+                $this->bankAccount->ownerName = $sepa['account_name'];
+                $this->bankAccount->countryCode = $sepa['country'];
+                $this->selectedBrand = "sepadirectdebit";
+                break;
         }
 		
         return $this;
