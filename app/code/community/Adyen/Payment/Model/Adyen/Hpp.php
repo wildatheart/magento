@@ -158,7 +158,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $adyFields['blockedMethods'] = "";
 
   		$openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
-         if($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") {
+
+         if(($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") || $this->getInfoInstance()->getCcType() == "klarna") {
          	$adyFields['billingAddressType'] = "1";
          	$adyFields['deliveryAddressType'] = "1";
          	$adyFields['shopperType'] = "1";

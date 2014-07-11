@@ -153,8 +153,8 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         $adyFields['shopper.telephoneNumber'] = $billingAddress->getTelephone();
         
         $openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
-        
-         if($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") {
+
+         if(($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") || $this->getInfoInstance()->getCcType() == "klarna") {
          	// initialize values if they are empty
          	(isset($adyFields['shopper.gender'])) ? $adyFields['shopper.gender'] : "";
          	(isset($adyFields['shopper.infix'])) ? $adyFields['shopper.infix'] : "";
