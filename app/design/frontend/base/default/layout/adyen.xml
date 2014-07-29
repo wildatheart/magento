@@ -33,6 +33,14 @@
             <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
         </reference>
     </checkout_onepage_index>
+
+    <onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addJs"><script>adyen/payment/elv.js</script></action>
+            <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
+        </reference>
+    </onestepcheckout_index_index>
+
     <checkout_multishipping_billing>
         <reference name="head">
             <action method="addJs"><script>adyen/payment/elv.js</script></action>
