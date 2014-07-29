@@ -447,6 +447,7 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
             shipment_methods.update('<div class="loading-ajax">&nbsp;</div>');
         }
 
+        var payment_hpp_type = $RF(form, 'payment[hpp_type]');
         var payment_method = $RF(form, 'payment[method]');
         parameters['payment_method'] = payment_method;
         parameters['payment[method]'] = payment_method;
@@ -506,7 +507,13 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
                             try    {
                                 var payment_method = $RF(form, 'payment[method]');
                                 $('container_payment_method_' + payment_method).show();
-                                $('payment_form_' + payment_method).show();
+                                var payment_form = $('payment_form_' + payment_method);
+                                if(payment_form)
+                                    $(payment_form).show();
+                                else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
+                                    // set sub payment method back
+                                    $('hpp_type_'+payment_hpp_type).checked = true;
+                                }
                             } catch(err)    {
 
                             }
@@ -538,6 +545,7 @@ function get_separate_save_methods_function(url, update_payments)
         var form = $('onestepcheckout-form');
         var shipping_method = $RF(form, 'shipping_method');
         var payment_method = $RF(form, 'payment[method]');
+        var payment_hpp_type = $RF(form, 'payment[hpp_type]');
         var totals = get_totals_element();
 
         var freeMethod = $('p_method_free');
@@ -594,7 +602,13 @@ function get_separate_save_methods_function(url, update_payments)
                             try    {
                                 var payment_method = $RF(form, 'payment[method]');
                                 $('container_payment_method_' + payment_method).show();
-                                $('payment_form_' + payment_method).show();
+                                var payment_form = $('payment_form_' + payment_method);
+                                if(payment_form)
+                                    $(payment_form).show();
+                                else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
+                                    // set sub payment method back
+                                    $('hpp_type_'+payment_hpp_type).checked = true;
+                                }
                             } catch(err)    {
 
                             }
