@@ -40,6 +40,10 @@
 .sp-methods #payment_form_adyen_hpp #payment_form_ideal table td input { margin-top: 15px; margin-left: 4px; /*margin-top: -38px; margin-left: 2px; position: relative; z-index: 1;*/ }
 .sp-methods #payment_form_adyen_hpp #payment_form_ideal table td img { /*margin-left: -25px;*/ }
 
+/* for onepagecheckout */
+.payment-methods dd#container_payment_method_adyen_hpp { margin:0; padding:0;}
+/* end for onepagecheckout */
+
 /* pos redirect page */
 .redirect-body-adyen { margin:0; padding:0;}
 #pos-redirect-page .logo { margin:10px 0 0 10px; width:336px; height:111px; background:url(../images/adyen/adyen_logo_large.png) left top no-repeat; }
@@ -47,4 +51,3 @@
 	#pos-redirect-page .grey-header h1 { padding: 16px 10px; font-family: 'Open Sans', sans-serif; font-size:24px;color:white; }
 #pos-redirect-page .amount-box { width:300px; height:150px; padding-top:75px; margin:50px auto; border:1px solid #797c83; color:#797c83; text-align:center; font-weight:bold; font-size:34px; background-color: #f5f5f5; box-shadow: 0 0 2px 2px #888;}
 #pos-redirect-page #launchlink { margin-top:10px; clear:both; display:block; color:#797C83; text-decoration:none; }
-	

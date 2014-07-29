@@ -411,6 +411,10 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         }
         return $result_array;
     }
+
+    public function getHppOptionsDisabled() {
+        return Mage::getStoreConfig("payment/adyen_hpp/disable_hpptypes");
+    }
     
     // Function to get the client ip address
 	public function getClientIp() {

@@ -45,7 +45,7 @@ class Adyen_Payment_Block_Form_Hpp extends Mage_Payment_Block_Form {
      * @since 0.1.0.4
      * @return type 
      */
-    public function hppOptionsDisabled() {
-        return Mage::getStoreConfig("payment/adyen_hpp/disable_hpptypes");
+    public function getHppOptionsDisabled() {
+        return $this->getMethod()->getHppOptionsDisabled();
     }
 }
