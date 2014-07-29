@@ -447,6 +447,7 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
             shipment_methods.update('<div class="loading-ajax">&nbsp;</div>');
         }
 
+        var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var payment_hpp_type = $RF(form, 'payment[hpp_type]');
         var payment_method = $RF(form, 'payment[method]');
         parameters['payment_method'] = payment_method;
@@ -513,6 +514,16 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
                                 else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
                                     // set sub payment method back
                                     $('hpp_type_'+payment_hpp_type).checked = true;
+
+                                    // check if ideal payment bank is chosen
+                                    if(payment_hpp_type == "ideal") {
+                                        if(payment_hpp_ideal_type) {
+                                            // get issue_id this is before the slash
+                                            var issue_id = payment_hpp_ideal_type.substr(0, payment_hpp_ideal_type.indexOf('/'));
+                                            $('hpp_ideal_type_'+issue_id).checked = true;
+                                        }
+                                        $('payment_form_ideal').show();
+                                    }
                                 }
                             } catch(err)    {
 
@@ -546,6 +557,7 @@ function get_separate_save_methods_function(url, update_payments)
         var shipping_method = $RF(form, 'shipping_method');
         var payment_method = $RF(form, 'payment[method]');
         var payment_hpp_type = $RF(form, 'payment[hpp_type]');
+        var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var totals = get_totals_element();
 
         var freeMethod = $('p_method_free');
@@ -608,6 +620,16 @@ function get_separate_save_methods_function(url, update_payments)
                                 else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
                                     // set sub payment method back
                                     $('hpp_type_'+payment_hpp_type).checked = true;
+
+                                    // check if ideal payment bank is chosen
+                                    if(payment_hpp_type == "ideal") {
+                                        if(payment_hpp_ideal_type) {
+                                            // get issue_id this is before the slash
+                                            var issue_id = payment_hpp_ideal_type.substr(0, payment_hpp_ideal_type.indexOf('/'));
+                                            $('hpp_ideal_type_'+issue_id).checked = true;
+                                        }
+                                        $('payment_form_ideal').show();
+                                    }
                                 }
                             } catch(err)    {
 
