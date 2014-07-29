@@ -253,7 +253,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
                                     var response = transport.responseText.evalJSON();
 
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate1', array('_secure'=>true)); ?>';
+                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
                                     var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
 
                                     if(shipping_methods){
@@ -352,7 +352,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
                                         $('onestepcheckout-coupon-remove').hide();
                                     }
 
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate2', array('_secure'=>true)); ?>';
+                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
                                     var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
 
                                     if(shipping_methods){
@@ -454,7 +454,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
                                     var response = transport.responseText.evalJSON();
 
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate3', array('_secure'=>true)); ?>';
+                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
                                     var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
 
                                     if(shipping_methods){
@@ -541,7 +541,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
                                 if(transport.status == 200) {
                                     var response = transport.responseText.evalJSON();
 
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate4', array('_secure'=>true)); ?>';
+                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
                                     var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
 
                                     if(shipping_methods){
@@ -1129,7 +1129,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
             }
 
             <?php if($this->settings['enable_ajax_save_billing']): ?>
-            get_save_billing_function('<?php echo $this->getUrl('onestepcheckout/ajax/save_billing', array('_secure'=>true)); ?>', '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate6', array('_secure'=>true)); ?>', <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>, true)();
+            get_save_billing_function('<?php echo $this->getUrl('onestepcheckout/ajax/save_billing', array('_secure'=>true)); ?>', '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>', <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>, true)();
             <?php endif; ?>
 
         });
@@ -1149,7 +1149,7 @@ $helper = Mage::helper('onestepcheckout/checkout');
         <?php if(Mage::getStoreConfig('onestepcheckout/ajax_update/enable_ajax_save_billing') && !empty($triggers)):?>
 
         var url_save_billing = '<?php echo $this->getUrl('onestepcheckout/ajax/save_billing', array('_secure'=>true)); ?>';
-        var url_set_methods = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate7', array('_secure'=>true)); ?>';
+        var url_set_methods = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
         var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
         var update_on_initial = false;
 
