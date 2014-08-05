@@ -255,6 +255,7 @@
                 <order_status>processing</order_status>
                 <title>Adyen SEPA</title>
                 <sort_order>60</sort_order>
+                <validate_iban>0</validate_iban>
             </adyen_sepa>
         </payment>  
         <adyen>
