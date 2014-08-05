@@ -327,7 +327,7 @@
                         </disable_hpptypes>
                         <cache_directory_lookup>
                             <label>Cache payment method call</label>
-                            <comment></comment>
+                            <comment>Enable this if you having trouble with performance and you don't have any amount rules setup in your skin in the Adyen backoffice.</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>100</sort_order>
@@ -336,6 +336,16 @@
                             <show_in_store>1</show_in_store>
                             <depends><disable_hpptypes>0</disable_hpptypes></depends>
                         </cache_directory_lookup>
+                        <return_url_in_request>
+                            <label>Return url in request</label>
+                            <comment>If you have a multi webshop and you want to use one skin only, enable this option</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </return_url_in_request>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>

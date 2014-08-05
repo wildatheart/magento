@@ -203,7 +203,15 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 $adyFields['idealIssuerId'] = $id['0'];        
             }            
         }
-        
+
+
+        // if option to put Return Url in request from magento is enabled add this in the request
+        $returnUrlInRequest = $this->_getConfigData('return_url_in_request', 'adyen_hpp');
+        if($returnUrlInRequest){
+            $url = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK, true)."adyen/process/success";
+            $adyFields['resURL'] = $url;
+        }
+
         // pos over hpp
 //         disable this because no one using this and it will always show POS payment method
 //         $terminalcode = 'redirect';
