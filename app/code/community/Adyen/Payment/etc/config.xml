@@ -175,7 +175,7 @@
                 <capture_mode>auto</capture_mode>
                 <recurringtypes>ONECLICK</recurringtypes>      		
             </adyen_abstract>
-            <adyen_hpp>
+            <adyen_hpp translate="title" module="adyen">
                 <customer_id backend_model="adminhtml/system_config_backend_encrypted"/>
                 <currency>EUR</currency>
                 <model>adyen/adyen_hpp</model>
@@ -192,14 +192,16 @@
                 <payment_authorized>processing</payment_authorized>
                 <allowspecific>0</allowspecific>
                 <disable_hpptypes>0</disable_hpptypes>
+                <sort_order>30</sort_order>
             </adyen_hpp>
-            <adyen_pos>
+            <adyen_pos translate="title" module="adyen">
             	<active>0</active>
             	<model>adyen/adyen_pos</model>
             	<title>Adyen POS</title>
             	<recurringtypes>ONECLICK</recurringtypes>
             	<comment>sdf</comment>
             	<allowspecific>0</allowspecific>
+                <sort_order>80</sort_order>
             </adyen_pos>
             <adyen_openinvoice translate="title" module="adyen">
                 <active>0</active>
@@ -208,6 +210,7 @@
                 <order_status>pending</order_status>
                 <title>Adyen Open Invoice</title>
                 <openinvoicetypes>openinvoice</openinvoicetypes>
+                <sort_order>40</sort_order>
             </adyen_openinvoice>  
             <adyen_cc translate="title" module="adyen">
                 <active>0</active>
@@ -224,6 +227,7 @@
                 <trxuser_password>0</trxuser_password>
                 <adminaction_password>5cfgRT34xsdedtFLdfHxj7tfwx24fe</adminaction_password>
                 <wsdl>https://pal-test.adyen.com/pal/Payment.wsdl</wsdl>
+                <sort_order>20</sort_order>
             </adyen_cc>
             <adyen_elv translate="title" module="adyen">
                 <active>0</active>
@@ -231,6 +235,7 @@
                 <group>adyen</group>
                 <order_status>processing</order_status>
                 <title>Adyen ELV</title>
+                <sort_order>50</sort_order>
             </adyen_elv>             
             <adyen_boleto translate="title" module="adyen">
             	<active>0</active>
@@ -239,6 +244,7 @@
                 <order_status>processing</order_status>
                 <title>Adyen Boleto</title>
                 <delivery_days>5</delivery_days>
+                <sort_order>70</sort_order>
             </adyen_boleto>
             <adyen_sepa translate="title" module="adyen">
                 <active>0</active>
@@ -246,6 +252,7 @@
                 <group>adyen</group>
                 <order_status>processing</order_status>
                 <title>Adyen SEPA</title>
+                <sort_order>60</sort_order>
             </adyen_sepa>
         </payment>  
         <adyen>

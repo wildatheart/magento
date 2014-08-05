@@ -224,110 +224,7 @@
                 <adyen_hpp translate="label" module="adyen">
                     <label>Adyen HPP</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>301</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <fields>
-                        <active translate="label">
-                            <label>Enabled</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
-                        </active>
-                        <title translate="label">
-                            <label>Title</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </title>                      
-                        <skinCode translate="label">
-                            <label>Skin Code</label>
-                            <comment>The skin code you want to use (You can find this in the admin are of your Adyen account)</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </skinCode>                  
-                        <secret_wordt translate="label">
-                            <label>HMAC Key for Test</label>
-                            <comment>Should match with the HMAC test key in the Adyen backoffice.</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </secret_wordt>
-                        <secret_wordp translate="label">
-                            <label>HMAC Key for Live</label>
-                            <comment>Should match with the HMAC live key in the Adyen backoffice.</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </secret_wordp>                    
-                        <payment_routines translate="label">
-                            <label>Payment Flow Selection</label>
-                            <comment>Adyen provide you with 2 types of payment routines. Multi-page and Single Page</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adyen/source_PaymentRoutines</source_model>
-                            <sort_order>6</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </payment_routines>
-                        <delivery_days translate="label">
-                            <label>Days for Delivery</label>
-                            <comment>How many days to be added to the current date for delivery. ONLY numbers allowed.</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>7</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </delivery_days>
-                        <disable_hpptypes translate="label">
-                            <label>Leave payment method selection on HPP</label>
-                            <comment>If you say yes here, payment methods in the checkout won't be displayed and you will be redirected to the Adyen HPP to make the selection.</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>9</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>                    
-                        </disable_hpptypes>
-                        <allowspecific translate="label">
-                            <label>Payment to applicable countries</label>
-                            <frontend_type>allowspecific</frontend_type>
-                            <sort_order>12</sort_order>
-                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </allowspecific>
-                        <specificcountry translate="label">
-                            <label>Payment to Specific countries</label>
-                            <frontend_type>multiselect</frontend_type>
-                            <sort_order>13</sort_order>
-                            <source_model>adminhtml/system_config_source_country</source_model>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>                         
-                    </fields>
-                </adyen_hpp>
-                 <!-- @Pos only --> 
-                <adyen_pos translate="label" module="adyen">
-                    <label>Adyen POS</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>302</sort_order>
+                    <sort_order>310</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -349,6 +246,125 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
+                        <skinCode translate="label">
+                            <label>Skin Code</label>
+                            <comment>The skin code you want to use (You can find this in the admin are of your Adyen account)</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </skinCode>                  
+                        <secret_wordt translate="label">
+                            <label>HMAC Key for Test</label>
+                            <comment>Should match with the HMAC test key in the Adyen backoffice.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </secret_wordt>
+                        <secret_wordp translate="label">
+                            <label>HMAC Key for Live</label>
+                            <comment>Should match with the HMAC live key in the Adyen backoffice.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </secret_wordp>                    
+                        <payment_routines translate="label">
+                            <label>Payment Flow Selection</label>
+                            <comment>Adyen provide you with 2 types of payment routines. Multi-page and Single Page</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adyen/source_PaymentRoutines</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </payment_routines>
+                        <delivery_days translate="label">
+                            <label>Days for Delivery</label>
+                            <comment>How many days to be added to the current date for delivery. ONLY numbers allowed.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_days>
+                        <disable_hpptypes translate="label">
+                            <label>Leave payment method selection on HPP</label>
+                            <comment>If you say yes here, payment methods in the checkout won't be displayed and you will be redirected to the Adyen HPP to make the selection.</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>                    
+                        </disable_hpptypes>
+                        <allowspecific translate="label">
+                            <label>Payment to applicable countries</label>
+                            <frontend_type>allowspecific</frontend_type>
+                            <sort_order>120</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </allowspecific>
+                        <specificcountry translate="label">
+                            <label>Payment to Specific countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>130</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<depends><allowspecific>1</allowspecific></depends>
+                        </specificcountry>                         
+                    </fields>
+                </adyen_hpp>
+                 <!-- @Pos only --> 
+                <adyen_pos translate="label" module="adyen">
+                    <label>Adyen POS</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>320</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>                    
+                        </active>
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <recurringtypes translate="label">
                            <label>Recurring Type</label>
                            <comment>You can set different value for POS because you have to have the permission of the customer</comment>
@@ -384,7 +400,7 @@
                 <adyen_openinvoice translate="label" module="adyen">
                     <label>Adyen OpenInvoice</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>303</sort_order>
+                    <sort_order>330</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -393,7 +409,7 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>                    
@@ -401,16 +417,24 @@
                         <title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <openinvoicetypes translate="label">
                             <label>OpenInvoice Type</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adyen/source_openinvoiceType</source_model>
-                            <sort_order>3</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -418,7 +442,7 @@
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>4</sort_order>
+                            <sort_order>40</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -427,7 +451,7 @@
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>5</sort_order>
+                            <sort_order>50</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -440,7 +464,7 @@
                 <adyen_cc translate="label" module="adyen">
                     <label>Adyen CC</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>304</sort_order>
+                    <sort_order>340</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -449,7 +473,7 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>                    
@@ -457,16 +481,24 @@
                         <title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <cctypes translate="label">
                             <label>Credit Card Types</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>adyen/source_ccType</source_model>
-                            <sort_order>4</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -475,7 +507,7 @@
                             <label>Enable Client-Side Encryption</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>6</sort_order>
+                            <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -483,7 +515,7 @@
                         <cse_publickey translate="label">
                             <label>Client-Side Encryption Public Key</label>
                             <frontend_type>textarea</frontend_type>
-                            <sort_order>7</sort_order>
+                            <sort_order>70</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -492,7 +524,7 @@
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>9</sort_order>
+                            <sort_order>90</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -501,7 +533,7 @@
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>10</sort_order>
+                            <sort_order>100</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -512,7 +544,7 @@
                         	<label>Enable Installments</label>
                         	<frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>11</sort_order>
+                            <sort_order>110</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -521,18 +553,18 @@
                             <label>Installments</label>
                             <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
                             <backend_model>adyen/system_config_backend_installments</backend_model>
-                            <sort_order>12</sort_order>
+                            <sort_order>120</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                        </installments>
                     </fields>
-                </adyen_cc>	
-                <!-- @Elv only --> 			
+                </adyen_cc>
+                <!-- @Elv only -->
                 <adyen_elv translate="label" module="adyen">
                     <label>Adyen ELV</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>305</sort_order>
+                    <sort_order>360</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -541,7 +573,7 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>                    
@@ -549,15 +581,23 @@
                         <title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>5</sort_order>
+                            <sort_order>50</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -566,7 +606,7 @@
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>6</sort_order>
+                            <sort_order>60</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -579,7 +619,7 @@
                 <adyen_boleto translate="label" module="adyen">
                     <label>Adyen Boleto</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>306</sort_order>
+                    <sort_order>370</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -588,7 +628,7 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>                    
@@ -596,16 +636,24 @@
                         <title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <delivery_days translate="label">
                             <label>Days for Delivery</label>
                             <comment>How many days to be added to the current date for delivery. ONLY numbers allowed.</comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>3</sort_order>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -614,7 +662,7 @@
                             <label>Boleto Types</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>adyen/source_boletoType</source_model>
-                            <sort_order>4</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -622,7 +670,7 @@
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>5</sort_order>
+                            <sort_order>50</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -631,7 +679,7 @@
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>6</sort_order>
+                            <sort_order>60</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -644,7 +692,7 @@
                 <adyen_sepa translate="label" module="adyen">
                     <label>Adyen SEPA</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>306</sort_order>
+                    <sort_order>380</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -653,7 +701,7 @@
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>1</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -661,15 +709,23 @@
                         <title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
+                            <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </title>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>5</sort_order>
+                            <sort_order>50</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -678,7 +734,7 @@
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>6</sort_order>
+                            <sort_order>60</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
