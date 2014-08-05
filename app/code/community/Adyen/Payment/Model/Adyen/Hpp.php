@@ -212,18 +212,18 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 //         $strsign = "merchantSig:pos.serial_number|" . $adyFields['merchantSig'] . ":" . $terminalcode;
 //         $signPOS = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $strsign);
 //         $adyFields['pos.sig'] = base64_encode(pack('H*', $signPOS));
-        
+
         Mage::log($adyFields, self::DEBUG_LEVEL, 'http-request.log',true);
-        
+
         return $adyFields;
     }
 
     protected function _getSecretWord($options = null) {
         switch ($this->getConfigDataDemoMode()) {
-            case true:        
+            case true:
                 $secretWord = trim($this->_getConfigData('secret_wordt', 'adyen_hpp'));
                 break;
-            default:               
+            default:
                 $secretWord = trim($this->_getConfigData('secret_wordp', 'adyen_hpp'));
                 break;
         }
@@ -232,7 +232,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
     /**
      * @desc Get url of Adyen payment
-     * @return string 
+     * @return string
      * @todo add brandCode here
      */
     public function getFormUrl() {
@@ -244,8 +244,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 if ($paymentRoutine == 'single' && empty($brandCode)) {
                     $url = 'https://test.adyen.com/hpp/pay.shtml';
                 } else {
-                    $url = (empty($brandCode)) ? 
-                            'https://test.adyen.com/hpp/select.shtml' : 
+                    $url = (empty($brandCode)) ?
+                            'https://test.adyen.com/hpp/select.shtml' :
                             "https://test.adyen.com/hpp/details.shtml?brandCode=$brandCode";
                 }
                 break;
@@ -253,23 +253,23 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 if ($paymentRoutine == 'single' && empty($brandCode)) {
                     $url = 'https://live.adyen.com/hpp/pay.shtml';
                 } else {
-                    $url = (empty($brandCode)) ? 
-                            'https://live.adyen.com/hpp/select.shtml' : 
+                    $url = (empty($brandCode)) ?
+                            'https://live.adyen.com/hpp/select.shtml' :
                             "https://live.adyen.com/hpp/details.shtml?brandCode=$brandCode";
                 }
                 break;
         }
-        
+
         //IDEAL
         $idealBankUrl = false;
         $bankData = $this->getInfoInstance()->getPoNumber();
         if ($brandCode == 'ideal' && !empty($bankData)) {
-            $idealBankUrl = ($isConfigDemoMode == true) ? 
+            $idealBankUrl = ($isConfigDemoMode == true) ?
                             'https://test.adyen.com/hpp/redirectIdeal.shtml' :
                             'https://live.adyen.com/hpp/redirectIdeal.shtml';
-        }        
-        
-        
+        }
+
+
         return (!empty($idealBankUrl)) ? $idealBankUrl : $url;
     }
 
@@ -302,18 +302,19 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
 
     public function getAvailableHPPTypes() {
-    	
+
         $orderCurrencyCode = Mage::helper('checkout/cart')->getQuote()->getQuoteCurrencyCode();
         $skinCode = trim($this->_getConfigData('skinCode', 'adyen_hpp'));
         $merchantAccount = trim($this->_getConfigData('merchantAccount'));
         $amount = $this->_formatAmount(Mage::helper('checkout/cart')->getQuote()->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
         $sessionValidity = date(DATE_ATOM, mktime(date("H") + 1, date("i"), date("s"), date("m"), date("j"), date("Y")));
-        
-        
+        $cacheDirectoryLookup = trim($this->_getConfigData('cache_directory_lookup', 'adyen_hpp'));
+
+
         $countryCode = trim($this->_getConfigData('countryCode'));
-        
+
         if(empty($countryCode)) {
-        	
+
         	// check if billingcountry is filled in
         	if(is_object(Mage::helper('checkout/cart')->getQuote()->getBillingAddress()) && Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry() != "") {
         		$countryCode =  Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry();
@@ -325,6 +326,16 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         	}
         }
 
+        // check if cache setting is on
+        if($cacheDirectoryLookup) {
+            // cache name has variables merchantAccount, skinCode, currencycode and country code. Amound is not cached because of performance issues
+            $cacheId = 'cache_directory_lookup_request_' .  $merchantAccount . "_" . $skinCode . "_" . $orderCurrencyCode . "_" . $countryCode;
+            // check if this request is already cached
+            if (false !== ($data = Mage::app()->getCache()->load($cacheId))) {
+                // return result from cache
+                return unserialize($data);
+            }
+        }
         // directory lookup to search for available payment methods
         $adyFields = array(
         		"paymentAmount" => $amount,
@@ -337,34 +348,34 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 "shopperLocale" => $countryCode,
         		"merchantSig" => "",
         );
-        
+
         $sign = $adyFields['paymentAmount'] .
 		        $adyFields['currencyCode'] .
 		        $adyFields['merchantReference'] .
 		        $adyFields['skinCode'] .
 		        $adyFields['merchantAccount'] .
 		        $adyFields['sessionValidity'];
-        
+
         //Generate HMAC encrypted merchant signature
         $secretWord = $this->_getSecretWord();
         $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign);
         $adyFields['merchantSig'] = base64_encode(pack('H*', $signMac));
 
         $ch = curl_init();
-        
+
         $isConfigDemoMode = $this->getConfigDataDemoMode();
         if ($isConfigDemoMode)
 	        curl_setopt($ch, CURLOPT_URL, "https://test.adyen.com/hpp/directory.shtml");
-        else 
+        else
         	curl_setopt($ch, CURLOPT_URL, "https://live.adyen.com/hpp/directory.shtml");
-        	
+
        	curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST,count($adyFields));
         curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($adyFields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // do not print results if you do curl_exec
-        
+
         $results = curl_exec($ch);
-        
+
         if($results === false) {
         	echo "Error: " . curl_error($ch);
         	Mage::log("Payment methods are not available on this merchantaccount\skin result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
@@ -382,21 +393,21 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         		Mage::log("Payment methods are empty on this merchantaccount\skin. results_json is incorrect result is:" . $results_json, self::DEBUG_LEVEL, 'http-request.log',true);
         		Mage::throwException(Mage::helper('adyen')->__('Payment methods are empty on this merchantaccount\skin'));
         	}
-        	
+
         	$payment_methods = $results_json->paymentMethods;
-        	
+
         	$result_array = array();
         	foreach($payment_methods as $payment_method) {
-        		
+
         		// if openinvoice is activated don't show this in HPP options
         		if(Mage::getStoreConfig("payment/adyen_openinvoice/active")) {
         			if(Mage::getStoreConfig("payment/adyen_openinvoice/openinvoicetypes") == $payment_method->brandCode) {
         				continue;
         			}
         		}
-        		
+
 				$result_array[$payment_method->brandCode]['name'] = $payment_method->name;
-				
+
 				if(isset($payment_method->issuers)) {
 					// for ideal go through the issuers
 					if(count($payment_method->issuers) > 0)
@@ -409,6 +420,12 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 				}
         	}
         }
+
+        // if cache is on cache this result
+        if($cacheDirectoryLookup) {
+            Mage::app()->getCache()->save(serialize($result_array), $cacheId);
+        }
+
         return $result_array;
     }
 

@@ -193,6 +193,7 @@
                 <allowspecific>0</allowspecific>
                 <disable_hpptypes>0</disable_hpptypes>
                 <sort_order>30</sort_order>
+                <cache_directory_lookup>0</cache_directory_lookup>
             </adyen_hpp>
             <adyen_pos translate="title" module="adyen">
             	<active>0</active>

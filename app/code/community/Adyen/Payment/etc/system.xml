@@ -30,7 +30,7 @@
     <sections>
         <payment>
             <groups>
-                <!-- @default --> 
+                <!-- @default -->
                 <adyen_abstract translate="label" module="adyen">
                     <label>Adyen Default Settings</label>
                     <frontend_type>text</frontend_type>
@@ -100,7 +100,7 @@
                             <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>                            
+                            <show_in_store>0</show_in_store>
                         </payment_pre_authorized>
                         <payment_cancelled translate="label">
                             <label>Order status cancelled payment</label>
@@ -111,7 +111,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </payment_cancelled>                                               
+                        </payment_cancelled>
                         <refund_authorized translate="label">
                             <label>Refund authorise (refund success)</label>
                             <comment>(optional) leave empty if you are not sure</comment>
@@ -121,7 +121,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </refund_authorized> 
+                        </refund_authorized>
                         <notification_username translate="label">
                             <label>Notification Username</label>
                             <comment>Should match your "notifications settings" in your Adyen account.</comment>
@@ -158,7 +158,7 @@
                            <show_in_default>1</show_in_default>
                            <show_in_website>1</show_in_website>
                            <show_in_store>1</show_in_store>
-                       </recurringtypes>            
+                       </recurringtypes>
                         <ws_username_test translate="label">
                             <label>Adyen ws username for Test</label>
                             <comment>Normally this will be ws@Company.YourCompanyCode</comment>
@@ -167,7 +167,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </ws_username_test>    
+                        </ws_username_test>
                         <ws_password_test translate="label">
                             <label>Adyen ws password for Test</label>
                             <comment>The password of the ws user for Test</comment>
@@ -176,7 +176,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </ws_password_test>    
+                        </ws_password_test>
                         <ws_username_live translate="label">
                             <label>Adyen ws username for Live</label>
                             <comment>Normally this will be ws@Company.YourCompanyCode</comment>
@@ -185,7 +185,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </ws_username_live>    
+                        </ws_username_live>
                         <ws_password_live translate="label">
                             <label>Adyen ws password for Live</label>
                             <comment>The password of the ws user for Live</comment>
@@ -232,10 +232,10 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </send_invoice_update_mail>      
+                        </send_invoice_update_mail>
                     </fields>
                 </adyen_abstract>
-                <!-- @Hpp only --> 
+                <!-- @Hpp only -->
                 <adyen_hpp translate="label" module="adyen">
                     <label>Adyen HPP</label>
                     <frontend_type>text</frontend_type>
@@ -251,7 +251,7 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
+                            <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
                             <label>Title</label>
@@ -277,7 +277,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </skinCode>                  
+                        </skinCode>
                         <secret_wordt translate="label">
                             <label>HMAC Key for Test</label>
                             <comment>Should match with the HMAC test key in the Adyen backoffice.</comment>
@@ -295,7 +295,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </secret_wordp>                    
+                        </secret_wordp>
                         <payment_routines translate="label">
                             <label>Payment Flow Selection</label>
                             <comment>Adyen provide you with 2 types of payment routines. Multi-page and Single Page</comment>
@@ -323,8 +323,19 @@
                             <sort_order>90</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>                    
+                            <show_in_store>0</show_in_store>
                         </disable_hpptypes>
+                        <cache_directory_lookup>
+                            <label>Cache payment method call</label>
+                            <comment></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><disable_hpptypes>0</disable_hpptypes></depends>
+                        </cache_directory_lookup>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
@@ -343,10 +354,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
 							<depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>                         
+                        </specificcountry>
                     </fields>
                 </adyen_hpp>
-                 <!-- @Pos only --> 
+                 <!-- @Pos only -->
                 <adyen_pos translate="label" module="adyen">
                     <label>Adyen POS</label>
                     <frontend_type>text</frontend_type>
@@ -408,10 +419,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
 							<depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>    
+                        </specificcountry>
                     </fields>
                 </adyen_pos>
-                <!-- @Openinvoice only --> 
+                <!-- @Openinvoice only -->
                 <adyen_openinvoice translate="label" module="adyen">
                     <label>Adyen OpenInvoice</label>
                     <frontend_type>text</frontend_type>
@@ -427,7 +438,7 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
+                            <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
                             <label>Title</label>
@@ -453,7 +464,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </openinvoicetypes>     
+                        </openinvoicetypes>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
@@ -462,7 +473,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </allowspecific> 						
+                        </allowspecific>
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
@@ -472,10 +483,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
 							<depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>                                                
+                        </specificcountry>
                     </fields>
-                </adyen_openinvoice> 
-                <!-- @CC only --> 
+                </adyen_openinvoice>
+                <!-- @CC only -->
                 <adyen_cc translate="label" module="adyen">
                     <label>Adyen CC</label>
                     <frontend_type>text</frontend_type>
@@ -491,7 +502,7 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
+                            <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
                             <label>Title</label>
@@ -591,7 +602,7 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
+                            <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
                             <label>Title</label>
@@ -617,7 +628,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </allowspecific>						
+                        </allowspecific>
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
@@ -627,10 +638,10 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
 							<depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>                                                
+                        </specificcountry>
                     </fields>
                 </adyen_elv>
-                <!-- @boleto only --> 
+                <!-- @boleto only -->
                 <adyen_boleto translate="label" module="adyen">
                     <label>Adyen Boleto</label>
                     <frontend_type>text</frontend_type>
@@ -646,7 +657,7 @@
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>                    
+                            <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
                             <label>Title</label>
@@ -690,7 +701,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </allowspecific>						
+                        </allowspecific>
                         <specificcountry translate="label">
                             <label>Payment to Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
@@ -700,7 +711,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <depends><allowspecific>1</allowspecific></depends>
-                        </specificcountry>                                                
+                        </specificcountry>
                     </fields>
                 </adyen_boleto>
                 <!-- @SEPA only -->
