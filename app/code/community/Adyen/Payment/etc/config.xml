@@ -85,7 +85,7 @@
             <groups>
                 <adyen>Adyen</adyen>
             </groups>
-        </payment>        
+        </payment>
     </global>
     
     <frontend>
@@ -152,7 +152,7 @@
                         <method>refund</method>
                     </adyen_online_refund>
                 </observers>
-            </sales_order_creditmemo_refund>                      
+            </sales_order_creditmemo_refund>
         </events>
     </adminhtml>
     <default>
@@ -231,6 +231,14 @@
                 <wsdl>https://pal-test.adyen.com/pal/Payment.wsdl</wsdl>
                 <sort_order>20</sort_order>
             </adyen_cc>
+            <adyen_oneclick translate="title" module="adyen">
+                <active>0</active>
+                <model>adyen/adyen_oneclick</model>
+                <group>adyen</group>
+                <order_status>processing</order_status>
+                <title>Adyen OneClick</title>
+                <sort_order>1</sort_order>
+            </adyen_oneclick>
             <adyen_elv translate="title" module="adyen">
                 <active>0</active>
                 <model>adyen/adyen_elv</model>

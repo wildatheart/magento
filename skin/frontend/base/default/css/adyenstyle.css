@@ -44,6 +44,19 @@
 .payment-methods dd#container_payment_method_adyen_hpp { margin:0; padding:0;}
 /* end for onepagecheckout */
 
+.sp-methods h3.other-payment { margin-top:15px; }
+.sp-methods #oneclick_payment_form_adyen_oneclick { padding-top:10px; }
+.sp-methods #oneclick_payment_form_adyen_oneclick .recurring-creditcards .recurring_type { float:left; vertical-align: middle; height:120px;}
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block { display:inline-block; border: 1px solid #999; padding:10px; margin-left:10px; min-width: 568px; }
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block img { margin-bottom:10px;}
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns { float:left; margin-right:10px; height:30px;}
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns .update-expiration-date { display:inline; float:none; }
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block label { display:block; }
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns.three.b label { width:175px;}
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .creditcard-holder-name { margin-top:20px;}
+
+
+
 /* pos redirect page */
 .redirect-body-adyen { margin:0; padding:0;}
 #pos-redirect-page .logo { margin:10px 0 0 10px; width:336px; height:111px; background:url(../images/adyen/adyen_logo_large.png) left top no-repeat; }

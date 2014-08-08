@@ -84,7 +84,19 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      */
     public function refund(Varien_Object $payment, $amount) {
         $this->writeLog('refund fx called');
-        parent::refund($payment, $amount);
+
+        $order = $payment->getOrder();
+        $pspReference = Mage::getModel('adyen/event')->getOriginalPspReference($order->getIncrementId());
+
+        // if amound is a full refund send a refund/cancelled request so if it is not captured yet it will cancel the order
+        $grandTotal = $order->getGrandTotal();
+
+        if($grandTotal == $amount) {
+            $order->getPayment()->getMethodInstance()->SendCancelOrRefund($payment, null, $pspReference);
+        } else {
+            $order->getPayment()->getMethodInstance()->sendRefundRequest($payment, $amount, $pspReference);
+        }
+
         return $this;
     }
 
@@ -96,7 +108,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
     public function authorize(Varien_Object $payment, $amount) {
     	parent::authorize($payment, $amount);
         $payment->setLastTransId($this->getTransactionId())->setIsTransactionPending(true);
-        if ($this->getCode() == 'adyen_boleto' || $this->getCode() == 'adyen_cc' || $this->getCode() == 'adyen_elv' || $this->getCode() == 'adyen_sepa') {
+        if ($this->getCode() == 'adyen_boleto' || $this->getCode() == 'adyen_cc' || $this->getCode() == 'adyen_oneclick' || $this->getCode() == 'adyen_elv' || $this->getCode() == 'adyen_sepa') {
             $_authorizeResponse = $this->_processRequest($payment, $amount, "authorise");
         }
         return $this;
@@ -139,6 +151,15 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
         return $this->_processRequest($payment, $amount, "refund", $pspReference);
     }
 
+    public function SendCancelOrRefund(Varien_Object $payment, $pspReference) {
+        if (empty($pspReference)) {
+            $this->writeLog('oops empty pspReference');
+            return $this;
+        }
+        $this->writeLog("sendCancelOrRefundRequest pspReference : $pspReference");
+        return $this->_processRequest($payment, null, "cancel_or_refund", $pspReference);
+    }
+
     /**
      * Process the request here
      * @param Varien_Object $payment
@@ -150,14 +171,15 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
         $this->_initOrder();
         $this->_initService();
         $merchantAccount = trim($this->_getConfigData('merchantAccount'));
+        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract');
         $modificationResult = Mage::getModel('adyen/adyen_data_modificationResult');
         $requestData = Mage::getModel('adyen/adyen_data_modificationRequest')
                 ->create($payment, $amount, $this->_order, $merchantAccount, $pspReference);
-        
+
         switch ($request) {
             case "authorise":
                 $requestData = Mage::getModel('adyen/adyen_data_paymentRequest')
-                        ->create($payment, $amount, $this->_order, $this->_paymentMethod, $merchantAccount);
+                        ->create($payment, $amount, $this->_order, $this->_paymentMethod, $merchantAccount,$recurringType);
 
                 $response = $this->_service->authorise(array('paymentRequest' => $requestData));
                 break;
@@ -177,6 +199,11 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
                     'modificationRequest' => $requestData,
                     'modificationResult' => $modificationResult));
                 break;
+            case "cancel_or_refund":
+                $response = $this->_service->cancelorrefund(array(
+                    'modificationRequest' => $requestData,
+                    'modificationResult' => $modificationResult));
+                break;
         }
 
         if (!empty($response)) {
@@ -192,6 +219,81 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
 
         //return $this;
         return $response;
+    }
+
+    protected function _processRecurringRequest($customerId) {
+
+        $this->_initService();
+
+        // customerId
+        $merchantAccount = trim($this->_getConfigData('merchantAccount'));
+        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract');
+
+
+        // do not show the oneclick if recurring type is empty or recurring
+        if($recurringType == "ONECLICK" || $recurringType == "ONECLICK,RECURRING")
+        {
+            // recurring type is always ONECLICK
+            if($recurringType == "ONECLICK,RECURRING") {
+                $recurringType = "ONECLICK";
+            }
+
+            // rest call to get listrecurring details
+            $request = array(
+                "action" => "Recurring.listRecurringDetails",
+                "recurringDetailsRequest.merchantAccount" => $merchantAccount,
+                "recurringDetailsRequest.shopperReference" => $customerId,
+                "recurringDetailsRequest.recurring.contract" => $recurringType, // i.e.: "ONECLICK" Or "RECURRING"
+            );
+
+            $ch = curl_init();
+
+            $isConfigDemoMode = $this->getConfigDataDemoMode();
+            $wsUsername = $this->getConfigDataWsUserName();
+            $wsPassword = $this->getConfigDataWsPassword();
+
+            if ($isConfigDemoMode)
+                curl_setopt($ch, CURLOPT_URL, "https://pal-test.adyen.com/pal/adapter/httppost");
+            else
+                curl_setopt($ch, CURLOPT_URL, "https://pal-live.adyen.com/pal/adapter/httppost");
+
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC  );
+            curl_setopt($ch, CURLOPT_USERPWD,$wsUsername.":".$wsPassword);
+            curl_setopt($ch, CURLOPT_POST,count($request));
+            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($request));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $result = curl_exec($ch);
+
+            if($result === false) {
+                Mage::log("List recurring is failing error is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+                Mage::throwException(Mage::helper('adyen')->__('List recurring is generating the error see the log'));
+            } else{
+                /**
+                 * The $result contains a JSON array containing
+                 * the available payment methods for the merchant account.
+                 */
+                parse_str($result,$result);
+                Mage::log("List recurring result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+
+                // create a arraylist with the cards
+                $recurringCards = array();
+
+                foreach($result as $key => $value) {
+                    // strip the key
+                    $key = str_replace("recurringDetailsResult_details_", "", $key);
+                    $key2 = strstr($key, '_');
+                    $keyNumber = str_replace($key2, "", $key);
+                    $keyAttribute = substr($key2, 1);
+                    $recurringCards[$keyNumber][$keyAttribute] = $value;
+                }
+                // unset the recurringDetailsResult because this is not a card
+                unset($recurringCards["recurringDetailsResult"]);
+
+                return $recurringCards;
+            }
+        }
     }
 
     /**
@@ -214,6 +316,10 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
             case "refund":
                 $responseCode = $response->refundResult->response;
                 $pspReference = $response->refundResult->pspReference;
+                break;
+            case "cancel_or_refund":
+                $responseCode = $response->cancelOrRefundResult->response;
+                $pspReference = $response->cancelOrRefundResult->pspReference;
                 break;
             case "capture":
                 $responseCode = $response->captureResult->response;
@@ -245,9 +351,8 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
             	$this->_addStatusHistory($payment, $responseCode, $pspReference, false, $pdfUrl);
             	break;
             case '[capture-received]':
-                $this->_addStatusHistory($payment, $responseCode, $pspReference);
-                break;
             case '[refund-received]':
+            case '[cancelOrRefund-received]':
                 $this->_addStatusHistory($payment, $responseCode, $pspReference);
                 break;
             case "Error":

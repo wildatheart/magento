@@ -53,6 +53,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 	// added for boleto
 	public $shopperName;
 	public $socialSecurityNumber;
+    const GUEST_ID = 'customer_';
 
     public function __construct() {
     	$this->browserInfo = new Adyen_Payment_Model_Adyen_Data_BrowserInfo();
@@ -64,10 +65,11 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
     }
 
-    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null) {
+    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null) {
         $incrementId = $order->getIncrementId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
         $customerId = $order->getCustomerId();
+        $realOrderId = $order->getRealOrderId();
 
         $this->reference = $incrementId;
         $this->merchantAccount = $merchantAccount;
@@ -78,8 +80,13 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $customerEmail = $order->getCustomerEmail();
         $this->shopperEmail = $customerEmail;
         $this->shopperIP = $order->getRemoteIp();
-        $this->shopperReference = $customerId;
+        $this->shopperReference = (!empty($customerId)) ? $customerId : self::GUEST_ID . $realOrderId;
 
+        // add recurring type for oneclick and recurring
+        if($recurringType) {
+            $this->recurring = new Adyen_Payment_Model_Adyen_Data_Recurring();
+            $this->recurring->contract = $recurringType;
+        }
 
         /**
          * Browser info
@@ -101,11 +108,23 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $this->elv->bankName = $elv['bank_name'];
                 break;
             case "cc":
-            	$this->shopperName = null;
+            case "oneclick":
+
+            $this->shopperName = null;
             	$this->elv = null;
                 $this->bankAccount = null;
 
+                $recurringDetailReference = $payment->getAdditionalInformation("recurring_detail_reference");
+
 				if (Mage::getModel('adyen/adyen_cc')->isCseEnabled()) {
+
+
+                    if($recurringDetailReference && $recurringDetailReference != "") {
+
+                        $this->selectedRecurringDetailReference = $recurringDetailReference;
+                        $this->shopperInteraction = "Ecommerce";
+                    }
+
 					$this->card = null;
 					$kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
 					$kv->key = new SoapVar("card.encrypted.json", XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
@@ -113,11 +132,26 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 					$this->additionalData->entry = $kv;
 				}
 				else {
-					$this->card->cvc = $payment->getCcCid();
-					$this->card->expiryMonth = $payment->getCcExpMonth();
-					$this->card->expiryYear = $payment->getCcExpYear();
-					$this->card->holderName = $payment->getCcOwner();
-					$this->card->number = $payment->getCcNumber();
+
+
+                    if($recurringDetailReference && $recurringDetailReference != "") {
+                        $this->selectedRecurringDetailReference = $recurringDetailReference;
+                        $this->card->cvc = $payment->getCcCid();
+
+                        // TODO: check if expirymonth and year is changed if so add this in the card object
+                        $this->card->expiryMonth = $payment->getCcExpMonth();
+                        $this->card->expiryYear = $payment->getCcExpYear();
+
+                        // set shopper interaction
+                        $this->shopperInteraction = "Ecommerce";
+
+                    } else {
+                        $this->card->cvc = $payment->getCcCid();
+                        $this->card->expiryMonth = $payment->getCcExpMonth();
+                        $this->card->expiryYear = $payment->getCcExpYear();
+                        $this->card->holderName = $payment->getCcOwner();
+                        $this->card->number = $payment->getCcNumber();
+                    }
 				}
 
                 // installments
@@ -151,7 +185,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $this->selectedBrand = "sepadirectdebit";
                 break;
         }
-		
+
         return $this;
     }
 

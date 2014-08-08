@@ -25,9 +25,14 @@
  * @property   Adyen B.V
  * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
  */
-class Adyen_Payment_Model_Adyen_Data_Recurring extends Adyen_Payment_Model_Adyen_Data_Abstract {
+class Adyen_Payment_Block_Form_Oneclick extends Adyen_Payment_Block_Form_Cc {
 
-    public $contract;
-    public $recurringDetailName = null;
+    protected function _construct() {
+        parent::_construct();
+        $this->setTemplate('adyen/form/oneclick.phtml');
+    }
 
+    public function getlistRecurringDetails() {
+        return $this->getMethod()->getlistRecurringDetails();
+    }
 }
