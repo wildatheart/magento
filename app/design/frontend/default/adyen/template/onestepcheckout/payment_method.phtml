@@ -87,6 +87,8 @@ if($helper->settings['hide_nonfree_payment_methods'])   {
                     if(!$disabled) {
                         $_style = ($_code == "adyen_hpp" && !$oneMethod) ? "display:none" : "";
                     }
+                } else if ($_code == "adyen_oneclick" && !$oneMethod) {
+                    $_style = "display:none";
                 }
                 ?>
 
@@ -99,7 +101,7 @@ if($helper->settings['hide_nonfree_payment_methods'])   {
                     <label for="p_method_<?php echo $_code ?>"><?php echo $_method->getTitle() ?></label>
                 </dt>
                 <?php if($html = $this->getChildHtml('payment.method.'.$_code)): ?>
-                    <?php $class = ($_code == "adyen_hpp") ? "" :  "payment-method"; ?>
+                    <?php $class = ($_code == "adyen_hpp" || $_code == "adyen_oneclick") ? "" :  "payment-method"; ?>
                     <dd id="container_payment_method_<?php echo $_code; ?>" class="<?php echo $class; ?>">
                         <?php echo $html; ?>
                     </dd>
@@ -115,6 +117,17 @@ if($helper->settings['hide_nonfree_payment_methods'])   {
                             if($('hpp_payment_form_adyen_hpp'))
                             {
                                 var form = $('hpp_payment_form_adyen_hpp');
+                                var elements = form.getElementsByTagName('input');
+                                for (var i=0; i<elements.length; i++) elements[i].checked = false;
+                            }
+                        }
+
+                        // check if oneclick is enabled if so clear the selected option because you select different payment method
+                        if(method != "adyen_oneclick") {
+                            // always enable the oneclick payments options if this payment method is on
+                            if($('oneclick_payment_form_adyen_oneclick'))
+                            {
+                                var form = $('oneclick_payment_form_adyen_oneclick');
                                 var elements = form.getElementsByTagName('input');
                                 for (var i=0; i<elements.length; i++) elements[i].checked = false;
                             }
@@ -167,6 +180,15 @@ if($helper->settings['hide_nonfree_payment_methods'])   {
                 $(name).show();
             }
         }
+    });
+
+    // ADYEN: set current method as well if you click on hpp and oneclick
+    $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', function(e) {
+        payment.currentMethod = "adyen_hpp";
+    });
+
+    $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', function(e) {
+        payment.currentMethod = "adyen_oneclick";
     });
 
     <?php if(Mage::helper('onestepcheckout')->isEnterprise() && Mage::helper('customer')->isLoggedIn()):?>
