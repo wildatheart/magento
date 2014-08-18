@@ -144,9 +144,11 @@
             }
 
             // Fix for the onestepcheckout plugins
-            $('onestepcheckout-place-order').observe('click', function(e) {
-                cse.call(this);
-            });
+            if($('onestepcheckout-place-order')) {
+                $('onestepcheckout-place-order').observe('click', function(e) {
+                    cse.call(this);
+                });
+            }
         }
 
         if (document.readyState === "complete") {
