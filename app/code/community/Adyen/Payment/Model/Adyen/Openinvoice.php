@@ -37,8 +37,43 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         if (!($data instanceof Varien_Object)) {
             $data = new Varien_Object($data);
         }
+
         $info = $this->getInfoInstance();
         $info->setCcType('openinvoice');
+
+        // check if option gender or date of birth is enabled
+        $genderShow = $this->genderShow();
+        $dobShow = $this->dobShow();
+
+        if($genderShow || $dobShow) {
+
+            // set gender and dob to the quote
+            $quote = $this->getQuote();
+
+            if($dobShow)
+                $quote->setCustomerDob($data->getDob());
+
+            if($genderShow)
+                $quote->setCustomerGender($data->getGender());
+
+            /* Check if the customer is logged in or not */
+            if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+                /* Get the customer data */
+                $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+                // set the email and/or gender
+                if($dobShow)
+                    $customer->setDob($data->getDob());
+
+                if($genderShow)
+                    $customer->setGender($data->getGender());
+
+                // save changes into customer
+                $customer->save();
+            }
+        }
+
         return $this;
     }
 
@@ -134,19 +169,30 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
    	 	}
         
    	 	
-        if ($adyFields['shopperReference'] != self::GUEST_ID) {
+        if ($adyFields['shopperReference'] != (self::GUEST_ID .  $order->getRealOrderId())) {
+
             $customer = Mage::getModel('customer/customer')->load($adyFields['shopperReference']);
             $adyFields['shopper.gender'] = strtoupper($this->getCustomerAttributeText($customer, 'gender'));
             $adyFields['shopper.infix'] = $customer->getPrefix();
             $dob = $customer->getDob();
-            
+
+            if (!empty($dob)) {
+                $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
+                $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
+                $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
+            }
+        } else {
+            // checkout as guest use details from the order
+            $_customer = Mage::getModel('customer/customer');
+            $adyFields['shopper.gender'] = strtoupper($_customer->getResource()->getAttribute('gender')->getSource()->getOptionText($order->getCustomerGender()));
+            $adyFields['shopper.infix'] = $order->getCustomerPrefix();
+            $dob = $order->getCustomerDob();
             if (!empty($dob)) {
                 $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
                 $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
                 $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
             }
         }
-
         // for sweden add here your socialSecurityNumber
         // $adyFields['shopper.socialSecurityNumber'] = "Result of your custom input field";
 
@@ -156,11 +202,11 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 
          if($this->_code == "adyen_openinvoice" || $this->getInfoInstance()->getCcType() == "klarna" || $this->getInfoInstance()->getCcType() == "afterpay_default" ) {
          	// initialize values if they are empty
-         	(isset($adyFields['shopper.gender'])) ? $adyFields['shopper.gender'] : "";
-         	(isset($adyFields['shopper.infix'])) ? $adyFields['shopper.infix'] : "";
-         	(isset($adyFields['shopper.dateOfBirthDayOfMonth'])) ? $adyFields['shopper.dateOfBirthDayOfMonth'] : "";
-         	(isset($adyFields['shopper.dateOfBirthMonth'])) ? $adyFields['shopper.dateOfBirthMonth'] : "";
-         	(isset($adyFields['shopper.dateOfBirthYear'])) ? $adyFields['shopper.dateOfBirthYear'] : "";
+             $adyFields['shopper.gender'] = (isset($adyFields['shopper.gender'])) ? $adyFields['shopper.gender'] : "";
+             $adyFields['shopper.infix'] = (isset($adyFields['shopper.infix'])) ? $adyFields['shopper.infix'] : "";
+             $adyFields['shopper.dateOfBirthDayOfMonth'] = (isset($adyFields['shopper.dateOfBirthDayOfMonth'])) ? $adyFields['shopper.dateOfBirthDayOfMonth'] : "";
+             $adyFields['shopper.dateOfBirthMonth'] = (isset($adyFields['shopper.dateOfBirthMonth'])) ? $adyFields['shopper.dateOfBirthMonth'] : "";
+             $adyFields['shopper.dateOfBirthYear'] = (isset($adyFields['shopper.dateOfBirthYear'])) ? $adyFields['shopper.dateOfBirthYear'] : "";
 
          	$shoppperSign = $adyFields['shopper.firstName'] . $adyFields['shopper.infix'] . $adyFields['shopper.lastName'] . $adyFields['shopper.gender'] . $adyFields['shopper.dateOfBirthDayOfMonth'] . $adyFields['shopper.dateOfBirthMonth'] . $adyFields['shopper.dateOfBirthYear'] . $adyFields['shopper.telephoneNumber'];
          	$shopperSignMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $shoppperSign);
@@ -316,5 +362,13 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
            $street = array($streeName,$_houseNumber);
         }
         return $street;
+    }
+
+    public function genderShow() {
+        return $this->_getConfigData('gender_show', 'adyen_openinvoice');
+    }
+
+    public function dobShow() {
+        return $this->_getConfigData('dob_show', 'adyen_openinvoice');
     }
 }
