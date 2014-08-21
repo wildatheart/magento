@@ -107,7 +107,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
     	
     	$helper = Mage::helper('adyen');
     	$response = $_REQUEST;
-    	
+
     	
     	$varienObj = new Varien_Object();
     	foreach ($response as $code => $value) {
@@ -121,10 +121,10 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
     	
     	$actionName = $this->getRequest()->getActionName();
     	$result = $varienObj->getData('result');
-    	
+
     	// check if result comes from POS device comes form POS
     	if($actionName == "successPos" && $result != "") {
-    	
+
     		$checksum = $varienObj->getData('checksum');
     		
     		// for android checksum is called cs
@@ -208,7 +208,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 			    			Mage::logException($e);
 			    		}
 			    	} else {
-			    		
+
 			    		$isBankTransfer = Mage::getModel('adyen/event')
 			    			->isBanktransfer($order->getIncrementId());
 			    			//attempt to hold/cancel (exceptional to BankTransfer they stay in previous status/pending)
@@ -221,7 +221,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 			    			$order->addStatusHistoryComment($comment, Mage_Sales_Model_Order::STATE_CANCELED);
 			    			
 			    			$order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
-			    	
+
 			    			if (!$order->canCancel()) {
 			    				$this->_writeLog('order can not be canceled', $order);
 			    				$order->addStatusHistoryComment($helper->__('Order can not be canceled'), Mage_Sales_Model_Order::STATE_CANCELED);
@@ -753,6 +753,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $eventCode = $response->getData('eventCode');
         $reason = $response->getData('reason');
         $success = (!empty($reason)) ? "$success_result <br />reason:$reason" : $success_result;
+        $klarnaReservationNumber = $response->getData('additionalData_additionalData_acquirerReference');
 
         //post
         $authResult = $response->getData('authResult');
@@ -778,8 +779,17 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             	Mage::log("default order authResult:".$eventCode . " : " . strtoupper($success_result), Zend_Log::DEBUG, "adyen_notification.log", true);
             	
                 $order->setAdyenEventCode($eventCode . " : " . strtoupper($success_result));
+
+                // if payment method is klarna or openinvoice/afterpay show the reservartion number
+                if(($paymentMethod == "klarna" || $paymentMethod == "afterpay_default" || $paymentMethod == "openinvoice") && ($klarnaReservationNumber != null && $klarnaReservationNumber != "")) {
+                    $klarnaReservationNumberText = "<br /> reservationNumber: " . $klarnaReservationNumber;
+                } else {
+                    $klarnaReservationNumberText = "";
+                }
+
                 $comment = Mage::helper('adyen')
-                        ->__('%s <br /> eventCode: %s <br /> pspReference: %s <br /> paymentMethod: %s <br /> success: %s ', $type, $eventCode, $pspReference, $paymentMethod, $success);
+                    ->__('%s <br /> eventCode: %s <br /> pspReference: %s <br /> paymentMethod: %s <br /> success: %s %s ', $type, $eventCode, $pspReference, $paymentMethod, $success, $klarnaReservationNumberText);
+
                 break;
         }
         $order->addStatusHistoryComment($comment, $status);
