@@ -1,0 +1,117 @@
+
+<?php if($this->hasEnableScanner()): ?>
+<div id="adyenCustomScanWrapper">
+    <form id="addToCartBarCode" method='post' action="<?php echo  $this->getUrl("adyen/process/addToCart"); ?>">
+
+        <h3>Barcode scanner</h3>
+
+        <div id="scan">
+            <input type="text" class="input-text" name="code" id="inpscan" value="" size="60"  placeholder="Scan barcode with scanner" autofocus />
+        </div>
+
+        <div id="customscan" style="display:none;">
+            <input type="text" class="input-text" name="customcode" id="inpcustomscan" value="" size="60"  placeholder="Fil in custom barcode">
+            <button id="SubmitCustomScan" type="button" title="Submit" class="button btn-proceed-checkout btn-checkout">
+                <span><span>Submit</span></span>
+            </button>
+        </div>
+
+        <br />
+        <button id="StopCustomScan" type="button" title="Custom barcode" class="button btn-proceed-checkout btn-checkout">
+            <span><span>Custom barcode</span></span>
+        </button>
+
+        <button id="StartScan" style="display:none; margin:0;" type="button" title="Start Auto Scanning" class="button btn-proceed-checkout btn-checkout">
+            <span><span>Start Auto Scanning</span></span>
+        </button>
+
+    </form>
+
+
+    <script type="text/javascript">
+
+        var intervalId;
+
+        // show autostart button for IOS because they block the onload focus event
+        var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+        if(iOS) {
+            // show auto startscan buttton
+            $('StartScan').show();
+        }
+
+        $('inpscan').observe('focus', function(e){
+            $('StartScan').hide();
+            intervalId = setInterval('scan()', 250);
+        });
+
+        $('inpscan').observe('blur', function(e){
+
+            clearInterval(intervalId);
+            $('StartScan').show();
+        });
+
+        $('StartScan').observe('click', function(e){
+
+            $('scan').show();
+            $('customscan').hide();
+
+            $('StopCustomScan').show();
+
+            $('inpscan').focus();
+            intervalId = setInterval('scan()', 250);
+            $('StartScan').hide();
+
+        });
+
+        $('StopCustomScan').observe('click', function(e){
+            $('scan').hide();
+            $('customscan').show();
+            $('inpcustomscan').focus();
+            $('StopCustomScan').hide();
+            $('StartScan').show();
+
+        });
+
+        $('SubmitCustomScan').observe('click', function(e){
+            document.getElementById("addToCartBarCode").submit();
+        });
+
+
+        var checkValue;
+
+        // check if scan is done with scanning
+        function checkValueInput(value) {
+
+            var currentValue = $('inpscan').value;
+
+            if(value == currentValue) {
+                this.checkValue = true;
+                return true;
+            }
+            this.checkValue = false;
+            return false;
+        }
+
+
+        function scan() {
+
+            // get value
+            $('inpscan').value;
+
+            if($('inpscan').value) {
+
+                // extra check for full input from scanner
+                var test = setTimeout("checkValueInput($('inpscan').value)", 25);
+
+                if(this.checkValue) {
+                    document.getElementById("addToCartBarCode").submit();
+                    $('inpscan').value = "";
+                }
+
+
+
+            }
+        }
+    </script>
+</div>
+<?php endif; ?>

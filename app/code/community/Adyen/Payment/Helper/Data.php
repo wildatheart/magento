@@ -67,4 +67,8 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
     public function getExtensionVersion() { 
     	return (string) Mage::getConfig()->getNode()->modules->Adyen_Payment->version; 
     }
+
+    public function hasEnableScanner() {
+        return (int) Mage::getStoreConfig('payment/adyen_pos/enable_scanner');
+    }
 }

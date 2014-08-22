@@ -201,7 +201,7 @@
             	<model>adyen/adyen_pos</model>
             	<title>Adyen POS</title>
             	<recurringtypes>ONECLICK</recurringtypes>
-            	<comment>sdf</comment>
+                <enable_scanner>0</enable_scanner>
             	<allowspecific>0</allowspecific>
                 <sort_order>80</sort_order>
             </adyen_pos>

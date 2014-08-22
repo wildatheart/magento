@@ -311,6 +311,48 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
     	return $this;
     }
 
+    /* add to cart function for adding scanned barcode to add to cart */
+    public function addToCartAction() {
+
+        $response = $this->getRequest()->getParams();
+
+        $cart =Mage::getSingleton('checkout/cart');
+
+        // check if barcdoe is from scanner or filled in manually
+        if($response['code'] != "") {
+            $sku = $response['code'];
+        } else if($response['customcode'] != "") {
+            $sku = $response['customcode'];
+        } else {
+            // no barcode
+            $sku = "";
+        }
+
+        if($sku != "") {
+            $productid = Mage::getModel('catalog/product')
+                ->getIdBySku(trim($sku));
+
+            if($productid > 0)
+            {
+                // Initiate product model
+                $product = Mage::getModel('catalog/product');
+
+                // Load specific product whose tier price want to update
+                $product ->load($productid);
+
+                if($product)
+                {
+                    $cart->addProduct($product, array('qty'=>'1'));
+                    $cart->save();
+                }
+            }
+        }
+
+        $this->_redirect('checkout/cart');
+
+
+    }
+
     public function getOrderStatusAction()
     {
     	if($_POST['merchantReference'] != "") {

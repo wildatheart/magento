@@ -27,6 +27,13 @@
  */
 -->
 <layout version="0.1.0">
+
+    <checkout_cart_index>
+        <reference name="top.container">
+            <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scanProduct.phtml"/>
+        </reference>
+    </checkout_cart_index>
+
     <checkout_onepage_index>
         <reference name="head">
             <action method="addJs"><script>adyen/payment/elv.js</script></action>
