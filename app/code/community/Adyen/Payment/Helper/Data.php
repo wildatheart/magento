@@ -71,4 +71,27 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
     public function hasEnableScanner() {
         return (int) Mage::getStoreConfig('payment/adyen_pos/enable_scanner');
     }
+
+    /**
+     * @param Mage_Sales_Model_Quote | Mage_Sales_Model_Order $object
+     */
+    public function isPaymentFeeEnabled($object)
+    {
+        $fee = Mage::getStoreConfig('payment/adyen_openinvoice/fee');
+        $paymentMethod = $object->getPayment()->getMethod() ;
+        if ($paymentMethod == 'adyen_openinvoice' && $fee > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * @param Mage_Sales_Model_Quote | Mage_Sales_Model_Order $object
+     */
+    public function getPaymentFeeAmount($object)
+    {
+        return Mage::getStoreConfig('payment/adyen_openinvoice/fee');
+    }
 }
