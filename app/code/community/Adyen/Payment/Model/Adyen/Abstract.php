@@ -231,7 +231,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
 
 
         // do not show the oneclick if recurring type is empty or recurring
-        if($recurringType == "ONECLICK" || $recurringType == "ONECLICK,RECURRING")
+        if($recurringType == "ONECLICK" || $recurringType == "ONECLICK,RECURRING" || $recurringType == "RECURRING")
         {
             // recurring type is always ONECLICK
             if($recurringType == "ONECLICK,RECURRING") {

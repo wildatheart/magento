@@ -110,19 +110,23 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
             case "cc":
             case "oneclick":
 
-            $this->shopperName = null;
+                $this->shopperName = null;
             	$this->elv = null;
                 $this->bankAccount = null;
 
                 $recurringDetailReference = $payment->getAdditionalInformation("recurring_detail_reference");
 
+                // set shopperInteraction
+                if($recurringType == "RECURRING") {
+                    $this->shopperInteraction = "ContAuth";
+                } else {
+                    $this->shopperInteraction = "Ecommerce";
+                }
+
 				if (Mage::getModel('adyen/adyen_cc')->isCseEnabled()) {
 
-
                     if($recurringDetailReference && $recurringDetailReference != "") {
-
                         $this->selectedRecurringDetailReference = $recurringDetailReference;
-                        $this->shopperInteraction = "Ecommerce";
                     }
 
 					$this->card = null;
@@ -133,17 +137,16 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 				}
 				else {
 
-
                     if($recurringDetailReference && $recurringDetailReference != "") {
                         $this->selectedRecurringDetailReference = $recurringDetailReference;
-                        $this->card->cvc = $payment->getCcCid();
+
+                        if($recurringType != "RECURRING") {
+                            $this->card->cvc = $payment->getCcCid();
+                        }
 
                         // TODO: check if expirymonth and year is changed if so add this in the card object
                         $this->card->expiryMonth = $payment->getCcExpMonth();
                         $this->card->expiryYear = $payment->getCcExpYear();
-
-                        // set shopper interaction
-                        $this->shopperInteraction = "Ecommerce";
 
                     } else {
                         $this->card->cvc = $payment->getCcCid();

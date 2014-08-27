@@ -88,6 +88,8 @@
                             </div>
                         </div>
 
+
+                        <?php if($this->isNotRecurring()): ?>
                         <div class="columns three c">
                             <label><?php echo $this->__('Card Verification Number') ?></label>
                             <?php if($this->hasVerification()): ?>
@@ -97,6 +99,7 @@
                                 </div>
                             <?php endif; ?>
                         </div>
+                        <?php endif; ?>
 
                         <div style="clear:both;"></div>
 

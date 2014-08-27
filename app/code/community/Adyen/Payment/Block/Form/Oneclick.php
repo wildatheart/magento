@@ -35,4 +35,8 @@ class Adyen_Payment_Block_Form_Oneclick extends Adyen_Payment_Block_Form_Cc {
     public function getlistRecurringDetails() {
         return $this->getMethod()->getlistRecurringDetails();
     }
+
+    public function isNotRecurring() {
+        return  $this->getMethod()->isNotRecurring();
+    }
 }

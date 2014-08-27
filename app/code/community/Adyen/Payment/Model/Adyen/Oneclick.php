@@ -104,4 +104,11 @@ class Adyen_Payment_Model_Adyen_Oneclick extends Adyen_Payment_Model_Adyen_Cc {
         return $this->_processRecurringRequest($customerId);
     }
 
+    public function isNotRecurring() {
+        $recurring_type = $this->_getConfigData('recurringtypes', 'adyen_abstract');
+        if($recurring_type == "RECURRING")
+            return false;
+        return true;
+    }
+
 }
