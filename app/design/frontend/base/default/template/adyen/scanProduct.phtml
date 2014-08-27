@@ -1,18 +1,18 @@
 
 <?php if($this->hasEnableScanner()): ?>
 <div id="adyenCustomScanWrapper">
-    <form id="addToCartBarCode" method='post' action="<?php echo  $this->getUrl("adyen/process/addToCart"); ?>">
+    <form id="addToCartBarCode" method='post' action="<?php echo  $this->getUrl("adyen/updateCart/index"); ?>">
 
         <h3>Barcode scanner</h3>
 
         <div id="scan">
-            <input type="text" class="input-text" name="code" id="inpscan" value="" size="60"  placeholder="Scan barcode with scanner" autofocus />
+            <input type="text" class="input-text" name="code" id="inpscan" value="" size="60"  placeholder="Scan barcode with scanner" autofocus/>
         </div>
 
         <div id="customscan" style="display:none;">
             <input type="text" class="input-text" name="customcode" id="inpcustomscan" value="" size="60"  placeholder="Fil in custom barcode">
             <button id="SubmitCustomScan" type="button" title="Submit" class="button btn-proceed-checkout btn-checkout">
-                <span><span>Submit</span></span>
+                <span><span>Add</span></span>
             </button>
         </div>
 
@@ -30,7 +30,9 @@
 
     <script type="text/javascript">
 
+
         var intervalId;
+        var scanInProgress = false;
 
         // show autostart button for IOS because they block the onload focus event
         var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
@@ -73,11 +75,14 @@
         });
 
         $('SubmitCustomScan').observe('click', function(e){
-            document.getElementById("addToCartBarCode").submit();
+            var value =  $('inpcustomscan').value;;
+            ajaxCall(value);
+            $('inpcustomscan').value = "";
+            $('inpcustomscan').focus();
+            e.preventDefault();
         });
 
 
-        var checkValue;
 
         // check if scan is done with scanning
         function checkValueInput(value) {
@@ -85,32 +90,53 @@
             var currentValue = $('inpscan').value;
 
             if(value == currentValue) {
-                this.checkValue = true;
-                return true;
+                // DO ajax call
+                ajaxCall(value);
+                $('inpscan').value = "";
+                this.scanInProgress = false;
+                return;
             }
-            this.checkValue = false;
-            return false;
+
+            // call same function after certain period of time
+            var test = setTimeout("checkValueInput($('inpscan').value)", 100);
         }
 
 
         function scan() {
 
-            // get value
-            $('inpscan').value;
+            if(this.scanInProgress === false) {
 
-            if($('inpscan').value) {
+                // get value
+                var value = $('inpscan').value;
+                if(value) {
+                    this.scanInProgress = true;
 
-                // extra check for full input from scanner
-                var test = setTimeout("checkValueInput($('inpscan').value)", 25);
-
-                if(this.checkValue) {
-                    document.getElementById("addToCartBarCode").submit();
-                    $('inpscan').value = "";
+                    // extra check for full input from scanner
+                    setTimeout("checkValueInput($('inpscan').value)", 250);
                 }
-
-
-
             }
+        }
+
+        function ajaxCall(code) {
+
+            var form = document.getElementById("addToCartBarCode");
+            new Ajax.Request(form.action, {
+                parameters: {code: code, isAjax: 1, method: 'POST'},
+                onSuccess: function(transport) {
+
+                    var response = transport.responseText;
+                    // update
+                    $$('.col-main').each(
+                        function (e) {
+                            e.update(response);
+                        }
+                    );
+                },
+                onFailure: function(){
+                    alert('<?php echo $this->jsQuoteEscape($this->__('Server Error. Please try again.')) ?>');
+                }
+            });
+
         }
     </script>
 </div>
