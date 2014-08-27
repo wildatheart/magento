@@ -28,6 +28,10 @@
 -->
 <layout version="0.1.0">
 
+    <adyen_updatecart_index>
+        <update handle="checkout_cart_index" />
+    </adyen_updatecart_index>
+
     <checkout_cart_index>
         <reference name="top.container">
             <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scanProduct.phtml"/>
