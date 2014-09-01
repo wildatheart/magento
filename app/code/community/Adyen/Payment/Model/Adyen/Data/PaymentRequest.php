@@ -68,6 +68,8 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
     public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null) {
         $incrementId = $order->getIncrementId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
+        // override amount because this amount uses the right currency
+        $amount = $this->_formatAmount($order->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
         $customerId = $order->getCustomerId();
         $realOrderId = $order->getRealOrderId();
 
