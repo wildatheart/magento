@@ -36,6 +36,9 @@
         <reference name="top.container">
             <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scanProduct.phtml"/>
         </reference>
+        <reference name="checkout.cart.methods">
+            <block type="adyen/posExpressCheckout" before="-" name="adyen.pos.express.checkout" template="adyen/posExpressCheckout.phtml"/>
+        </reference>
     </checkout_cart_index>
 
     <checkout_onepage_index>

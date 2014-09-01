@@ -1,0 +1,14 @@
+
+<?php if($this->hasExpressCheckout()): ?>
+
+<form action="<?php echo  $this->getUrl("adyen/checkoutPos"); ?>" method="post">
+<input style="width:250px;" type="text" class="input-text" name="adyenPosEmail" id="adyenPosEmail" value="" size="60"  placeholder="Email" autocapitalize="off"/>
+
+<button id="StartScan" style="" type="submit" title="Start Auto Scanning" class="button btn-proceed-checkout btn-checkout">
+    <span><span>Checkout with POS</span></span>
+</button>
+
+</form>
+<div>-OR-</div>
+
+<?php endif; ?>

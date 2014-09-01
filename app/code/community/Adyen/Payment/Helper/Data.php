@@ -72,6 +72,14 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
         return (int) Mage::getStoreConfig('payment/adyen_pos/enable_scanner');
     }
 
+    public function hasExpressCheckout() {
+        return (int) Mage::getStoreConfig('payment/adyen_pos/express_checkout');
+    }
+
+    public function getOrderStatus() {
+        return Mage::getStoreConfig('payment/adyen_abstract/order_status');
+    }
+
     /**
      * @param Mage_Sales_Model_Quote | Mage_Sales_Model_Order $object
      */
