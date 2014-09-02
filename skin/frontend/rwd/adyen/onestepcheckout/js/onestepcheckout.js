@@ -534,7 +534,7 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
                                     // set back the cvc code
                                     $('adyen_oneclick_oneclick_cid_'+payment_recurring_type).value = payment_recurring_type_cvc.value;
                                     // show the cvc code block
-                                    var cvc_block = "cvc_block_" + key;
+                                    var cvc_block = "cvc_block_" + payment_recurring_type;
                                     $(cvc_block).show();
                                 }
                             } catch(err)    {

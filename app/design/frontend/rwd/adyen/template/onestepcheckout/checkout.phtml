@@ -232,7 +232,14 @@ $helper = Mage::helper('onestepcheckout/checkout');
                         var url = '<?php echo $this->getUrl('onestepcheckout/ajax/add_coupon', array('_secure'=>true)); ?>';
                         var parameters = {code: coupon};
                         var shipping_methods = $$('dl.shipment-methods').first();
+
+                var form = $('onestepcheckout-form');
+                var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
+                var payment_hpp_type = $RF(form, 'payment[hpp_type]');
+                var payment_recurring_type = $RF(form, 'payment[recurring]');
+                var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
                         var payment_methods = $$('div.payment-methods').first();
+
                         var summary = $$('div.onestepcheckout-summary').first();
 
                         if(shipping_methods){
@@ -275,13 +282,36 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
                                         paymentContainer = $('container_payment_method_' + payment.currentMethod)
                                         paymentForm = $('payment_form_' + payment.currentMethod)
+                                var payment_method = $RF(form, 'payment[method]');
 
                                         if(paymentContainer != null){
                                             paymentContainer.show();
                                         }
                                         if(paymentForm != null){
                                             paymentForm.show();
+                                } else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
+                                    // set sub payment method back
+                                    $('hpp_type_'+payment_hpp_type).checked = true;
+
+                                    // check if ideal payment bank is chosen
+                                    if(payment_hpp_type == "ideal") {
+                                        if(payment_hpp_ideal_type) {
+                                            // get issue_id this is before the slash
+                                            var issue_id = payment_hpp_ideal_type.substr(0, payment_hpp_ideal_type.indexOf('/'));
+                                            $('hpp_ideal_type_'+issue_id).checked = true;
                                         }
+                                        $('payment_form_ideal').show();
+                                    }
+                                } else if(payment_method == "adyen_oneclick") { // check if payment type is hpp
+                                    // set sub payment method back
+                                    $('recurring_type_'+payment_recurring_type).checked = true;
+                                    // set back the cvc code
+                                    $('adyen_oneclick_oneclick_cid_'+payment_recurring_type).value = payment_recurring_type_cvc.value;
+                                    // show the cvc code block
+                                    var cvc_block = "cvc_block_" + payment_recurring_type;
+                                    $(cvc_block).show();
+                                }
+
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
                                         $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
                                         $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
