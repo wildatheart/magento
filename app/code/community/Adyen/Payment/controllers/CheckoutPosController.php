@@ -72,7 +72,8 @@ class Adyen_Payment_CheckoutPosController extends Mage_Core_Controller_Front_Act
 
             // add order information to the session
             $session->setLastOrderId($order->getId())
-                ->setLastRealOrderId($order->getIncrementId());
+                ->setLastRealOrderId($order->getIncrementId())
+                ->setLastSuccessQuoteId($order->getQuoteId());
 
             $this->_redirect('adyen/process/redirect');
             return $this;
