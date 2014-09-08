@@ -69,14 +69,14 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $incrementId = $order->getIncrementId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
         // override amount because this amount uses the right currency
-        //$amount = $this->_formatAmount($order->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
+        $amount = $order->getGrandTotal();
         $customerId = $order->getCustomerId();
         $realOrderId = $order->getRealOrderId();
 
         $this->reference = $incrementId;
         $this->merchantAccount = $merchantAccount;
         $this->amount->currency = $orderCurrencyCode;
-        $this->amount->value = $this->_formatAmount($amount);
+        $this->amount->value = $this->_formatAmount($amount,(($orderCurrencyCode=='IDR')?0:2));
 
         //shopper data
         $customerEmail = $order->getCustomerEmail();
