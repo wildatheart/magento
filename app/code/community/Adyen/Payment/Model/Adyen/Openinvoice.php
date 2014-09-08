@@ -50,11 +50,17 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             // set gender and dob to the quote
             $quote = $this->getQuote();
 
-            if($dobShow)
-                $quote->setCustomerDob($data->getDob());
+            // dob must be in yyyy-MM-dd
+            $dob = $data->getYear() . "-" . $data->getMonth() . "-" . $data->getDay();
 
-            if($genderShow)
+            if($dobShow)
+                $quote->setCustomerDob($dob);
+
+            if($genderShow) {
                 $quote->setCustomerGender($data->getGender());
+                // Fix for OneStepCheckout (won't convert quote customerGender to order object)
+                $info->setAdditionalInformation('customerGender', $data->getGender());
+            }
 
             /* Check if the customer is logged in or not */
             if (Mage::getSingleton('customer/session')->isLoggedIn()) {
@@ -64,7 +70,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 
                 // set the email and/or gender
                 if($dobShow)
-                    $customer->setDob($data->getDob());
+                    $customer->setDob($dob);
 
                 if($genderShow)
                     $customer->setGender($data->getGender());
@@ -167,12 +173,27 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 	        $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign);
 	        $adyFields['deliveryAddressSig'] = base64_encode(pack('H*', $signMac));
    	 	}
-        
-   	 	
+
+
         if ($adyFields['shopperReference'] != (self::GUEST_ID .  $order->getRealOrderId())) {
 
             $customer = Mage::getModel('customer/customer')->load($adyFields['shopperReference']);
-            $adyFields['shopper.gender'] = strtoupper($this->getCustomerAttributeText($customer, 'gender'));
+
+            if($this->getCustomerAttributeText($customer, 'gender') != "") {
+                $adyFields['shopper.gender'] = strtoupper($this->getCustomerAttributeText($customer, 'gender'));
+            } else {
+                // fix for OneStepCheckout (guest is not logged in but uses email that exists with account)
+                $_customer = Mage::getModel('customer/customer');
+                if($order->getCustomerGender()) {
+                    $customerGender = "";
+                } else {
+                    // this is still empty for OneStepCheckout so uses extra saved parameter
+                    $payment = $order->getPayment();
+                    $customerGender = $payment->getAdditionalInformation('customerGender');
+                }
+                $adyFields['shopper.gender'] = strtoupper($_customer->getResource()->getAttribute('gender')->getSource()->getOptionText($customerGender));
+            }
+
             $adyFields['shopper.infix'] = $customer->getPrefix();
             $dob = $customer->getDob();
 
@@ -180,6 +201,14 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
                 $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
                 $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
                 $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
+            } else {
+                // fix for OneStepCheckout (guest is not logged in but uses email that exists with account)
+                $dob = $order->getCustomerDob();
+                if (!empty($dob)) {
+                    $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
+                    $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
+                    $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
+                }
             }
         } else {
             // checkout as guest use details from the order
