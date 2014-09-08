@@ -52,8 +52,9 @@ class Adyen_Payment_Model_Event extends Mage_Core_Model_Abstract {
      * @param type $dbEventCode
      * @return boolean true if the event is a duplicate
      */
-    public function isDuplicate($pspReference, $event) {
-        $result = $this->getResource()->getEvent(trim($pspReference), trim($event));
+    public function isDuplicate($pspReference, $event, $success) {
+        $success = (trim($success) == "true") ? true : false;
+        $result = $this->getResource()->getEvent(trim($pspReference), trim($event), $success);
         return (empty($result)) ? false : true;
     }
 

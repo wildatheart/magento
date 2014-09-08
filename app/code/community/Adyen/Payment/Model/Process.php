@@ -108,7 +108,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
     	$helper = Mage::helper('adyen');
     	$response = $_REQUEST;
 
-    	
+
     	$varienObj = new Varien_Object();
     	foreach ($response as $code => $value) {
     		if ($code == 'amount') {
@@ -362,6 +362,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $authResult = $response->getData('authResult');
         $incrementId = $response->getData('merchantReference');
         $paymentMethod = $response->getData('paymentMethod');
+        $success = (trim($response->getData('success')) == "true") ? true : false;
         $eventData = (!empty($eventCode)) ? $eventCode : $authResult;
         $paymentObj = $order->getPayment();
         
@@ -395,6 +396,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 	                ->setIncrementId($incrementId)
 	                ->setPaymentMethod($paymentMethod)
 	                ->setCreatedAt(now())
+                    ->setSuccess($success)
 	                ->saveData($updateAdyenStatus) // don't update the adyen status
 	        ;  
         } catch (Exception $e) {
@@ -473,9 +475,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 
         //handle duplicates
         $isDuplicate = Mage::getModel('adyen/event')
-                ->isDuplicate($pspReference, $eventCode);
+                ->isDuplicate($pspReference, $eventCode, $success);
         if ($isDuplicate) {
-            $payment->writeLog("#skipping duplicate notification pspReference:$pspReference && eventCode: $eventCode");
+            $payment->writeLog("#skipping duplicate notification pspReference:$pspReference && eventCode: $eventCode && success: $success");
             return false; //hmt
         }
 
@@ -516,6 +518,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $eventCode = trim($response->getData('eventCode'));
         
         $success = (bool) trim($response->getData('success'));
+        $payment_method = trim($response->getData('paymentMethod'));
         switch ($eventCode) {
             case Adyen_Payment_Model_Event::ADYEN_EVENT_REFUND:
 
@@ -530,7 +533,20 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             case Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION:
                 //pre-authorise if success
             	$order->sendNewOrderEmail(); // send order email
-            	
+
+                /*
+                 * For AliPay or UnionPay sometimes it first send a AUTHORISATION false notification and then
+                 * a AUTHORISATION true notification. The second time it must revert the cancelled of the first notification before we can
+                 * assign a new status
+                 */
+                if($success == "true") {
+                    if($payment_method == "alipay" || $payment_method == "unionpay") {
+                        foreach ($order->getAllItems() as $item) {
+                            $item->setQtyCanceled(0);
+                            $item->save();
+                        }
+                    }
+                }
                 $this->setPrePaymentAuthorized($order, $success);
 
                 $this->createInvoice($order, $response);

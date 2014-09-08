@@ -39,13 +39,24 @@ class Adyen_Payment_Model_Mysql4_Adyen_Event extends Mage_Core_Model_Mysql4_Abst
      * @param type $adyenEventCode
      * @return type 
      */
-    public function getEvent($pspReference, $adyenEventCode) {
+    public function getEvent($pspReference, $adyenEventCode, $success = null) {
         $db = $this->_getReadAdapter();
-        $sql = $db->select()
+
+        if($success == null) {
+            $sql = $db->select()
                 ->from($this->getMainTable(), array('*'))
                 ->where('adyen_event_code = ?', $adyenEventCode)
                 ->where('psp_reference = ?', $pspReference)
-        ;
+            ;
+        } else {
+            $sql = $db->select()
+                ->from($this->getMainTable(), array('*'))
+                ->where('adyen_event_code = ?', $adyenEventCode)
+                ->where('psp_reference = ?', $pspReference)
+                ->where('success = ?', $success)
+            ;
+        }
+
         $stmt = $db->query($sql);
         return $stmt->fetch();
     }
