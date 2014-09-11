@@ -1,0 +1,17 @@
+{
+    "name": "adyen/payment",
+    "description": "Magento Plugin for Payment Service Provider Adyen. The integration guide for this Plugin is available on the Adyen Support website: support.adyen.com, type in 'Magento'.",
+    "type": "magento-module",
+    "homepage": "https://github.com/adyenpayments/magento",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "Adyen",
+            "email": "support@adyen.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
