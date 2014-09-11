@@ -185,7 +185,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
                 // fix for OneStepCheckout (guest is not logged in but uses email that exists with account)
                 $_customer = Mage::getModel('customer/customer');
                 if($order->getCustomerGender()) {
-                    $customerGender = "";
+                    $customerGender = $order->getCustomerGender();
                 } else {
                     // this is still empty for OneStepCheckout so uses extra saved parameter
                     $payment = $order->getPayment();
