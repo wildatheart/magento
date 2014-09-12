@@ -27,8 +27,8 @@
 ?>
 <?php //TODO add a form to add data here, currently only on Adyen. ?>
 <?php $_code = $this->getMethodCode(); ?>
-<fieldset class="form-list">
-    <ul id="payment_form_<?php echo $_code ?>" style="display:none">
+<fieldset class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none">
+    <ul>
 
         <?php if($this->genderShow()):?>
         <li><label for="gender" class="required"><em>*</em><?php echo $this->__('Gender') ?></label>
@@ -51,21 +51,21 @@
                 <?php
                 $this->setDateInput('d',
                     '<div class="dob-day">
-                         <input type="text" id="day" name="day" value="' . $this->getDay() . '" title="' . $this->__('Day') . '" class="input-text validate-custom" />
+                         <input type="text" id="day" name="payment[day]" value="' . $this->getDay() . '" title="' . $this->__('Day') . '" class="input-text validate-custom" />
              <label for="' . $this->getFieldId('day') . '">' . $this->__('DD') . '</label>
          </div>'
                 );
 
                 $this->setDateInput('m',
                     '<div class="dob-month">
-                         <input type="text" id="month" name="' . $this->getFieldName('month') . '" value="' . $this->getMonth()  . '" title="' . $this->__('Month')  . '" class="input-text validate-custom" ' . $this->getFieldParams()  . ' />
+                         <input type="text" id="month" name="payment[month]" value="' . $this->getMonth()  . '" title="' . $this->__('Month')  . '" class="input-text validate-custom" ' . $this->getFieldParams()  . ' />
              <label for="' . $this->getFieldId('month') . '">' . $this->__('MM')  . '</label>
          </div>'
                 );
 
                 $this->setDateInput('y',
                     '<div class="dob-year">
-                         <input type="text" id="year" name="' . $this->getFieldName('year') . '" value="' . $this->getYear()  . '" title="' . $this->__('Year')  . '" class="input-text validate-custom" ' . $this->getFieldParams()  . ' />
+                         <input type="text" id="year" name="payment[year]" value="' . $this->getYear()  . '" title="' . $this->__('Year')  . '" class="input-text validate-custom" ' . $this->getFieldParams()  . ' />
              <label for="' . $this->getFieldId('year') . '">' . $this->__('YYYY')  . '</label>
          </div>'
                 );
@@ -90,9 +90,3 @@
         </li>
     </ul>
 </fieldset>
-<div>
-    <span id="ipayment-elv-please-wait" style="display:none;" class="opc-please-wait">
-        <img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif') ?>" class="v-middle" alt=""/> &nbsp; <?php echo $this->__('Submitting payment information...') ?> &nbsp;
-    </span>
-</div>
-

@@ -32,7 +32,7 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
     public function collect(Mage_Sales_Model_Quote_Address $address)
     {
         parent::collect($address);
- 
+
         $this->_setAmount(0);
         $this->_setBaseAmount(0);
  
@@ -42,10 +42,10 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
             $currentAmount = $address->getPaymentFeeAmount();
             $fee = Mage::Helper('adyen')->getPaymentFeeAmount($quote);
             $balance = $fee - $currentAmount;
-            
+
             $address->setPaymentFeeAmount($address->getQuote()->getStore()->convertPrice($balance));
             $address->setBasePaymentFeeAmount($balance);
-                 
+
             $address->setGrandTotal($address->getGrandTotal() + $address->getPaymentFeeAmount());
             $address->setBaseGrandTotal($address->getBaseGrandTotal() + $address->getBasePaymentFeeAmount());
         }
@@ -56,11 +56,11 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
     public function fetch(Mage_Sales_Model_Quote_Address $address)
     {
         $amt = $address->getPaymentFeeAmount();
-        
+
         if ($amt != 0) {
             $address->addTotal(array(
                     'code'=>$this->getCode(),
-                    'title'=> Mage::Helper('checkout')->__("Afterpay fee"),
+                    'title'=> Mage::helper('adyen')->__('Fee'),
                     'value'=> $amt
             ));
         }

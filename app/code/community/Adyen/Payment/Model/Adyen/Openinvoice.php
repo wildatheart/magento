@@ -246,7 +246,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         $count = 0;
         $currency = $order->getOrderCurrencyCode();
         $additional_data_sign = array();
-        
+
         foreach ($order->getItemsCollection() as $item) {
         	//skip dummies
         	if ($item->isDummy()) continue;
@@ -262,7 +262,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         }
         
         //discount cost
-        if($order->getDiscountAmount() > 0)
+        if($order->getDiscountAmount() > 0 || $order->getDiscountAmount() < 0)
         {
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
@@ -281,6 +281,16 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = $order->getShippingDescription();
             $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getShippingAmount());
             $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = $this->_formatAmount($order->getShippingTaxAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
+            $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
+        }
+
+        if($order->getPaymentFeeAmount() > 0) {
+            $linename = "line".++$count;
+            $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
+            $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Fee');
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getPaymentFeeAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }

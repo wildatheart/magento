@@ -50,7 +50,7 @@ class Adyen_Payment_Model_Adyen_Data_OpenInvoiceDetailResult extends Adyen_Payme
         }
         
         //discount cost
-        if($order->getDiscountAmount() > 0)
+        if($order->getDiscountAmount() > 0 || $order->getDiscountAmount() < 0)
         {
             $cost = new Varien_Object();
             $cost->setName(Mage::helper('adyen')->__('Total Discount'));
@@ -67,6 +67,15 @@ class Adyen_Payment_Model_Adyen_Data_OpenInvoiceDetailResult extends Adyen_Payme
             $cost->setName($order->getShippingDescription());
             $cost->setPrice($order->getShippingAmount());
             $cost->setTaxAmount($order->getShippingTaxAmount());
+            $cost->setQtyOrdered(1);
+            $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
+            $count++;
+        }
+
+        if($order->getPaymentFeeAmount() > 0) {
+            $cost = new Varien_Object();
+            $cost->setName(Mage::helper('adyen')->__('Fee'));
+            $cost->setPrice($order->getPaymentFeeAmount());
             $cost->setQtyOrdered(1);
             $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
             $count++;
