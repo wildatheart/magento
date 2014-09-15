@@ -33,15 +33,40 @@ class Adyen_Payment_Block_Adminhtml_Sales_Order_Filter_Adyen extends Mage_Adminh
             array('label' => '', 'value' => null),
         );
         foreach ($events as $event) {
-            if($event['adyen_event_result'] == "AUTHORISATION") {
-                // add the true and false in the filter
-                $eventNameTrue = $event['adyen_event_result'] . " : " . "TRUE";
-                $eventNameFalse = $event['adyen_event_result'] . " : " . "FALSE";
-                $select[] = array('label' => $eventNameTrue, 'value' => $eventNameTrue);
-                $select[] = array('label' => $eventNameFalse, 'value' => $eventNameFalse);
-            } else {
-                $select[] = array('label' => $event['adyen_event_result'], 'value' => $event['adyen_event_result']);
+
+
+            switch($event['adyen_event_result']) {
+
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE:
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE_FAILED:
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_REFUND:
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCEL_OR_REFUND:
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION:
+
+                    if ($event['adyen_event_result'] == Adyen_Payment_Model_Event::ADYEN_EVENT_REFUND) {
+                        $eventNamePartialTrue = "(PARTIAL) " . $event['adyen_event_result'] . " : " . "TRUE";
+                        $eventNamePartialFalse = "(PARTIAL) " . $event['adyen_event_result'] . " : " . "FALSE";
+
+                        $select[] = array('label' => $eventNamePartialTrue, 'value' => $eventNamePartialTrue);
+                        $select[] = array('label' => $eventNamePartialFalse, 'value' => $eventNamePartialFalse);
+                    }
+
+                    $eventNameTrue = $event['adyen_event_result'] . " : " . "TRUE";
+                    $eventNameFalse = $event['adyen_event_result'] . " : " . "FALSE";
+                    $select[] = array('label' => $eventNameTrue, 'value' => $eventNameTrue);
+                    $select[] = array('label' => $eventNameFalse, 'value' => $eventNameFalse);
+
+                    break;
+                default:
+                    $select[] = array('label' => $event['adyen_event_result'], 'value' => $event['adyen_event_result']);
+                    break;
             }
+
+
+
+
+
+
         }
         return $select;
     }
