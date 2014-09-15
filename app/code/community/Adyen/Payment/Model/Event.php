@@ -35,10 +35,11 @@ class Adyen_Payment_Model_Event extends Mage_Core_Model_Abstract {
     const ADYEN_EVENT_ERROR = 'ERROR';
     const ADYEN_EVENT_REFUND = 'REFUND';
     const ADYEN_EVENT_CAPTURE = 'CAPTURE';
+    const ADYEN_EVENT_CAPTURE_FAILED = 'CAPTURE_FAILED';
     const ADYEN_EVENT_CANCELLATION = 'CANCELLATION';
     const ADYEN_EVENT_POSAPPROVED = 'POS_APPROVED';
     const ADYEN_EVENT_HANDLEDEXTERNALLY  = 'HANDLED_EXTERNALLY';
-    
+
     /**
      * Initialize resources
      */

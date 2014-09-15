@@ -554,6 +554,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE:
                 $this->setPaymentAuthorized($order, $success);
                 break;
+            case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE_FAILED:
             case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLATION:
             case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLED:
                 $this->holdCancelOrder($order, $response);
@@ -729,7 +730,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         	$order->save();
         	return false;
         }
-        
+
         if ($order->canInvoice()) {
             $invoice = $order->prepareInvoice();
             $invoice->getOrder()->setIsInProcess(true);
