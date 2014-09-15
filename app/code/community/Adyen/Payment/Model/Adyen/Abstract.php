@@ -151,7 +151,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
         return $this->_processRequest($payment, $amount, "refund", $pspReference);
     }
 
-    public function SendCancelOrRefund(Varien_Object $payment, $pspReference) {
+    public function SendCancelOrRefund(Varien_Object $payment, $amount, $pspReference) {
         if (empty($pspReference)) {
             $this->writeLog('oops empty pspReference');
             return $this;
