@@ -250,6 +250,7 @@
             	<title>Adyen POS</title>
             	<recurringtypes>ONECLICK</recurringtypes>
                 <enable_scanner>0</enable_scanner>
+                <express_checkout>0</express_checkout>
             	<allowspecific>0</allowspecific>
                 <sort_order>80</sort_order>
             </adyen_pos>
