@@ -188,7 +188,6 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $this->card = null;
                 $this->elv = null;
                 $this->shopperName = null;
-                $this->bankAccount->bic = $sepa['bic'];
                 $this->bankAccount->iban = $sepa['iban'];
                 $this->bankAccount->ownerName = $sepa['account_name'];
                 $this->bankAccount->countryCode = $sepa['country'];

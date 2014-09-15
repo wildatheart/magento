@@ -27,7 +27,6 @@
  */
 class Adyen_Payment_Model_Adyen_Data_BankAccount extends Adyen_Payment_Model_Adyen_Data_Abstract {
 
-    public $bic;
     public $iban;
     public $ownerName;
     public $countryCode;

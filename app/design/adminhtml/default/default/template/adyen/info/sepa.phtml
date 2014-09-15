@@ -45,6 +45,5 @@
     <?php $elv = unserialize($this->getInfo()->getPoNumber())?>
     <?php echo Mage::helper('adyen')->__('Account holder: %s', $this->htmlEscape($elv['account_name'])) ?><br/>
     <?php echo Mage::helper('adyen')->__('IBAN: %s', $this->htmlEscape($elv['iban'])) ?><br/>
-    <?php echo Mage::helper('adyen')->__('BIC: %s', $this->htmlEscape($elv['bic'])) ?><br/>
     <?php echo Mage::helper('adyen')->__('Country: %s', $this->htmlEscape($elv['country'])) ?><br/>
 <?php endif;?>

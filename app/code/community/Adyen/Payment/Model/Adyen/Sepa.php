@@ -49,7 +49,6 @@ class Adyen_Payment_Model_Adyen_Sepa extends Adyen_Payment_Model_Adyen_Abstract 
         $sepa = array(
             'account_name' => $data->getAccountName(),
             'iban' => $data->getIban(),
-            'bic' => $data->getBic(),
             'country' => $data->getCountry()
         );
 
