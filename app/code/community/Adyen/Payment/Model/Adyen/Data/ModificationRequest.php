@@ -46,4 +46,4 @@ class Adyen_Payment_Model_Adyen_Data_ModificationRequest extends Adyen_Payment_M
         return $this;
     }
 
-}di
+}
