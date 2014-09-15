@@ -65,7 +65,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
     }
 
-    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null) {
+    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null, $enableMoto = null) {
         $incrementId = $order->getIncrementId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
         // override amount because this amount uses the right currency
@@ -123,6 +123,11 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                     $this->shopperInteraction = "ContAuth";
                 } else {
                     $this->shopperInteraction = "Ecommerce";
+                }
+
+
+                if(Mage::app()->getStore()->isAdmin() && $enableMoto != null && $enableMoto == 1) {
+                    $this->shopperInteraction = "Moto";
                 }
 
 				if (Mage::getModel('adyen/adyen_cc')->isCseEnabled()) {

@@ -45,14 +45,14 @@
                     </p>]]></comment>
                     <fields>
                         <version translate="label">
-                            <label>Extension version</label>
-                            <frontend_type>label</frontend_type>
-                            <frontend_model>Adyen_Payment_Block_Adminhtml_Version</frontend_model>
-                            <sort_order>0</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </version>
+                                        <label>Extension version</label>
+                                                <frontend_type>label</frontend_type>
+                                                <frontend_model>Adyen_Payment_Block_Adminhtml_Version</frontend_model>
+                                                <sort_order>0</sort_order>
+                                                <show_in_default>1</show_in_default>
+                                                <show_in_website>1</show_in_website>
+                                                <show_in_store>1</show_in_store>
+                                    </version>
                         <merchantAccount translate="label">
                             <label>Merchant Account</label>
                             <comment>You can find this in the Adyen backoffice.</comment>
@@ -151,14 +151,14 @@
                             <show_in_store>0</show_in_store>
                         </capture_mode>
                         <recurringtypes translate="label">
-                           <label>Recurring Type</label>
-                           <frontend_type>select</frontend_type>
-                           <source_model>adyen/source_recurringType</source_model>
-                           <sort_order>78</sort_order>
-                           <show_in_default>1</show_in_default>
-                           <show_in_website>1</show_in_website>
-                           <show_in_store>1</show_in_store>
-                       </recurringtypes>
+                            <label>Recurring Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adyen/source_recurringType</source_model>
+                            <sort_order>78</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </recurringtypes>
                         <ws_username_test translate="label">
                             <label>Adyen ws username for Test</label>
                             <comment>Normally this will be ws@Company.YourCompanyCode</comment>
@@ -363,11 +363,11 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
+                            <depends><allowspecific>1</allowspecific></depends>
                         </specificcountry>
                     </fields>
                 </adyen_hpp>
-                 <!-- @Pos only -->
+                <!-- @Pos only -->
                 <adyen_pos translate="label" module="adyen">
                     <label>Adyen POS</label>
                     <frontend_type>text</frontend_type>
@@ -402,15 +402,15 @@
                             <show_in_store>0</show_in_store>
                         </sort_order>
                         <recurringtypes translate="label">
-                           <label>Recurring Type</label>
-                           <comment>You can set different value for POS because you have to have the permission of the customer</comment>
-                           <frontend_type>select</frontend_type>
-                           <source_model>adyen/source_recurringType</source_model>
-                           <sort_order>30</sort_order>
-                           <show_in_default>1</show_in_default>
-                           <show_in_website>1</show_in_website>
-                           <show_in_store>1</show_in_store>
-                       </recurringtypes>
+                            <label>Recurring Type</label>
+                            <comment>You can set different value for POS because you have to have the permission of the customer</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adyen/source_recurringType</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </recurringtypes>
                         <enable_scanner translate="label">
                             <label>Enable Scanner</label>
                             <comment>If you enable this you have the possiblity to scan products with a hand scanner on the shopping cart page and this will automatically add products to the shopping cart based on the same SKU name</comment>
@@ -448,7 +448,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
+                            <depends><allowspecific>1</allowspecific></depends>
                         </specificcountry>
                     </fields>
                 </adyen_pos>
@@ -539,7 +539,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
+                            <depends><allowspecific>1</allowspecific></depends>
                         </specificcountry>
                     </fields>
                 </adyen_openinvoice>
@@ -602,7 +602,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><cse_enabled>1</cse_enabled></depends>
+                            <depends><cse_enabled>1</cse_enabled></depends>
                         </cse_publickey>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
@@ -621,11 +621,21 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
+                            <depends><allowspecific>1</allowspecific></depends>
                         </specificcountry>
+                        <enable_moto>
+                            <label>Enable MOTO for backend orders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>105</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Important you have to activate MOTO for your acocunt contact magento@adyen.com. For more information <a target="_blank" href="https://www.adyen.com/dam/documentation/manuals/MotoManual.pdf">check our MOTO manual</a>]]></comment>
+                        </enable_moto>
                         <enable_installments translate="label">
-                        	<label>Enable Installments</label>
-                        	<frontend_type>select</frontend_type>
+                            <label>Enable Installments</label>
+                            <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>110</sort_order>
                             <show_in_default>1</show_in_default>
@@ -640,7 +650,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                       </installments>
+                        </installments>
                     </fields>
                 </adyen_cc>
                 <adyen_oneclick>
@@ -722,7 +732,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-							<depends><allowspecific>1</allowspecific></depends>
+                            <depends><allowspecific>1</allowspecific></depends>
                         </specificcountry>
                     </fields>
                 </adyen_elv>

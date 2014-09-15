@@ -135,7 +135,7 @@
             </order_creditmemo>
         </sales>
     </global>
-    
+
     <frontend>
         <secure_url>
             <adyen_process>/adyen/process</adyen_process>
@@ -166,7 +166,7 @@
             </updates>
         </layout>
     </frontend>
-    
+
     <adminhtml>
         <layout>
             <updates>
@@ -221,7 +221,7 @@
                 <payment_pending>pending</payment_pending>
                 <payment_authorized>processing</payment_authorized>
                 <capture_mode>auto</capture_mode>
-                <recurringtypes>ONECLICK</recurringtypes>      		
+                <recurringtypes>ONECLICK</recurringtypes>
             </adyen_abstract>
             <adyen_hpp translate="title" module="adyen">
                 <customer_id backend_model="adminhtml/system_config_backend_encrypted"/>
@@ -245,13 +245,13 @@
                 <return_url_in_request>0</return_url_in_request>
             </adyen_hpp>
             <adyen_pos translate="title" module="adyen">
-            	<active>0</active>
-            	<model>adyen/adyen_pos</model>
-            	<title>Adyen POS</title>
-            	<recurringtypes>ONECLICK</recurringtypes>
+                <active>0</active>
+                <model>adyen/adyen_pos</model>
+                <title>Adyen POS</title>
+                <recurringtypes>ONECLICK</recurringtypes>
                 <enable_scanner>0</enable_scanner>
                 <express_checkout>0</express_checkout>
-            	<allowspecific>0</allowspecific>
+                <allowspecific>0</allowspecific>
                 <sort_order>80</sort_order>
             </adyen_pos>
             <adyen_openinvoice translate="title" module="adyen">
@@ -264,7 +264,7 @@
                 <gender_show>0</gender_show>
                 <dob_show>0</dob_show>
                 <sort_order>40</sort_order>
-            </adyen_openinvoice>  
+            </adyen_openinvoice>
             <adyen_cc translate="title" module="adyen">
                 <active>0</active>
                 <model>adyen/adyen_cc</model>
@@ -275,6 +275,7 @@
                 <enable_installments>0</enable_installments>
                 <cse_enabled>0</cse_enabled>
                 <cse_public_key></cse_public_key>
+                <enable_moto>0</enable_moto>
                 <account_id>99999</account_id>
                 <trxuser_id>99999</trxuser_id>
                 <trxuser_password>0</trxuser_password>
@@ -297,9 +298,9 @@
                 <order_status>processing</order_status>
                 <title>Adyen ELV</title>
                 <sort_order>50</sort_order>
-            </adyen_elv>             
+            </adyen_elv>
             <adyen_boleto translate="title" module="adyen">
-            	<active>0</active>
+                <active>0</active>
                 <model>adyen/adyen_boleto</model>
                 <group>adyen</group>
                 <order_status>processing</order_status>
@@ -316,7 +317,7 @@
                 <sort_order>60</sort_order>
                 <validate_iban>0</validate_iban>
             </adyen_sepa>
-        </payment>  
+        </payment>
         <adyen>
             <payment>
                 <cctypes>
@@ -376,12 +377,12 @@
                     </CB>
                 </cctypes>
                 <boletotypes>
-                	<boletobancario_hsbc>
+                    <boletobancario_hsbc>
                         <code>boletobancario_hsbc</code>
                         <name>boletobancario_hsbc</name>
                         <order>0</order>
                     </boletobancario_hsbc>
-                	 <boletobancario_itau>
+                    <boletobancario_itau>
                         <code>boletobancario_itau</code>
                         <name>boletobancario_itau</name>
                         <order>0</order>
@@ -403,40 +404,40 @@
                     </boletobancario_bancodobrasil>
                 </boletotypes>
                 <openinvoicetypes>
-                	<afterpay>
+                    <afterpay>
                         <code>openinvoice</code>
                         <name>AfterPay</name>
                         <order>10</order>
                     </afterpay>
-                	<klarna>
+                    <klarna>
                         <code>klarna</code>
                         <name>Klarna</name>
                         <order>20</order>
                     </klarna>
                 </openinvoicetypes>
                 <recurringtypes>
-                	<none>
-                		<code></code>
-                		<name>NONE</name>
-                		<order>10</order>
-                	</none>
-                	<oneclick>
-                		<code>ONECLICK</code>
+                    <none>
+                        <code></code>
+                        <name>NONE</name>
+                        <order>10</order>
+                    </none>
+                    <oneclick>
+                        <code>ONECLICK</code>
                         <name>ONECLICK</name>
                         <order>20</order>
-                	</oneclick>
-                	<recurring>
-                		<code>RECURRING</code>
+                    </oneclick>
+                    <recurring>
+                        <code>RECURRING</code>
                         <name>RECURRING</name>
                         <order>30</order>
-                	</recurring>
-                	<oneclickrecurring>
-                		<code>ONECLICK,RECURRING</code>
+                    </recurring>
+                    <oneclickrecurring>
+                        <code>ONECLICK,RECURRING</code>
                         <name>ONECLICK,RECURRING</name>
                         <order>40</order>
-                	</oneclickrecurring>
+                    </oneclickrecurring>
                 </recurringtypes>
-            </payment> 
+            </payment>
         </adyen>
         <sales>
             <totals_sort>
