@@ -357,6 +357,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @param type $response
      */
     protected function _addAdyenAttributes(Varien_Object $order, $response, $updateAdyenStatus = true) {
+        $klarnaReservationNumber = $response->getData('additionalData_additionalData_acquirerReference');
         $pspReference = $response->getData('pspReference');
         $eventCode = $response->getData('eventCode');
         $authResult = $response->getData('authResult');
@@ -385,6 +386,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION)
         {
             $paymentObj->setAdyenPspReference($pspReference);
+            if($klarnaReservationNumber != "") {
+                $paymentObj->setAdyenKlarnaNumber($klarnaReservationNumber);
+            }
         }
 
         try {

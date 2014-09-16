@@ -28,5 +28,6 @@ $installer->getConnection()
         )
     );
 
+$installer->addAttribute('order_payment', 'adyen_klarna_number', array());
 
 $installer->endSetup();
