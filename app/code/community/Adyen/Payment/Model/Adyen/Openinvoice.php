@@ -255,8 +255,8 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         	$linename = "line".$count;
         	$additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
         	$additional_data_sign['openinvoicedata.' . $linename . '.description'] = $item->getName();
-        	$additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($item->getPrice());
-	      	$additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] =  $this->_formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount());
+        	$additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($item->getPrice(), $currency);
+	      	$additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] =  Mage::helper('adyen')->formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount(), $currency);
         	$additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = (int) $item->getQtyOrdered();
         	$additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }
@@ -267,7 +267,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Total Discount');
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getDiscountAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getDiscountAmount(), $currency);
             $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
@@ -279,8 +279,8 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = $order->getShippingDescription();
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getShippingAmount());
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = $this->_formatAmount($order->getShippingTaxAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getShippingAmount(), $currency);
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = Mage::helper('adyen')->formatAmount($order->getShippingTaxAmount(), $currency);
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }
@@ -289,7 +289,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Fee');
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getPaymentFeeAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getPaymentFeeAmount(), $currency);
             $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
@@ -299,7 +299,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 //        $linename = "line".++$count;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Tax');
-//        $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getTaxAmount());
+//        $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getTaxAmount(), $currency);
 //        $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
 //        $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";

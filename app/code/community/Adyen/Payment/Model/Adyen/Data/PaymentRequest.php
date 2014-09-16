@@ -76,7 +76,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->reference = $incrementId;
         $this->merchantAccount = $merchantAccount;
         $this->amount->currency = $orderCurrencyCode;
-        $this->amount->value = $this->_formatAmount($amount,(($orderCurrencyCode=='IDR')?0:2));
+        $this->amount->value = Mage::helper('adyen')->formatAmount($amount, $orderCurrencyCode);
 
         //shopper data
         $customerEmail = $order->getCustomerEmail();

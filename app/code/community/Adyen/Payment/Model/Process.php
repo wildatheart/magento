@@ -798,16 +798,16 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 
                 if($eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_REFUND) {
 
-                    // check if it is a full or partial refund
-                    $amount = $response->getValue() / 100;
-                    $orderAmount = $order->getGrandTotal();
+                    $currency = $order->getOrderCurrencyCode();
 
-                    $this->_formatAmount(($response->getValue() / 100),(($response->getData('paymentMethod') =='IDR')?0:2));
+                    // check if it is a full or partial refund
+                    $amount = Mage::helper('adyen')->formatAmount(($response->getValue() / 100), $currency);
+                    $orderAmount = Mage::helper('adyen')->formatAmount($order->getGrandTotal(), $currency);
 
                     if($amount == $orderAmount) {
-                        $order->setAdyenEventCode("(PARTIAL) " . $eventCode . " : " . strtoupper($success_result));
-                    } else {
                         $order->setAdyenEventCode($eventCode . " : " . strtoupper($success_result));
+                    } else {
+                        $order->setAdyenEventCode("(PARTIAL) " . $eventCode . " : " . strtoupper($success_result));
                     }
                 } else {
                     $order->setAdyenEventCode($eventCode . " : " . strtoupper($success_result));
@@ -834,15 +834,6 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 
         $order->addStatusHistoryComment($comment, $status);
         $order->save();
-    }
-
-    /**
-     * Format price
-     * @param unknown_type $amount
-     * @param unknown_type $format
-     */
-    protected function _formatAmount($amount, $format = 2) {
-        return (int) number_format($amount, $format, '', '');
     }
 
     /**

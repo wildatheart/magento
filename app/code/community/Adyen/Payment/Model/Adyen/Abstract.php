@@ -401,7 +401,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @param unknown_type $amount
      * @param unknown_type $format
      */
-    protected function _formatAmount($amount, $format = 2) {
+    protected function _numberFormat($amount, $format = 2) {
         return (int) number_format($amount, $format, '', '');
     }
 

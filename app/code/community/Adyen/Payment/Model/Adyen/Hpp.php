@@ -97,7 +97,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $realOrderId = $order->getRealOrderId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
         $skinCode = trim($this->_getConfigData('skinCode', 'adyen_hpp'));
-        $amount = $this->_formatAmount($order->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
+        $amount = Mage::helper('adyen')->formatAmount($order->getGrandTotal(), $orderCurrencyCode);
         $merchantAccount = trim($this->_getConfigData('merchantAccount'));
         $customerEmail = $order->getCustomerEmail();
         $shopperEmail = (!empty($customerEmail)) ? $customerEmail : self::DUMMY_EMAIL;
@@ -141,7 +141,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 continue;
             }
             $name = $item->getName();
-            $qtyOrdered = $this->_formatAmount($item->getQtyOrdered(), '0');
+            $qtyOrdered = $this->_numberFormat($item->getQtyOrdered(), '0');
             $rowTotal = number_format($item->getRowTotalInclTax(), 2, ',', ' ');
             $prodDetails .= Mage::helper('adyen')->__('%s ( Qty: %s ) (Price: %s %s ) <br />', $name, $qtyOrdered, $rowTotal, $orderCurrencyCode);
         }
@@ -314,7 +314,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $orderCurrencyCode = Mage::helper('checkout/cart')->getQuote()->getQuoteCurrencyCode();
         $skinCode = trim($this->_getConfigData('skinCode', 'adyen_hpp'));
         $merchantAccount = trim($this->_getConfigData('merchantAccount'));
-        $amount = $this->_formatAmount(Mage::helper('checkout/cart')->getQuote()->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
+        $amount = Mage::helper('adyen')->formatAmount(Mage::helper('checkout/cart')->getQuote()->getGrandTotal(), $orderCurrencyCode);
         $sessionValidity = date(DATE_ATOM, mktime(date("H") + 1, date("i"), date("s"), date("m"), date("j"), date("Y")));
         $cacheDirectoryLookup = trim($this->_getConfigData('cache_directory_lookup', 'adyen_hpp'));
 
