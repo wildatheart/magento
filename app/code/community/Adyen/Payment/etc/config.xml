@@ -193,14 +193,6 @@
                     </adyen_manual_online_capture>
                 </observers>
             </sales_order_invoice_pay>
-            <sales_order_creditmemo_refund>
-                <observers>
-                    <adyen_online_refund>
-                        <class>adyen/observer</class>
-                        <method>refund</method>
-                    </adyen_online_refund>
-                </observers>
-            </sales_order_creditmemo_refund>
         </events>
     </adminhtml>
     <default>
