@@ -79,11 +79,17 @@ class Adyen_Payment_Helper_Installments
         }
         unset($value['__empty']);
         foreach ($value as $_id => $row) {
-            if (!is_array($row) || !array_key_exists('installment_currency',$row) || !array_key_exists('installment_boundary', $row) || !array_key_exists('installment_frequency', $row)) {
+            if (!is_array($row) || !array_key_exists('installment_currency',$row) || !array_key_exists('installment_boundary', $row) || !array_key_exists('installment_frequency', $row ) || !array_key_exists('installment_interest', $row )) {
                 return false;
             }
         }
         return true;
+    }
+
+    public function getInstallments($store = null, $ccType = "installments") {
+        $value = Mage::getStoreConfig("payment/adyen_cc/".$ccType, $store);
+        $value = $this->_unserializeValue($value);
+        return $value;
     }
 
     /**
@@ -96,12 +102,18 @@ class Adyen_Payment_Helper_Installments
     {
         $result = array();
         foreach ($value as $triplet){
-        	list($currency,$boundary,$frequency) = $triplet; 
+
+            $currency = (isset($triplet[0])) ? $triplet[0] : "";
+            $boundary = (isset($triplet[1])) ? $triplet[1] : "";
+            $frequency = (isset($triplet[2])) ? $triplet[2] : "";
+            $interest = (isset($triplet[3])) ? $triplet[3] : "";
+
             $_id = Mage::helper('core')->uniqHash('_');
             $result[$_id] = array(
             	'installment_currency' => $currency,
                 'installment_boundary' => $boundary,
                 'installment_frequency' => $frequency,
+                'installment_interest' => $interest
             );
         }
         return $result;
@@ -118,13 +130,14 @@ class Adyen_Payment_Helper_Installments
         $result = array();
         unset($value['__empty']);
         foreach ($value as $_id => $row) {
-            if (!is_array($row) || !array_key_exists('installment_currency',$row) || !array_key_exists('installment_boundary', $row) || !array_key_exists('installment_frequency', $row)) {
+            if (!is_array($row) || !array_key_exists('installment_currency',$row) || !array_key_exists('installment_boundary', $row) || !array_key_exists('installment_frequency', $row) || !array_key_exists('installment_interest', $row)) {
                 continue;
             }
             $currency = $row['installment_currency'];
             $boundary = $row['installment_boundary'];
             $frequency = $row['installment_frequency'];
-            $result[] = array($currency,$boundary,$frequency);
+            $interest = $row['installment_interest'];
+            $result[] = array($currency,$boundary,$frequency,$interest);
         }
         return $result;
     }
@@ -136,10 +149,10 @@ class Adyen_Payment_Helper_Installments
      * @param mixed $store
      * @return float|null
      */
-    public function getConfigValue($curr,$amount, $store = null)
+    public function getConfigValue($curr,$amount, $store = null, $ccType = "installments")
     {
-        $value = Mage::getStoreConfig("payment/adyen_cc/installments", $store);
-        $value = $this->_unserializeValue($value);
+        $value = $this->getInstallments($store, $ccType);
+
         if ($this->_isEncodedArrayFieldValue($value)) {
             $value = $this->_decodeArrayFieldValue($value);
         }
@@ -149,7 +162,7 @@ class Adyen_Payment_Helper_Installments
         	list($currency,$boundary,$frequency) = $row;
             if ($curr == $currency){
             	if($amount <= $boundary && ($boundary <= $cur_minimal_boundary || $cur_minimal_boundary == -1) ) {
-	            	$cur_minimal_boundary = $boundary;
+                    $cur_minimal_boundary = $boundary;
 	            	$resulting_freq = $frequency;
 	            }
 	            if($boundary == "" && $cur_minimal_boundary == -1){

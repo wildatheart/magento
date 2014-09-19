@@ -37,12 +37,27 @@ class Adyen_Payment_Block_Adminhtml_Sales_Order_Invoice_Totals extends Mage_Admi
                     'strong'    => false,
                     'value'     => $this->getSource()->getPaymentFeeAmount(),
                     'base_value'=> $this->getSource()->getBasePaymentFeeAmount(),
-                    'label'     => $this->helper('sales')->__('Payment Fee'),
+                    'label'     => $this->helper('adyen')->__('Payment Fee'),
                     'area'      => '',
                 )
             ),
             'subtotal'
         );
+
+        $this->addTotal(
+            new Varien_Object(
+                array(
+                    'code'      => 'payment_installment_fee',
+                    'strong'    => false,
+                    'value'     => $this->getSource()->getPaymentInstallmentFeeAmount(),
+                    'base_value'=> $this->getSource()->getBasePaymentInstallmentFeeAmount(),
+                    'label'     => $this->helper('adyen')->__('Payment Fee Installments'),
+                    'area'      => '',
+                )
+            ),
+            'subtotal'
+        );
+
         return $this;
     }
 }

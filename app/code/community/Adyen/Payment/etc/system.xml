@@ -643,14 +643,87 @@
                             <show_in_store>1</show_in_store>
                         </enable_installments>
                         <installments translate="label">
-                            <label>Installments</label>
+                            <label>Installments default</label>
                             <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
                             <backend_model>adyen/system_config_backend_installments</backend_model>
                             <sort_order>120</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comments>This is the fallback if specific credit card type has no installments configured</comments>
                         </installments>
+                        <installments_AE translate="label">
+                            <label>Installments For American Express</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_AE>
+                        <installments_VI translate="label">
+                            <label>Installments For Visa</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_VI>
+                        <installments_MC translate="label">
+                            <label>Installments For Master Card</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_MC>
+                        <installments_DI translate="label">
+                            <label>Installments For Discover</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_DI>
+                        <installments_DC translate="label">
+                            <label>Installments For Diners Club</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_DC>
+                        <installments_MO translate="label">
+                            <label>Installments For Maestro</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_MO>
+                        <installments_JC translate="label">
+                            <label>Installments For JCB</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_JC>
+                        <installments_CB translate="label">
+                            <label>Installments For CarteBleue</label>
+                            <frontend_model>adyen/adminhtml_form_field_installments</frontend_model>
+                            <backend_model>adyen/system_config_backend_installments</backend_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </installments_CB>
                     </fields>
                 </adyen_cc>
                 <adyen_oneclick>

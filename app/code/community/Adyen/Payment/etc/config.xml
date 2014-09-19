@@ -102,21 +102,30 @@
             <sales_convert_quote_address>
                 <payment_fee_amount><to_order>*</to_order></payment_fee_amount>
                 <base_payment_fee_amount><to_order>*</to_order></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_order>*</to_order></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_order>*</to_order></base_payment_installment_fee_amount>
             </sales_convert_quote_address>
             <sales_convert_order>
                 <payment_fee_amount><to_invoice>*</to_invoice></payment_fee_amount>
                 <base_payment_fee_amount><to_invoice>*</to_invoice></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_invoice>*</to_invoice></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_invoice>*</to_invoice></base_payment_installment_fee_amount>
                 <payment_fee_amount><to_cm>*</to_cm></payment_fee_amount>
                 <base_payment_fee_amount><to_cm>*</to_cm></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_invoice>*</to_invoice></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_invoice>*</to_invoice></base_payment_installment_fee_amount>
             </sales_convert_order>
         </fieldsets>
         <sales>
             <quote>
                 <totals>
                     <payment_fee>
-                        <!--<class>adyen_payment_model_sales_quote_address_total_paymentFee</class>-->
                         <class>adyen/sales_quote_address_total_paymentFee</class>
                     </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/sales_quote_address_total_paymentInstallmentFee</class>
+                        <after>grand_total</after>
+                    </payment_installment_fee>
                 </totals>
             </quote>
             <order_invoice>
@@ -124,6 +133,9 @@
                     <payment_fee>
                         <class>adyen/total_paymentFee_invoice</class>
                     </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/total_paymentInstallmentFee_invoice</class>
+                    </payment_installment_fee>
                 </totals>
             </order_invoice>
             <order_creditmemo>
@@ -131,6 +143,9 @@
                     <payment_fee>
                         <class>adyen/total_paymentFee_creditmemo</class>
                     </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/total_paymentInstallmentFee_creditmemo</class>
+                    </payment_installment_fee>
                 </totals>
             </order_creditmemo>
         </sales>
@@ -343,12 +358,6 @@
                         <order>40</order>
                         <is_cvv_required>1</is_cvv_required>
                     </DC>
-                    <SS>
-                        <code>SS</code>
-                        <name>Switch/Solo</name>
-                        <order>50</order>
-                        <is_cvv_required>1</is_cvv_required>
-                    </SS>
                     <MO>
                         <code>MO</code>
                         <name>Maestro</name>
@@ -434,6 +443,7 @@
         <sales>
             <totals_sort>
                 <payment_fee>15</payment_fee>
+                <payment_installment_fee>16</payment_installment_fee>
             </totals_sort>
         </sales>
     </default>
