@@ -366,6 +366,11 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
         //Generate HMAC encrypted merchant signature
         $secretWord = $this->_getSecretWord();
+
+        if($secretWord == "") {
+            Mage::throwException(Mage::helper('adyen')->__('You forgot to fill in HMAC key for Test or Live'));
+        }
+
         $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign);
         $adyFields['merchantSig'] = base64_encode(pack('H*', $signMac));
 
