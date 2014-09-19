@@ -63,7 +63,6 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->additionalData = new Adyen_Payment_Model_Adyen_Data_AdditionalData();
         $this->shopperName = new Adyen_Payment_Model_Adyen_Data_ShopperName(); // for boleto
         $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
-        $this->installments = new Adyen_Payment_Model_Adyen_Data_Installments();
     }
 
     public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null, $enableMoto = null) {
@@ -166,7 +165,8 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 				}
 
                 // installments
-                if(Mage::helper('adyen/installments')->isInstallmentsEnabled()){
+                if(Mage::helper('adyen/installments')->isInstallmentsEnabled() &&  $payment->getAdditionalInformation('number_of_installments') > 0){
+                    $this->installments = new Adyen_Payment_Model_Adyen_Data_Installments();
                     $this->installments->value = $payment->getAdditionalInformation('number_of_installments');
                 }
                 break;
@@ -192,7 +192,6 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $this->selectedBrand = "sepadirectdebit";
                 break;
         }
-
         return $this;
     }
 
