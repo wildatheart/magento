@@ -63,6 +63,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->additionalData = new Adyen_Payment_Model_Adyen_Data_AdditionalData();
         $this->shopperName = new Adyen_Payment_Model_Adyen_Data_ShopperName(); // for boleto
         $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
+        $this->installments = new Adyen_Payment_Model_Adyen_Data_Installments();
     }
 
     public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null, $enableMoto = null) {
@@ -166,10 +167,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 
                 // installments
                 if(Mage::helper('adyen/installments')->isInstallmentsEnabled()){
-                    $kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
-                    $kv->key = new SoapVar("installments", XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
-                    $kv->value = new SoapVar($payment->getPoNumber(), XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
-                    $this->additionalData->entry = $kv;
+                    $this->installments->value = $payment->getAdditionalInformation('number_of_installments');
                 }
                 break;
             case "boleto":
