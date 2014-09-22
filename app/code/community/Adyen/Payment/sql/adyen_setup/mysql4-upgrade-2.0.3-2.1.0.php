@@ -33,4 +33,7 @@ $installer->getConnection()->addColumn($this->getTable('sales/invoice'), 'base_p
 $installer->getConnection()->addColumn($this->getTable('sales/creditmemo'), 'payment_installment_fee_amount', "decimal(12,4) null default null");
 $installer->getConnection()->addColumn($this->getTable('sales/creditmemo'), 'base_payment_installment_fee_amount', "decimal(12,4) null default null");
 
+$installer->addAttribute('order_payment', 'adyen_avs_result', array());
+$installer->addAttribute('order_payment', 'adyen_cvc_result', array());
+
 $installer->endSetup();

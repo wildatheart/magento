@@ -358,6 +358,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      */
     protected function _addAdyenAttributes(Varien_Object $order, $response, $updateAdyenStatus = true) {
         $klarnaReservationNumber = $response->getData('additionalData_additionalData_acquirerReference');
+        $ccLast4 = $response->getData('additionalData_cardSummary');
+        $avsResult = $response->getData('additionalData_avsResult');
+        $cvcResult = $response->getData('additionalData_cvcResult');
         $pspReference = $response->getData('pspReference');
         $eventCode = $response->getData('eventCode');
         $authResult = $response->getData('authResult');
@@ -388,6 +391,15 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             $paymentObj->setAdyenPspReference($pspReference);
             if($klarnaReservationNumber != "") {
                 $paymentObj->setAdyenKlarnaNumber($klarnaReservationNumber);
+            }
+            if($ccLast4 != "") {
+                $paymentObj->setccLast4($ccLast4);
+            }
+            if($avsResult != "") {
+                $paymentObj->setAdyenAvsResult($avsResult);
+            }
+            if($cvcResult != "") {
+                $paymentObj->setAdyenCvcResult($cvcResult);
             }
         }
 
