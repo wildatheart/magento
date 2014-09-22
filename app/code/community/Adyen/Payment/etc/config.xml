@@ -121,6 +121,8 @@
                 <totals>
                     <payment_fee>
                         <class>adyen/sales_quote_address_total_paymentFee</class>
+                        <after>subtotal,discount</after>
+                        <before>grand_total,tax</before>
                     </payment_fee>
                     <payment_installment_fee>
                         <class>adyen/sales_quote_address_total_paymentInstallmentFee</class>

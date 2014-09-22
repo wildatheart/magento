@@ -74,7 +74,7 @@ class Adyen_Payment_Model_Adyen_Data_OpenInvoiceDetailResult extends Adyen_Payme
 
         if($order->getPaymentFeeAmount() > 0) {
             $cost = new Varien_Object();
-            $cost->setName(Mage::helper('adyen')->__('Fee'));
+            $cost->setName(Mage::helper('adyen')->__('Payment Fee'));
             $cost->setPrice($order->getPaymentFeeAmount());
             $cost->setQtyOrdered(1);
             $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);

@@ -288,7 +288,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         if($order->getPaymentFeeAmount() > 0) {
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
-            $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Fee');
+            $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Payment Fee');
             $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getPaymentFeeAmount(), $currency);
             $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;

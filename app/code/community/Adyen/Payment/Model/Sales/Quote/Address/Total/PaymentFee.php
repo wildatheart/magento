@@ -35,7 +35,7 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
 
         $this->_setAmount(0);
         $this->_setBaseAmount(0);
- 
+
         $quote = $address->getQuote();
 		$val = Mage::Helper('adyen')->isPaymentFeeEnabled($quote);
         if ($address->getAllItems() && $val) {
@@ -49,10 +49,10 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
             $address->setGrandTotal($address->getGrandTotal() + $address->getPaymentFeeAmount());
             $address->setBaseGrandTotal($address->getBaseGrandTotal() + $address->getBasePaymentFeeAmount());
         }
-        
+
         return $this;
     }
- 
+
     public function fetch(Mage_Sales_Model_Quote_Address $address)
     {
         $amt = $address->getPaymentFeeAmount();
@@ -60,11 +60,11 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentFee extends Mage_Sale
         if ($amt != 0) {
             $address->addTotal(array(
                     'code'=>$this->getCode(),
-                    'title'=> Mage::helper('adyen')->__('Fee'),
+                    'title'=> Mage::helper('adyen')->__('Payment Fee'),
                     'value'=> $amt
             ));
         }
-        
+
         return $this;
     }
 }
