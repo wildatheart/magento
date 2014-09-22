@@ -114,6 +114,8 @@
                 <base_payment_fee_amount><to_cm>*</to_cm></base_payment_fee_amount>
                 <payment_installment_fee_amount><to_invoice>*</to_invoice></payment_installment_fee_amount>
                 <base_payment_installment_fee_amount><to_invoice>*</to_invoice></base_payment_installment_fee_amount>
+                <payment_installment_fee_amount><to_cm>*</to_cm></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_cm>*</to_cm></base_payment_installment_fee_amount>
             </sales_convert_order>
         </fieldsets>
         <sales>
