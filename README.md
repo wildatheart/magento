@@ -26,7 +26,7 @@ magento
  * Full refund will send in Cancel\Refund request to Adyen if payment is not yet captured the order will be cancelled
  * For payment method Klarna and after pay the fields are disabled on the Adyen HPP
  * Payment methods in the checkout give back the language specific payment method text
- * Add after pay logo in magenta checkout
+ * Add after pay logo in magento checkout
  * Plugin version number and links for setting up now visible in the Adyen General settings sections
 
  2.0.3
