@@ -361,6 +361,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $ccLast4 = $response->getData('additionalData_cardSummary');
         $avsResult = $response->getData('additionalData_avsResult');
         $cvcResult = $response->getData('additionalData_cvcResult');
+        $boletoPaidAmount = $response->getData('additionalData_boletobancario_paidAmount');
         $pspReference = $response->getData('pspReference');
         $eventCode = $response->getData('eventCode');
         $authResult = $response->getData('authResult');
@@ -400,6 +401,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             }
             if($cvcResult != "") {
                 $paymentObj->setAdyenCvcResult($cvcResult);
+            }
+            if($boletoPaidAmount != "") {
+                $paymentObj->setAdyenBoletoPaidAmount($boletoPaidAmount);
             }
         }
 
@@ -568,7 +572,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     $this->createInvoice($order, $response);
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE:
-                    $this->setPaymentAuthorized($order, $success);
+                    $this->setPaymentAuthorized($order, $success, $response);
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE_FAILED:
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLATION:
@@ -588,9 +592,40 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @param type $order
      * @param type $success
      */
-    public function setPaymentAuthorized($order, $success = false) {
+    public function setPaymentAuthorized($order, $success = false, $response) {
         if ($success && !empty($order)) {
+
             $status = $this->_getConfigData('payment_authorized');
+
+            // check for boleto if payment is totally paid
+            if($order->getPayment()->getMethod() == "adyen_boleto") {
+
+                // check if paid amount is the same as orginal amount
+                $orginalAmount = trim($response->getData('additionalData_boletobancario_originalAmount'));
+                $paidAmount = trim($response->getData('additionalData_boletobancario_paidAmount'));
+
+                if($orginalAmount != $paidAmount) {
+
+                    // not the full amount is paid. Check if it is underpaid or overpaid
+                    // strip the  BRL of the string
+                    $orginalAmount = str_replace("BRL", "",  $orginalAmount);
+                    $orginalAmount = floatval(trim($orginalAmount));
+
+                    $paidAmount = str_replace("BRL", "",  $paidAmount);
+                    $paidAmount = floatval(trim($paidAmount));
+
+                    if($paidAmount > $orginalAmount) {
+                        $overpaidStatus =  $this->_getConfigData('order_overpaid_status', 'adyen_boleto');
+                        // check if there is selected a status if not fall back to the default
+                        $status = (!empty($overpaidStatus)) ? $overpaidStatus : $status;
+                    } else {
+                        $underpaidStatus = $this->_getConfigData('order_underpaid_status', 'adyen_boleto');
+                        // check if there is selected a status if not fall back to the default
+                        $status = (!empty($underpaidStatus)) ? $underpaidStatus : $status;
+                    }
+                }
+            }
+
             $status = (!empty($status)) ? $status : $order->getStatus();
             $order->addStatusHistoryComment(Mage::helper('adyen')->__('Adyen Payment Successfully completed'), $status);
             $order->sendOrderUpdateEmail((bool) $this->_getConfigData('send_update_mail'));
@@ -644,10 +679,11 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @since 0.0.9.x
      */
     public function isAutoCapture($response) {
+        return true; // just for testing ONLY!!!!!!!!!!!!
         $paymentMethod = trim($response->getData('paymentMethod'));
         $captureMode = trim($this->_getConfigData('capture_mode'));
         // payment method ideal and cash has direct capture
-        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash') === 0 ) {
+        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash' ) === 0 ) {
             return true;
         }
         if (strcmp($captureMode, 'manual') === 0) {
@@ -747,6 +783,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             return false;
         }
 
+        //$order->addStatusHistoryComment(Mage::helper('adyen')->__('Adyen Payment Successfully completed'), $status);
+
+
         if ($order->canInvoice()) {
             $invoice = $order->prepareInvoice();
             $invoice->getOrder()->setIsInProcess(true);
@@ -761,7 +800,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             }
 
             //selected adyen status
-            $this->setPaymentAuthorized($order, $success);
+            $this->setPaymentAuthorized($order, $success, $response);
 
             if ($invoiceAutoMail) {
                 $invoice->sendEmail();

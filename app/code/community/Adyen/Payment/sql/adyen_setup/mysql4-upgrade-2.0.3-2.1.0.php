@@ -36,4 +36,6 @@ $installer->getConnection()->addColumn($this->getTable('sales/creditmemo'), 'bas
 $installer->addAttribute('order_payment', 'adyen_avs_result', array());
 $installer->addAttribute('order_payment', 'adyen_cvc_result', array());
 
+$installer->addAttribute('order_payment', 'adyen_boleto_paid_amount', array());
+
 $installer->endSetup();

@@ -861,6 +861,26 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </boletotypes>
+                        <order_underpaid_status translate="label">
+                            <label>Order status underpaid</label>
+                            <comment>With Boleto it is possible to pay less than the full amount. Select here the status if this is the case. If you leave this empty it will take the Order status authorised payment as default status</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_underpaid_status>
+                        <order_overpaid_status translate="label">
+                            <label>Order status overpaid</label>
+                            <comment>With Boleto it is possible to pay more than the total amount. Select here the status if this is the case. If you leave this empty it will take the Order status authorised payment as default status</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_overpaid_status>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
