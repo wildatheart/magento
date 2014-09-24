@@ -679,7 +679,6 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @since 0.0.9.x
      */
     public function isAutoCapture($response) {
-        return true; // just for testing ONLY!!!!!!!!!!!!
         $paymentMethod = trim($response->getData('paymentMethod'));
         $captureMode = trim($this->_getConfigData('capture_mode'));
         // payment method ideal and cash has direct capture
