@@ -99,6 +99,48 @@
         </li>
     <?php endif;?>
 </ul>
+
+<script type="text/javascript">
+
+    var ChangeCCType= function(event) {
+
+        // clear the select box
+        document.getElementById('<?php echo $_code ?>_installments').options.length = 0;
+
+        // get the installments for this cardtype
+        var ccType = $('<?php echo $_code?>_cc_type').value;
+
+        var url = '<?php echo $this->getUrl('adyen/GetInstallments'); ?>';
+
+        new Ajax.Request(url, {
+            parameters: {ccType: ccType, isAjax: 1, method: 'POST'},
+            onSuccess: function(transport) {
+
+                if(transport.status == 200) {
+
+                    var response = transport.responseText.evalJSON();
+
+                    for (var key in response) {
+
+                        // change the installments
+                        var opt = document.createElement('option');
+                        opt.text = response[key]
+                        opt.value = key;
+                        $('<?php echo $_code ?>_installments').options.add(opt);
+
+                    }
+                }
+            },
+            onFailure: function(){
+                alert('<?php echo $this->jsQuoteEscape($this->__('Server Error. Please try again.')) ?>');
+            }
+        });
+    }
+    // event on change Credit Card Type
+    Event.observe($('<?php echo $_code?>_cc_type'), 'change', ChangeCCType);
+
+</script>
+
 <?php if ($this->isCseEnabled()): ?>
     <input type="hidden" id="<?php echo $_code ?>_encrypted_form_expiry_generationtime" value="<?php echo date("c"); ?>" data-encrypted-name="generationtime" />
     <input type="hidden" id="adyen-cse-form" />
@@ -140,6 +182,13 @@
                 checkout.save = checkout.save.wrap(function(originalSaveMethod) {
                     cse.call(this);
                     originalSaveMethod();
+                });
+            }
+
+            // Fix for the onestepcheckout plugins
+            if($('onestepcheckout-place-order')) {
+                $('onestepcheckout-place-order').observe('click', function(e) {
+                    cse.call(this);
                 });
             }
         }

@@ -27,12 +27,34 @@
  */
 -->
 <layout version="0.1.0">
+
+    <adyen_updatecart_index>
+        <update handle="checkout_cart_index" />
+    </adyen_updatecart_index>
+
+    <checkout_cart_index>
+        <reference name="top.container">
+            <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scanProduct.phtml"/>
+        </reference>
+        <reference name="checkout.cart.methods">
+            <block type="adyen/posExpressCheckout" before="-" name="adyen.pos.express.checkout" template="adyen/posExpressCheckout.phtml"/>
+        </reference>
+    </checkout_cart_index>
+
     <checkout_onepage_index>
         <reference name="head">
             <action method="addJs"><script>adyen/payment/elv.js</script></action>
             <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
         </reference>
     </checkout_onepage_index>
+
+    <onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addJs"><script>adyen/payment/elv.js</script></action>
+            <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
+        </reference>
+    </onestepcheckout_index_index>
+
     <checkout_multishipping_billing>
         <reference name="head">
             <action method="addJs"><script>adyen/payment/elv.js</script></action>

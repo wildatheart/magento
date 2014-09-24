@@ -49,5 +49,8 @@
             ?>
             <?php echo $this->__('Bank: %s', $this->htmlEscape($label)) ?><br/>
         <?php endif; ?>            
-    <?php endif; ?>        
+    <?php endif; ?>
+    <?php if($_info->getAdyenKlarnaNumber() != null && $_info->getAdyenKlarnaNumber() != ""): ?>
+        <?php echo Mage::helper('adyen')->__('Klarna reservation number: %s', $this->htmlEscape($_info->getAdyenKlarnaNumber())) ?> <br/>
+    <?php endif; ?>
 <?php endif; ?>

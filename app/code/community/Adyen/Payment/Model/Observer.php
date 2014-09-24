@@ -50,28 +50,6 @@ class Adyen_Payment_Model_Observer {
     }
 
     /**
-     * @desc online refund only
-     * @param Mage_Sales_Model_Order_Creditmemo $observer
-     */
-    public function refund(Varien_Event_Observer $observer) {
-        $event = $observer->getEvent();
-        $eventNameCmp = strcmp($event->getName(), 'sales_order_creditmemo_refund');
-        $offline = (bool) $event->getCreditmemo()->getData('offline_requested');
-        if ($eventNameCmp === 0 && !$offline) {
-            $order = $event->getCreditmemo()->getOrder();
-            $isAdyen = $this->isPaymentMethodAdyen($order);
-            if (!$isAdyen)
-                return false;
-            $grandTotal = $event->getCreditmemo()->getGrandTotal();
-            $payment = $order->getPayment();
-            $pspReference = Mage::getModel('adyen/event')->getOriginalPspReference($order->getIncrementId());
-            $order->getPayment()->getMethodInstance()->sendRefundRequest($payment, $grandTotal, $pspReference);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Determine if the payment method is Adyen
      * @param type $order
      * @return boolean

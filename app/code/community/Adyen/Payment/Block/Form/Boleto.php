@@ -41,4 +41,35 @@ class Adyen_Payment_Block_Form_Boleto extends Mage_Payment_Block_Form {
         return $this->getMethod()->getAvailableBoletoTypes();
     }
 
+
+    public function getFirstname() {
+        $firstname = "";
+
+        // check if user is logged in
+        if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+            /* Get the customer data */
+            $customer = Mage::getSingleton('customer/session')->getCustomer();
+            $firstname = $customer->getFirstname();
+
+        } else {
+            $firstname = Mage::getSingleton('checkout/session')->getQuote()->getBillingAddress()->getFirstname();
+        }
+        return $firstname;
+    }
+
+    public function getLastname() {
+        $lastname = "";
+
+        // check if user is logged in
+        if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+            /* Get the customer data */
+            $customer = Mage::getSingleton('customer/session')->getCustomer();
+            $lastname = $customer->getLastname();
+
+        } else {
+            $lastname = Mage::getSingleton('checkout/session')->getQuote()->getBillingAddress()->getLastname();
+        }
+        return $lastname;
+    }
+
 }

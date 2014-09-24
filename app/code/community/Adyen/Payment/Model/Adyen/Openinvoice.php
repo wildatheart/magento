@@ -37,8 +37,49 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         if (!($data instanceof Varien_Object)) {
             $data = new Varien_Object($data);
         }
+
         $info = $this->getInfoInstance();
         $info->setCcType('openinvoice');
+
+        // check if option gender or date of birth is enabled
+        $genderShow = $this->genderShow();
+        $dobShow = $this->dobShow();
+
+        if($genderShow || $dobShow) {
+
+            // set gender and dob to the quote
+            $quote = $this->getQuote();
+
+            // dob must be in yyyy-MM-dd
+            $dob = $data->getYear() . "-" . $data->getMonth() . "-" . $data->getDay();
+
+            if($dobShow)
+                $quote->setCustomerDob($dob);
+
+            if($genderShow) {
+                $quote->setCustomerGender($data->getGender());
+                // Fix for OneStepCheckout (won't convert quote customerGender to order object)
+                $info->setAdditionalInformation('customerGender', $data->getGender());
+            }
+
+            /* Check if the customer is logged in or not */
+            if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+                /* Get the customer data */
+                $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+                // set the email and/or gender
+                if($dobShow)
+                    $customer->setDob($dob);
+
+                if($genderShow)
+                    $customer->setGender($data->getGender());
+
+                // save changes into customer
+                $customer->save();
+            }
+        }
+
         return $this;
     }
 
@@ -132,35 +173,69 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 	        $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign);
 	        $adyFields['deliveryAddressSig'] = base64_encode(pack('H*', $signMac));
    	 	}
-        
-   	 	
-        if ($adyFields['shopperReference'] != self::GUEST_ID) {
+
+
+        if ($adyFields['shopperReference'] != (self::GUEST_ID .  $order->getRealOrderId())) {
+
             $customer = Mage::getModel('customer/customer')->load($adyFields['shopperReference']);
-            $adyFields['shopper.gender'] = strtoupper($this->getCustomerAttributeText($customer, 'gender'));
+
+            if($this->getCustomerAttributeText($customer, 'gender') != "") {
+                $adyFields['shopper.gender'] = strtoupper($this->getCustomerAttributeText($customer, 'gender'));
+            } else {
+                // fix for OneStepCheckout (guest is not logged in but uses email that exists with account)
+                $_customer = Mage::getModel('customer/customer');
+                if($order->getCustomerGender()) {
+                    $customerGender = $order->getCustomerGender();
+                } else {
+                    // this is still empty for OneStepCheckout so uses extra saved parameter
+                    $payment = $order->getPayment();
+                    $customerGender = $payment->getAdditionalInformation('customerGender');
+                }
+                $adyFields['shopper.gender'] = strtoupper($_customer->getResource()->getAttribute('gender')->getSource()->getOptionText($customerGender));
+            }
+
             $adyFields['shopper.infix'] = $customer->getPrefix();
             $dob = $customer->getDob();
-            
+
+            if (!empty($dob)) {
+                $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
+                $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
+                $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
+            } else {
+                // fix for OneStepCheckout (guest is not logged in but uses email that exists with account)
+                $dob = $order->getCustomerDob();
+                if (!empty($dob)) {
+                    $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
+                    $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
+                    $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
+                }
+            }
+        } else {
+            // checkout as guest use details from the order
+            $_customer = Mage::getModel('customer/customer');
+            $adyFields['shopper.gender'] = strtoupper($_customer->getResource()->getAttribute('gender')->getSource()->getOptionText($order->getCustomerGender()));
+            $adyFields['shopper.infix'] = $order->getCustomerPrefix();
+            $dob = $order->getCustomerDob();
             if (!empty($dob)) {
                 $adyFields['shopper.dateOfBirthDayOfMonth'] = $this->getDate($dob, 'd');
                 $adyFields['shopper.dateOfBirthMonth'] = $this->getDate($dob, 'm');
                 $adyFields['shopper.dateOfBirthYear'] = $this->getDate($dob, 'Y');
             }
         }
-
         // for sweden add here your socialSecurityNumber
         // $adyFields['shopper.socialSecurityNumber'] = "Result of your custom input field";
 
         $adyFields['shopper.telephoneNumber'] = $billingAddress->getTelephone();
         
         $openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
-        
-         if($this->_code == "adyen_openinvoice" && $openinvoiceType == "klarna") {
+
+         if($this->_code == "adyen_openinvoice" || $this->getInfoInstance()->getCcType() == "klarna" || $this->getInfoInstance()->getCcType() == "afterpay_default" ) {
          	// initialize values if they are empty
-         	(isset($adyFields['shopper.gender'])) ? $adyFields['shopper.gender'] : "";
-         	(isset($adyFields['shopper.infix'])) ? $adyFields['shopper.infix'] : "";
-         	(isset($adyFields['shopper.dateOfBirthDayOfMonth'])) ? $adyFields['shopper.dateOfBirthDayOfMonth'] : "";
-         	(isset($adyFields['shopper.dateOfBirthMonth'])) ? $adyFields['shopper.dateOfBirthMonth'] : "";
-         	(isset($adyFields['shopper.dateOfBirthYear'])) ? $adyFields['shopper.dateOfBirthYear'] : "";
+             $adyFields['shopper.gender'] = (isset($adyFields['shopper.gender'])) ? $adyFields['shopper.gender'] : "";
+             $adyFields['shopper.infix'] = (isset($adyFields['shopper.infix'])) ? $adyFields['shopper.infix'] : "";
+             $adyFields['shopper.dateOfBirthDayOfMonth'] = (isset($adyFields['shopper.dateOfBirthDayOfMonth'])) ? $adyFields['shopper.dateOfBirthDayOfMonth'] : "";
+             $adyFields['shopper.dateOfBirthMonth'] = (isset($adyFields['shopper.dateOfBirthMonth'])) ? $adyFields['shopper.dateOfBirthMonth'] : "";
+             $adyFields['shopper.dateOfBirthYear'] = (isset($adyFields['shopper.dateOfBirthYear'])) ? $adyFields['shopper.dateOfBirthYear'] : "";
 
          	$shoppperSign = $adyFields['shopper.firstName'] . $adyFields['shopper.infix'] . $adyFields['shopper.lastName'] . $adyFields['shopper.gender'] . $adyFields['shopper.dateOfBirthDayOfMonth'] . $adyFields['shopper.dateOfBirthMonth'] . $adyFields['shopper.dateOfBirthYear'] . $adyFields['shopper.telephoneNumber'];
          	$shopperSignMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $shoppperSign);
@@ -171,7 +246,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         $count = 0;
         $currency = $order->getOrderCurrencyCode();
         $additional_data_sign = array();
-        
+
         foreach ($order->getItemsCollection() as $item) {
         	//skip dummies
         	if ($item->isDummy()) continue;
@@ -180,19 +255,19 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         	$linename = "line".$count;
         	$additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
         	$additional_data_sign['openinvoicedata.' . $linename . '.description'] = $item->getName();
-        	$additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($item->getPrice());
-	      	$additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] =  $this->_formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount());
+        	$additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($item->getPrice(), $currency);
+	      	$additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] =  Mage::helper('adyen')->formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount(), $currency);
         	$additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = (int) $item->getQtyOrdered();
         	$additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }
         
         //discount cost
-        if($order->getDiscountAmount() > 0)
+        if($order->getDiscountAmount() > 0 || $order->getDiscountAmount() < 0)
         {
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Total Discount');
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getDiscountAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getDiscountAmount(), $currency);
             $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
@@ -204,8 +279,18 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
             $linename = "line".++$count;
             $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
             $additional_data_sign['openinvoicedata.' . $linename . '.description'] = $order->getShippingDescription();
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getShippingAmount());
-            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = $this->_formatAmount($order->getShippingTaxAmount());
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getShippingAmount(), $currency);
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = Mage::helper('adyen')->formatAmount($order->getShippingTaxAmount(), $currency);
+            $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
+            $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
+        }
+
+        if($order->getPaymentFeeAmount() > 0) {
+            $linename = "line".++$count;
+            $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
+            $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Payment Fee');
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getPaymentFeeAmount(), $currency);
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
             $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
             $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }
@@ -214,7 +299,7 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
 //        $linename = "line".++$count;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.description'] = Mage::helper('adyen')->__('Tax');
-//        $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = $this->_formatAmount($order->getTaxAmount());
+//        $additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($order->getTaxAmount(), $currency);
 //        $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = "0";
 //        $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = 1;
 //        $additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
@@ -316,5 +401,13 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
            $street = array($streeName,$_houseNumber);
         }
         return $street;
+    }
+
+    public function genderShow() {
+        return $this->_getConfigData('gender_show', 'adyen_openinvoice');
+    }
+
+    public function dobShow() {
+        return $this->_getConfigData('dob_show', 'adyen_openinvoice');
     }
 }

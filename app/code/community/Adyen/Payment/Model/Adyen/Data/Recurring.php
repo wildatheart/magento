@@ -30,7 +30,4 @@ class Adyen_Payment_Model_Adyen_Data_Recurring extends Adyen_Payment_Model_Adyen
     public $contract;
     public $recurringDetailName = null;
 
-    public function __construct() {
-    	$this->contract = $this->_getConfigData('recurringtypes', 'adyen_abstract');
-    }
 }

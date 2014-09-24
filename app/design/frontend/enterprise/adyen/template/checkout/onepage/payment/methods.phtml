@@ -1,0 +1,139 @@
+<?php
+/**
+ * Magento Enterprise Edition
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magento Enterprise Edition License
+ * that is bundled with this package in the file LICENSE_EE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.magentocommerce.com/license/enterprise-edition
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://www.magentocommerce.com/license/enterprise-edition
+ */
+?>
+<?php
+/**
+ * One page checkout payment methods
+ *
+ * @see Mage_Checkout_Block_Onepage_Payment_Methods
+ */
+$methods = $this->getMethods();
+$oneMethod = count($methods) <= 1;
+?>
+<dl class="sp-methods" id="checkout-payment-method-load">
+    <?php foreach ($methods as $_method):
+        $_code = $_method->getCode();
+
+        $_style = "";
+        if($_code == "adyen_hpp") {
+
+            // get method and check if config payment/adyen_hpp/disable_hpptypes is set
+            $disabled = $_method->getHppOptionsDisabled();
+            if(!$disabled) {
+                $_style = ($_code == "adyen_hpp" && !$oneMethod) ? "display:none" : "";
+            }
+        } else if ($_code == "adyen_oneclick" && !$oneMethod) {
+            $_style = "display:none";
+        }
+        ?>
+        <dt style="<?php echo $_style; ?>">
+            <?php if( sizeof($this->getMethods()) > 1 ): ?>
+                <input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" title="<?php echo $this->htmlEscape($_method->getTitle()) ?>" onclick="payment.switchMethod('<?php echo $_code ?>')"<?php if($this->getSelectedMethodCode()==$_code): ?> checked="checked"<?php endif; ?> class="radio" />
+            <?php else: ?>
+                <span class="no-display"><input id="p_method_<?php echo $_code ?>" value="<?php echo $_code ?>" type="radio" name="payment[method]" checked="checked" class="radio" /></span>
+            <?php endif; ?>
+
+            <?php if(($_code == "adyen_hpp" && $disabled) || ($_code != "adyen_hpp")): ?>
+                <label for="p_method_<?php echo $_code ?>"><?php echo $this->getMethodTitle($_method) ?> <?php echo $this->getMethodLabelAfterHtml($_method) ?></label>
+            <?php endif; ?>
+
+        </dt>
+        <?php if ($html = $this->getPaymentMethodFormHtml($_method)): ?>
+            <dd>
+                <?php echo $html; ?>
+            </dd>
+        <?php endif; ?>
+        <script type="text/javascript">
+            //<![CDATA[
+
+            var SwitchMethod= function() {
+                var method = $('p_method_<?php echo $_code?>').value;
+
+                if(method != "adyen_hpp") {
+                    // check if hpp is enabled if so clear the selected option because you select different payment method
+                    if($('hpp_payment_form_adyen_hpp'))
+                    {
+                        var form = $('hpp_payment_form_adyen_hpp');
+                        var elements = form.getElementsByTagName('input');
+                        for (var i=0; i<elements.length; i++) elements[i].checked = false;
+                    }
+                }
+
+                // check if adyen_oneclick is enabled
+                if(method != "adyen_oneclick") {
+                    if($('oneclick_payment_form_adyen_oneclick'))
+                    {
+                        // if so clear the selected option because you select different payment method
+                        var form = $('oneclick_payment_form_adyen_oneclick');
+                        var elements = form.getElementsByTagName('input');
+                        for (var i=0; i<elements.length; i++) elements[i].checked = false;
+
+                        // don't show the cvc field
+                        $$('.cvc_block').each(
+                            function (e) {
+                                e.setStyle({display:'none'});
+                            }
+                        );
+                    }
+                }
+                payment.switchMethod(method);
+            };
+            Event.observe($('p_method_<?php echo $_code ?>'), 'change', SwitchMethod);
+
+            //]]>
+        </script>
+    <?php endforeach; ?>
+</dl>
+<?php echo $this->getChildChildHtml('additional'); ?>
+<script type="text/javascript">
+    //<![CDATA[
+    <?php echo $this->getChildChildHtml('scripts'); ?>
+    payment.init();
+    <?php if (is_string($oneMethod)): ?>
+    payment.switchMethod('<?php echo $oneMethod ?>');
+    <?php endif; ?>
+
+    // always enable the hpp payment options if this payment method is on
+    if($('hpp_payment_form_adyen_hpp'))
+    {
+        var form = $('hpp_payment_form_adyen_hpp');
+        var elements = form.getElementsByTagName('input');
+        for (var i=0; i<elements.length; i++) elements[i].disabled = false;
+    }
+
+    // always enable the oneclick payments options if this payment method is on
+    if($('oneclick_payment_form_adyen_oneclick'))
+    {
+        var form = $('oneclick_payment_form_adyen_oneclick');
+        var elements = form.getElementsByTagName('input');
+        for (var i=0; i<elements.length; i++) elements[i].disabled = false;
+
+        // always enable the selectboxes for the oneclick creditcards
+        var elements = form.getElementsByTagName('select');
+        for (var i=0; i<elements.length; i++) elements[i].disabled = false;
+    }
+    //]]>
+</script>

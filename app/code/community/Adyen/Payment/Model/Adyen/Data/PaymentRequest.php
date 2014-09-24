@@ -53,6 +53,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 	// added for boleto
 	public $shopperName;
 	public $socialSecurityNumber;
+    const GUEST_ID = 'customer_';
 
     public function __construct() {
     	$this->browserInfo = new Adyen_Payment_Model_Adyen_Data_BrowserInfo();
@@ -61,25 +62,34 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
         $this->elv = new Adyen_Payment_Model_Adyen_Data_Elv();
         $this->additionalData = new Adyen_Payment_Model_Adyen_Data_AdditionalData();
         $this->shopperName = new Adyen_Payment_Model_Adyen_Data_ShopperName(); // for boleto
+        $this->bankAccount = new Adyen_Payment_Model_Adyen_Data_BankAccount(); // for SEPA
     }
 
-    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null) {
+    public function create(Varien_Object $payment, $amount, $order, $paymentMethod = null, $merchantAccount = null, $recurringType = null, $enableMoto = null) {
         $incrementId = $order->getIncrementId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
+        // override amount because this amount uses the right currency
+        $amount = $order->getGrandTotal();
         $customerId = $order->getCustomerId();
+        $realOrderId = $order->getRealOrderId();
 
         $this->reference = $incrementId;
         $this->merchantAccount = $merchantAccount;
         $this->amount->currency = $orderCurrencyCode;
-        $this->amount->value = $this->_formatAmount($amount);
+        $this->amount->value = Mage::helper('adyen')->formatAmount($amount, $orderCurrencyCode);
 
         //shopper data
         $customerEmail = $order->getCustomerEmail();
         $this->shopperEmail = $customerEmail;
         $this->shopperIP = $order->getRemoteIp();
-        $this->shopperReference = $customerId;
-        
-        
+        $this->shopperReference = (!empty($customerId)) ? $customerId : self::GUEST_ID . $realOrderId;
+
+        // add recurring type for oneclick and recurring
+        if($recurringType) {
+            $this->recurring = new Adyen_Payment_Model_Adyen_Data_Recurring();
+            $this->recurring->contract = $recurringType;
+        }
+
         /**
          * Browser info
          * @var unknown_type
@@ -92,6 +102,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $elv = unserialize($payment->getPoNumber());
                 $this->card = null;
                 $this->shopperName = null;
+                $this->bankAccount = null;
                 $this->elv->accountHolderName = $elv['account_owner'];
                 $this->elv->bankAccountNumber = $elv['account_number'];
                 $this->elv->bankLocation = $elv['bank_location'];
@@ -99,10 +110,32 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                 $this->elv->bankName = $elv['bank_name'];
                 break;
             case "cc":
-            	$this->shopperName = null;
+            case "oneclick":
+
+                $this->shopperName = null;
             	$this->elv = null;
-            	
+                $this->bankAccount = null;
+
+                $recurringDetailReference = $payment->getAdditionalInformation("recurring_detail_reference");
+
+                // set shopperInteraction
+                if($recurringType == "RECURRING") {
+                    $this->shopperInteraction = "ContAuth";
+                } else {
+                    $this->shopperInteraction = "Ecommerce";
+                }
+
+
+                if(Mage::app()->getStore()->isAdmin() && $enableMoto != null && $enableMoto == 1) {
+                    $this->shopperInteraction = "Moto";
+                }
+
 				if (Mage::getModel('adyen/adyen_cc')->isCseEnabled()) {
+
+                    if($recurringDetailReference && $recurringDetailReference != "") {
+                        $this->selectedRecurringDetailReference = $recurringDetailReference;
+                    }
+
 					$this->card = null;
 					$kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
 					$kv->key = new SoapVar("card.encrypted.json", XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
@@ -110,33 +143,55 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 					$this->additionalData->entry = $kv;
 				}
 				else {
-					$this->card->cvc = $payment->getCcCid();
-					$this->card->expiryMonth = $payment->getCcExpMonth();
-					$this->card->expiryYear = $payment->getCcExpYear();
-					$this->card->holderName = $payment->getCcOwner();
-					$this->card->number = $payment->getCcNumber();
+
+                    if($recurringDetailReference && $recurringDetailReference != "") {
+                        $this->selectedRecurringDetailReference = $recurringDetailReference;
+
+                        if($recurringType != "RECURRING") {
+                            $this->card->cvc = $payment->getCcCid();
+                        }
+
+                        // TODO: check if expirymonth and year is changed if so add this in the card object
+                        $this->card->expiryMonth = $payment->getCcExpMonth();
+                        $this->card->expiryYear = $payment->getCcExpYear();
+
+                    } else {
+                        $this->card->cvc = $payment->getCcCid();
+                        $this->card->expiryMonth = $payment->getCcExpMonth();
+                        $this->card->expiryYear = $payment->getCcExpYear();
+                        $this->card->holderName = $payment->getCcOwner();
+                        $this->card->number = $payment->getCcNumber();
+                    }
 				}
-                
+
                 // installments
-                if(Mage::helper('adyen/installments')->isInstallmentsEnabled()){
-                    $kv = new Adyen_Payment_Model_Adyen_Data_AdditionalDataKVPair();
-                    $kv->key = new SoapVar("installments", XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
-                    $kv->value = new SoapVar($payment->getPoNumber(), XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
-                    $this->additionalData->entry = $kv;
+                if(Mage::helper('adyen/installments')->isInstallmentsEnabled() &&  $payment->getAdditionalInformation('number_of_installments') > 0){
+                    $this->installments = new Adyen_Payment_Model_Adyen_Data_Installments();
+                    $this->installments->value = $payment->getAdditionalInformation('number_of_installments');
                 }
                 break;
             case "boleto":
             	$boleto = unserialize($payment->getPoNumber());
             	$this->card = null;
             	$this->elv = null;
+                $this->bankAccount = null;
             	$this->socialSecurityNumber = $boleto['social_security_number'];
             	$this->selectedBrand = $boleto['selected_brand'];
             	$this->shopperName->firstName = $boleto['firstname'];
             	$this->shopperName->lastName = $boleto['lastname'];
             	$this->deliveryDate = $boleto['delivery_date'];
             	break;
+            case "sepa":
+                $sepa = unserialize($payment->getPoNumber());
+                $this->card = null;
+                $this->elv = null;
+                $this->shopperName = null;
+                $this->bankAccount->iban = $sepa['iban'];
+                $this->bankAccount->ownerName = $sepa['account_name'];
+                $this->bankAccount->countryCode = $sepa['country'];
+                $this->selectedBrand = "sepadirectdebit";
+                break;
         }
-		
         return $this;
     }
 

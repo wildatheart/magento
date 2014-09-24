@@ -36,9 +36,4 @@ class Adyen_Payment_Model_Adyen_Data_Abstract {
     protected function _getCheckout() {
         return Mage::getSingleton('checkout/session');
     }
-
-    protected function _formatAmount($amount, $format = 2) {
-        return number_format($amount, $format, '', '');
-    }
-
 }

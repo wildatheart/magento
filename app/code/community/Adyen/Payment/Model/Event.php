@@ -34,11 +34,13 @@ class Adyen_Payment_Model_Event extends Mage_Core_Model_Abstract {
     const ADYEN_EVENT_REFUSED = 'REFUSED';
     const ADYEN_EVENT_ERROR = 'ERROR';
     const ADYEN_EVENT_REFUND = 'REFUND';
+    const ADYEN_EVENT_CANCEL_OR_REFUND  = 'CANCEL_OR_REFUND';
     const ADYEN_EVENT_CAPTURE = 'CAPTURE';
+    const ADYEN_EVENT_CAPTURE_FAILED = 'CAPTURE_FAILED';
     const ADYEN_EVENT_CANCELLATION = 'CANCELLATION';
     const ADYEN_EVENT_POSAPPROVED = 'POS_APPROVED';
     const ADYEN_EVENT_HANDLEDEXTERNALLY  = 'HANDLED_EXTERNALLY';
-    
+
     /**
      * Initialize resources
      */
@@ -52,8 +54,9 @@ class Adyen_Payment_Model_Event extends Mage_Core_Model_Abstract {
      * @param type $dbEventCode
      * @return boolean true if the event is a duplicate
      */
-    public function isDuplicate($pspReference, $event) {
-        $result = $this->getResource()->getEvent(trim($pspReference), trim($event));
+    public function isDuplicate($pspReference, $event, $success) {
+        $success = (trim($success) == "true") ? true : false;
+        $result = $this->getResource()->getEvent(trim($pspReference), trim($event), $success);
         return (empty($result)) ? false : true;
     }
 

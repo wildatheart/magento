@@ -59,7 +59,7 @@ $_code=$this->getMethodCode();
                 	type="text" id="<?php echo $_code ?>?>_firstname" name="payment[firstname]" 
                 	title="<?php echo $this->__('Firstname') ?>" 
                 	class="validate-ipayment-boleto-firstname required-entry input-text" 
-                	value="" />
+                	value="<?php echo $this->getFirstname() ?>" />
             </div>
         </li>
          <li>
@@ -69,7 +69,7 @@ $_code=$this->getMethodCode();
 	                type="text" id="<?php echo $_code ?>_lastname" name="payment[lastname]" 
 	                title="<?php echo $this->__('Lastname') ?>" 
 	                class="validate-ipayment-boleto-lastname required-entry input-text" 
-	                value="" />
+	                value="<?php echo $this->getLastname() ?>" />
             </div>
         </li>
     </ul>
