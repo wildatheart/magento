@@ -36,7 +36,7 @@ class Adyen_Payment_Block_Info_Boleto extends Mage_Payment_Block_Info {
     }
 
     public function toPdf() {
-        $this->setTemplate('adyen/info/pdf/boleto.phtml');
+        $this->setTemplate('adyen/pdf/boleto.phtml');
         return $this->toHtml();
     }
     
