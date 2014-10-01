@@ -58,6 +58,12 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         }
         $info = $this->getInfoInstance();
         $hppType = $data->getHppType();
+
+        // get the label name and save it so we can show it in the information tab
+        $hppTypeLabel = "hpp_type_label_";
+        $hppTypeLabelValue = $data->getData($hppTypeLabel . $hppType);
+        $info->setAdditionalInformation('hpp_type_label', $hppTypeLabelValue);
+
         $info->setCcType($hppType)
             ->setPoNumber($data->getData('hpp_ideal_type')); /* @note misused field */
         $config = Mage::getStoreConfig("payment/adyen_hpp/disable_hpptypes");
@@ -344,6 +350,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 return unserialize($data);
             }
         }
+
         // directory lookup to search for available payment methods
         $adyFields = array(
             "paymentAmount" => (int)$amount,
