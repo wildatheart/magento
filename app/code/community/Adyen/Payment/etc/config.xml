@@ -212,6 +212,14 @@
                     </adyen_manual_online_capture>
                 </observers>
             </sales_order_invoice_pay>
+            <sales_order_payment_cancel>
+                <observers>
+                    <adyen_payment>
+                        <class>adyen/observer</class>
+                        <method>salesOrderPaymentCancel</method>
+                    </adyen_payment>
+                </observers>
+            </sales_order_payment_cancel>
         </events>
     </adminhtml>
     <default>

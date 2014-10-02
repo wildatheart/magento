@@ -49,6 +49,16 @@ class Adyen_Payment_Model_Observer {
         return false;
     }
 
+    public function salesOrderPaymentCancel(Varien_Event_Observer $observer) {
+        // observer is payment object
+        $payment = $observer->getEvent()->getPayment();
+
+        $order = $payment->getOrder();
+//        print_r($payment);
+        $pspReference = Mage::getModel('adyen/event')->getOriginalPspReference($order->getIncrementId());
+        $payment->getMethodInstance()->SendCancelOrRefund($payment, null, $pspReference);
+    }
+
     /**
      * Determine if the payment method is Adyen
      * @param type $order
