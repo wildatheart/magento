@@ -535,7 +535,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $valid = $this->notificationHandler($order, $response); //hmt: added $valid
 
         if ($valid) {
-            Mage::dispatchEvent('adyen_payment_process_notifications_before', array('order' => $order, 'adyenResponse' => $response));
+            Mage::dispatchEvent('adyen_payment_process_notifications_before', array('order' => $order, 'adyen_response' => $response));
             if ($response->getData('handled')) {
                 return;
             }
