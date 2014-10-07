@@ -73,8 +73,8 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
     public function openinvoiceAction() {
         $_mode = $this->_getConfigData('demoMode');
         $wsdl = ($_mode == 'Y') ?
-                'https://ca-test.adyen.com/ca/services/OpenInvoiceDetail?wsdl' :
-                'https://ca-live.adyen.com/ca/services/OpenInvoiceDetail?wsdl';
+            'https://ca-test.adyen.com/ca/services/OpenInvoiceDetail?wsdl' :
+            'https://ca-live.adyen.com/ca/services/OpenInvoiceDetail?wsdl';
         $server = new SoapServer($wsdl);
         $server->setClass(self::OPENINVOICE_SOAP_SERVER);
         $server->addFunction(SOAP_FUNCTIONS_ALL);
@@ -108,23 +108,23 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
 
             //redirect only if this order is never recorded
             $hasEvent = Mage::getResourceModel('adyen/adyen_event')
-                                    ->getLatestStatus($session->getLastRealOrderId());
+                ->getLatestStatus($session->getLastRealOrderId());
             if (!empty($hasEvent) || !$order->getId()) {
                 $this->_redirect('/');
                 return $this;
             }
-            
+
             //redirect to adyen
             if (strcmp($order->getState(), Mage_Sales_Model_Order::STATE_PENDING_PAYMENT) === 0 ||
-                    (strcmp($order->getState(), Mage_Sales_Model_Order::STATE_NEW) === 0)) {
+                (strcmp($order->getState(), Mage_Sales_Model_Order::STATE_NEW) === 0)) {
                 $_status = $this->_getConfigData('order_status');
                 // FIXME this status won't be added because order is not saved $order->save() missing
                 $order->addStatusHistoryComment(Mage::helper('adyen')->__('Customer was redirected to Adyen.'), $_status);
                 $this->getResponse()->setBody(
-                        $this->getLayout()
-                                ->createBlock($this->_redirectBlockType)
-                                ->setOrder($order)
-                                ->toHtml()
+                    $this->getLayout()
+                        ->createBlock($this->_redirectBlockType)
+                        ->setOrder($order)
+                        ->toHtml()
                 );
                 $session->unsQuoteId();
             }
@@ -138,93 +138,95 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
             $this->cancel();
         }
     }
-	
-    public function validate3dAction() {
-		try {
-			// get current order
-			$session = $this->_getCheckout();
-			$order = $this->_getOrder();
-			$session->setAdyenQuoteId($session->getQuoteId());
-			$session->setAdyenRealOrderId($session->getLastRealOrderId());
-			$order->loadByIncrementId($session->getLastRealOrderId());
-			$adyenStatus = $order->getAdyenEventCode();
-			
-			// get payment details
-			$payment = $order->getPayment();
-			$paRequest = $payment->getAdditionalInformation('paRequest');
-			$md = $payment->getAdditionalInformation('md');
-			$issuerUrl = $payment->getAdditionalInformation('issuerUrl');
-			
-			$infoAvailable = $payment && !empty($paRequest) && !empty($md) && !empty($issuerUrl);
-			
-			// check adyen status and check if all information is available
-			if (!empty($adyenStatus) && $adyenStatus == 'RedirectShopper' && $infoAvailable) {	
 
-				$request = $this->getRequest();
-				$requestMD = $request->getPost('MD');
-				$requestPaRes = $request->getPost('PaRes');
-				
-				// authorise the payment if the user is back from the external URL
-				if ($request->isPost() && !empty($requestMD) && !empty($requestPaRes)) {
-					if ($requestMD == $md) {
-						$payment->setAdditionalInformation('paResponse', $requestPaRes);
-						// send autorise3d request, catch exception in case of 'Refused'
-						try {
-							$result = $payment->getMethodInstance()->authorise3d($payment, $order->getGrandTotal());
-						} catch (Exception $e) {
-							$result = 'Refused';
-							$order->setAdyenEventCode($result)->save();
-						}
-							
-						// check if authorise3d was successful
-						if ($result == 'Authorised') {
-							$order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true, 
-										Mage::helper('adyen')->__('3D-secure validation was successful.'))->save();
-							$this->_redirect('checkout/onepage/success');
-						}
-						else {
-							$order->addStatusHistoryComment(Mage::helper('adyen')->__('3D-secure validation was unsuccessful.'))->save();
-							$session->addException($e, Mage::helper('adyen')->__($e->getMessage()));
-							$this->cancel();
-						}
-					}
-					else {
-						$this->_redirect('/');
-						return $this;
-					}
-					
-				}
-				
-				// otherwise, redirect to the external URL
-				else {
-					$order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, true, 
-						Mage::helper('adyen')->__('Customer was redirected to bank for 3D-secure validation.'))->save();
-					$this->getResponse()->setBody(
-							$this->getLayout()->createBlock($this->_redirectBlockType)->setOrder($order)->toHtml()
-					);
-				}
-			
-			}
-			else {
-				$this->_redirect('/');
-				return $this;
-			}
+    public function validate3dAction() {
+        try {
+            // get current order
+            $session = $this->_getCheckout();
+            $order = $this->_getOrder();
+            $session->setAdyenQuoteId($session->getQuoteId());
+            $session->setAdyenRealOrderId($session->getLastRealOrderId());
+            $order->loadByIncrementId($session->getLastRealOrderId());
+            $adyenStatus = $order->getAdyenEventCode();
+
+            // get payment details
+            $payment = $order->getPayment();
+            $paRequest = $payment->getAdditionalInformation('paRequest');
+            $md = $payment->getAdditionalInformation('md');
+            $issuerUrl = $payment->getAdditionalInformation('issuerUrl');
+
+            $infoAvailable = $payment && !empty($paRequest) && !empty($md) && !empty($issuerUrl);
+
+            // check adyen status and check if all information is available
+            if (!empty($adyenStatus) && $adyenStatus == 'RedirectShopper' && $infoAvailable) {
+
+                $request = $this->getRequest();
+                $requestMD = $request->getPost('MD');
+                $requestPaRes = $request->getPost('PaRes');
+
+                // authorise the payment if the user is back from the external URL
+                if ($request->isPost() && !empty($requestMD) && !empty($requestPaRes)) {
+                    if ($requestMD == $md) {
+                        $payment->setAdditionalInformation('paResponse', $requestPaRes);
+                        // send autorise3d request, catch exception in case of 'Refused'
+                        try {
+                            $result = $payment->getMethodInstance()->authorise3d($payment, $order->getGrandTotal());
+                        } catch (Exception $e) {
+                            $result = 'Refused';
+                            $order->setAdyenEventCode($result)->save();
+                        }
+
+                        // check if authorise3d was successful
+                        if ($result == 'Authorised') {
+                            $order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true,
+                                Mage::helper('adyen')->__('3D-secure validation was successful.'))->save();
+                            $this->_redirect('checkout/onepage/success');
+                        }
+                        else {
+                            $order->addStatusHistoryComment(Mage::helper('adyen')->__('3D-secure validation was unsuccessful.'))->save();
+                            $session->addException($e, Mage::helper('adyen')->__($e->getMessage()));
+                            $this->cancel();
+                        }
+                    }
+                    else {
+                        $this->_redirect('/');
+                        return $this;
+                    }
+
+                }
+
+                // otherwise, redirect to the external URL
+                else {
+                    $order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, true,
+                        Mage::helper('adyen')->__('Customer was redirected to bank for 3D-secure validation.'))->save();
+                    $this->getResponse()->setBody(
+                        $this->getLayout()->createBlock($this->_redirectBlockType)->setOrder($order)->toHtml()
+                    );
+                }
+
+            }
+            else {
+                $this->_redirect('/');
+                return $this;
+            }
         } catch (Exception $e) {
             $session->addException($e, Mage::helper('adyen')->__($e->getMessage()));
             $this->cancel();
         }
-	}
+    }
 
     /**
      * Adyen returns POST variables to this action
      */
     public function successAction() {
         $status = $this->processResponse();
-        $session = $this->_getCheckout();
-        $session->unsAdyenRealOrderId();
-        $session->setQuoteId($session->getAdyenQuoteId(true));
-        $session->getQuote()->setIsActive(false)->save();
-        if ($status) {            
+
+        if ($status) {
+            $session = $this->_getCheckout();
+            $session->unsAdyenRealOrderId();
+            $session->setQuoteId($session->getAdyenQuoteId(true));
+            $session->getQuote()->setIsActive(false)->save();
+
             $this->_redirect('checkout/onepage/success');
         } else {
             $this->cancel();
@@ -236,20 +238,24 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
      * @since v009
      */
     public function cancel() {
-        $cart = Mage::getSingleton('checkout/cart');
+
         $session = $this->_getCheckout();
         $order = Mage::getModel('sales/order');
         $incrementId = $session->getLastRealOrderId();
-        $session->getQuote()->setIsActive(false)->save();
-        $session->clear();
+
         if (empty($incrementId)) {
             $session->addError($this->__('Your payment failed, Please try again later'));
             $this->_redirect('checkout/cart');
             return;
         }
-        
+
         $order->loadByIncrementId($incrementId);
-        
+
+        // reactivate the quote again
+        $quoteId = $order->getQuoteId();
+        $cart = Mage::getModel('sales/quote')->load($quoteId);
+        $cart->setIsActive(true)->save();
+
         //handle the old order here
         try {
             $order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
@@ -257,17 +263,7 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
         } catch (Mage_Core_Exception $e) {
             Mage::logException($e);
         }
-        $items = $order->getItemsCollection();
-        foreach ($items as $item) {
-            try {
-                $cart->addOrderItem($item);
-            } catch (Mage_Core_Exception $e) {
-                $session->addError($this->__($e->getMessage()));
-                Mage::logException($e);
-                continue;
-            }
-        }
-        $cart->save();
+
         $session->addError($this->__('Your payment failed. Please try again later'));
         $this->_redirect('checkout/cart');
     }
@@ -275,72 +271,72 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
     public function insAction() {
         try {
 
-	   $status = $this->processResponse();
+            $status = $this->processResponse();
 
-	    if($status == "401"){
-		$this->_return401();
-	    } else {
-		echo "[accepted]";
-	    }
+            if($status == "401"){
+                $this->_return401();
+            } else {
+                echo "[accepted]";
+            }
         } catch (Exception $e) {
             Mage::logException($e);
         }
-	
+
         exit();
     }
-    
+
     public function cashAction() {
-    
-    	$status = $this->processCashResponse();
-    	
-    	$session = $this->_getCheckout();
-    	$session->unsAdyenRealOrderId();
-    	$session->setQuoteId($session->getAdyenQuoteId(true));
-    	$session->getQuote()->setIsActive(false)->save();
-    	if ($status) {
-    		$this->_redirect('checkout/onepage/success');
-    	} else {
-    		$this->cancel();
-    	}
+
+        $status = $this->processCashResponse();
+
+        $session = $this->_getCheckout();
+        $session->unsAdyenRealOrderId();
+        $session->setQuoteId($session->getAdyenQuoteId(true));
+        $session->getQuote()->setIsActive(false)->save();
+        if ($status) {
+            $this->_redirect('checkout/onepage/success');
+        } else {
+            $this->cancel();
+        }
     }
-    
+
     /* START actions for POS */
     public function successPosAction() {
-    	
-    	echo $this->processPosResponse();
-    	return $this;
+
+        echo $this->processPosResponse();
+        return $this;
     }
 
     public function getOrderStatusAction()
     {
-    	if($_POST['merchantReference'] != "") {
-    		// get the order
-    		$order = Mage::getModel('sales/order')->loadByIncrementId($_POST['merchantReference']);
-    		// if order is not cancelled then order is success
-    		if($order->getStatus() == Mage_Sales_Model_Order::STATE_PROCESSING || $order->getAdyenEventCode() == Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED) {
-    			echo 'true';
-    		}
-    	}	
-    	return;
+        if($_POST['merchantReference'] != "") {
+            // get the order
+            $order = Mage::getModel('sales/order')->loadByIncrementId($_POST['merchantReference']);
+            // if order is not cancelled then order is success
+            if($order->getStatus() == Mage_Sales_Model_Order::STATE_PROCESSING || $order->getAdyenEventCode() == Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED) {
+                echo 'true';
+            }
+        }
+        return;
     }
-    
+
     public function cancelAction()
     {
-    	$this->cancel();
+        $this->cancel();
     }
-    
-    
+
+
     public function processPosResponse() {
-    	return Mage::getModel('adyen/process')->processPosResponse();
+        return Mage::getModel('adyen/process')->processPosResponse();
     }
     /* END actions for POS */
-    
+
     public function processCashResponse() {
-    	return Mage::getModel('adyen/process')->processCashResponse();
+        return Mage::getModel('adyen/process')->processCashResponse();
     }
 
     protected function _return401(){
-	header('HTTP/1.1 401 Unauthorized',true,401);
+        header('HTTP/1.1 401 Unauthorized',true,401);
     }
 
     /**
@@ -351,7 +347,7 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
     public function processResponse($soapItem = null) {
         return Mage::getModel('adyen/process')->processResponse($soapItem);
     }
-    
+
     protected function _getCheckout() {
         return Mage::getSingleton('checkout/session');
     }
@@ -359,7 +355,7 @@ class Adyen_Payment_ProcessController extends Mage_Core_Controller_Front_Action 
     protected function _getOrder() {
         return Mage::getModel('sales/order');
     }
-    
+
     /**
      * @desc Give Default settings
      * @example $this->_getConfigData('demoMode','adyen_abstract')
