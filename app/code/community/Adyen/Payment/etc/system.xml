@@ -308,6 +308,7 @@
                         </payment_routines>
                         <delivery_days translate="label">
                             <label>Days for Delivery</label>
+                            <validate>validate-digits</validate>
                             <comment>How many days to be added to the current date for delivery. ONLY numbers allowed.</comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>70</sort_order>
