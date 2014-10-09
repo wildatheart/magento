@@ -315,30 +315,17 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         ksort($additional_data_sign);
 
         // signature is first alphabatical keys seperate by : and then | and then the values seperate by :
-        $sign_additional_data_keys = "";
-        $sign_additional_data_values = "";
         foreach($additional_data_sign as $key => $value) {
-        	
         	// add to fields
         	$adyFields[$key] = $value;
-        	
-        	// create sign
-        	$sign_additional_data_keys .= $key;
-        	$sign_additional_data_values .= $value;
-        	
-			$keys = array_keys($additional_data_sign);
-        	if(end($keys) != $key) {
-        		$sign_additional_data_keys .= ":";
-        		$sign_additional_data_values .= ":";
-        	}
         }
-        
-        $sign_additional_data =  $sign_additional_data_keys . "|" . $sign_additional_data_values;
-       
+
+        $keys = implode(':',array_keys($additional_data_sign));
+        $values = implode(':',$additional_data_sign);
+        $sign_additional_data = trim($keys) . '|' . trim($values);
         $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign_additional_data);
         $adyFields['openinvoicedata.sig'] =  base64_encode(pack('H*', $signMac));
-        
-        
+
         Mage::log($adyFields, self::DEBUG_LEVEL, 'http-request.log');
         
         return $adyFields;
