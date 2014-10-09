@@ -51,10 +51,13 @@ echo ($cseEnabled ? " (with Client-Side Encryption)" : "");
     <?php echo Mage::helper('adyen')->__('Credit Card Number: xxxx-%s', $this->htmlEscape($this->getInfo()->getCcLast4())) ?><br/>
     <?php echo Mage::helper('adyen')->__('Expiration Date: %s/%s', $this->htmlEscape($this->getCcExpMonth()), $this->htmlEscape($this->getInfo()->getCcExpYear())) ?><br/>
     <?php else : ?>
-        <?php echo Mage::helper('adyen')->__('Credit Card Type: %s', $this->htmlEscape($this->getCcTypeName())) ?><br/>
-        <?php echo Mage::helper('adyen')->__('Credit Card Number: xxxx-%s', $this->htmlEscape($this->getInfo()->getCcLast4())) ?><br/>
+        <?php if($this->getCcTypeName() != ""):?>
+            <?php echo Mage::helper('adyen')->__('Credit Card Type: %s', $this->htmlEscape($this->getCcTypeName())) ?><br/>
+        <?php endif; ?>
+        <?php if($this->getInfo()->getCcLast4() != ""):?>
+            <?php echo Mage::helper('adyen')->__('Credit Card Number: xxxx-%s', $this->htmlEscape($this->getInfo()->getCcLast4())) ?><br/>
+        <?php endif;?>
     <?php endif;?>
-
     <?php if($this->htmlEscape($this->getInfo()->getAdyenAvsResult()) != ""): ?>
         <?php echo Mage::helper('adyen')->__('Avs result: %s', $this->htmlEscape($this->getInfo()->getAdyenAvsResult())) ?><br/>
     <?php endif; ?>
