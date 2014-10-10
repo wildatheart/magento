@@ -38,4 +38,14 @@ class Adyen_Payment_Block_PosExpressCheckout extends Mage_Core_Block_Template
         }
     }
 
+    public function hasCashExpressCheckout()
+    {
+        // must be login to show this checkout option
+        if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+            return (string) Mage::helper('adyen')->hasCashExpressCheckout();
+        } else {
+            return false;
+        }
+    }
+
 }

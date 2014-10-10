@@ -237,7 +237,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                         }
                     }
                 }
-            }
+        }
         }
         // close the window
         $html = "<html><body>
@@ -387,7 +387,8 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 
         //only original here
         if ($eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISED
-            || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION)
+            || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION
+            || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLED_EXTERNALLY)
         {
             $paymentObj->setAdyenPspReference($pspReference);
             if($klarnaReservationNumber != "") {
@@ -553,7 +554,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_PENDING:
                     //add comment to the order
                     break;
-                case Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLEDEXTERNALLY:
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLED_EXTERNALLY:
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION:
                     //pre-authorise if success
                     $order->sendNewOrderEmail(); // send order email

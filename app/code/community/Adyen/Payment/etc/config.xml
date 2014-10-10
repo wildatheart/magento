@@ -271,6 +271,7 @@
                 <enable_scanner>0</enable_scanner>
                 <submit_scanner>0</submit_scanner>
                 <express_checkout>0</express_checkout>
+                <cash_express_checkout>0</cash_express_checkout>
                 <allowspecific>0</allowspecific>
                 <sort_order>80</sort_order>
             </adyen_pos>
