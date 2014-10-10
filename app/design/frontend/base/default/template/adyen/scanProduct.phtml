@@ -9,9 +9,15 @@
             <input type="text" class="input-text" name="code" id="inpscan" value="" size="60"  placeholder="Scan barcode with scanner" autofocus/>
         </div>
 
+        <?php if($this->hasAutoSubmitScanner()): ?>
+            <button style="visibility: hidden;" id="SubmitScan" type="submit" title="Submit" class="button btn-proceed-checkout btn-checkout">
+            </button>
+        <?php endif; ?>
+
+
         <div id="customscan" style="display:none;">
             <input type="text" class="input-text" name="customcode" id="inpcustomscan" value="" size="60"  placeholder="Fil in custom barcode">
-            <button id="SubmitCustomScan" type="button" title="Submit" class="button btn-proceed-checkout btn-checkout">
+            <button id="SubmitCustomScan" type="submit" title="Submit" class="button btn-proceed-checkout btn-checkout">
                 <span><span>Add</span></span>
             </button>
         </div>
@@ -43,7 +49,9 @@
 
         $('inpscan').observe('focus', function(e){
             $('StartScan').hide();
-            intervalId = setInterval('scan()', 250);
+            <?php if(!$this->hasAutoSubmitScanner()): ?>
+                intervalId = setInterval('scan()', 250);
+            <?php endif; ?>
         });
 
         $('inpscan').observe('blur', function(e){
@@ -79,6 +87,14 @@
             ajaxCall(value);
             $('inpcustomscan').value = "";
             $('inpcustomscan').focus();
+            e.preventDefault();
+        });
+
+        $('SubmitScan').observe('click', function(e){
+            var value =  $('inpscan').value;;
+            ajaxCall(value);
+            $('inpscan').value = "";
+            $('inpscan').focus();
             e.preventDefault();
         });
 

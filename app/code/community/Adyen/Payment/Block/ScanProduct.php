@@ -33,4 +33,8 @@ class Adyen_Payment_Block_ScanProduct extends Mage_Core_Block_Template
         return (string) Mage::helper('adyen')->hasEnableScanner();
     }
 
+    public function hasAutoSubmitScanner() {
+        return (string) Mage::helper('adyen')->hasAutoSubmitScanner();
+    }
+
 }
