@@ -33,6 +33,30 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
     protected $_infoBlockType = 'adyen/info_openinvoice';
     protected $_paymentMethod = 'openinvoice';
 
+
+    public function isApplicableToQuote($quote, $checksBitMask)
+    {
+        // different don't show
+        if($this->_getConfigData('different_address_disable', 'adyen_openinvoice')) {
+
+            // get billing and shipping information
+            $quote = $this->getQuote();
+            $billing = $quote->getBillingAddress()->getData();
+            $shipping = $quote->getShippingAddress()->getData();
+
+            // check if the following items are different: street, city, postcode, region, countryid
+            $billingAddress = array($billing['street'], $billing['city'], $billing['postcode'], $billing['region'],$billing['country_id']);
+            $shippingAddress = array($shipping['street'], $shipping['city'], $shipping['postcode'], $shipping['region'],$shipping['country_id']);
+
+            // if the result are not the same don't show the payment method open invoice
+            $diff = array_diff($billingAddress,$shippingAddress);
+            if(is_array($diff) && !empty($diff)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function assignData($data) {
         if (!($data instanceof Varien_Object)) {
             $data = new Varien_Object($data);
