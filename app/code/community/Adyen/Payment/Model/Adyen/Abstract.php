@@ -275,7 +275,13 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
                  * The $result contains a JSON array containing
                  * the available payment methods for the merchant account.
                  */
+
+                // convert result to utf8 characters
+                $result = utf8_encode(urldecode($result));
+
+                // convert to array
                 parse_str($result,$result);
+
                 Mage::log("List recurring result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
 
                 // create a arraylist with the cards
