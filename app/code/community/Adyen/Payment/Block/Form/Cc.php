@@ -56,6 +56,10 @@ class Adyen_Payment_Block_Form_Cc extends Mage_Payment_Block_Form_Cc {
         return Mage::helper('adyen/installments')->isInstallmentsEnabled();
     }
 
+    public function getRecurringType() {
+        return $this->getMethod()->getRecurringType();
+    }
+
     /**
      * Alway's return true for creditcard verification otherwise api call to adyen won't work
      *

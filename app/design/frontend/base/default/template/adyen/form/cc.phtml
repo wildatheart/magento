@@ -98,6 +98,17 @@
             </div>
         </li>
     <?php endif;?>
+
+    <?php if($this->getRecurringType() == "ONECLICK" || $this->getRecurringType() == "ONECLICK,RECURRING"): ?>
+        <li>
+            <div class="input-box">
+                <div class="v-fix">
+                    <input type="checkbox" name="payment[store_cc]" id="<?php echo $_code ?>_store_cc" value="1" checked />
+                    <label for="<?php echo $_code ?>_store_cc" class="required"><em>*</em><?php echo $this->__('Remember these details') ?></label>
+                </div>
+            </div>
+        </li>
+    <?php endif; ?>
 </ul>
 
 <script type="text/javascript">

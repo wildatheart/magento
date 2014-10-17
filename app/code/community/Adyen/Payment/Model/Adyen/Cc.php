@@ -49,6 +49,9 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
         // set number of installements
         $info->setAdditionalInformation('number_of_installments', $data->getAdditionalData());
 
+        // save value remember details checkbox
+        $info->setAdditionalInformation('store_cc', $data->getStoreCc());
+
         if ($this->isCseEnabled()) {
             $info->setAdditionalInformation('encrypted_data', $data->getEncryptedData());
         }
@@ -73,7 +76,7 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
 
         return $this;
     }
-    
+
     public function getPossibleInstallments() {
         // retrieving quote
         $quote = (Mage::getModel('checkout/type_onepage') !== false)? Mage::getModel('checkout/type_onepage')->getQuote(): Mage::getModel('checkout/session')->getQuote();
@@ -149,25 +152,30 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
         }
 
 
-    
+
         return $result;
     }
-    
+
     /**
      * @desc Called just after asssign data
      */
     public function prepareSave() {
         parent::prepareSave();
     }
-    
+
     /**
      * @desc Helper functions to get config data
      */
     public function isCseEnabled() {
         return Mage::getStoreConfig("payment/adyen_cc/cse_enabled");
     }
+
     public function getCsePublicKey() {
         return trim(Mage::getStoreConfig("payment/adyen_cc/cse_publickey"));
+    }
+
+    public function getRecurringType() {
+        return trim(Mage::getStoreConfig("payment/adyen_abstract/recurringtypes"));
     }
 	
     /**
