@@ -179,6 +179,69 @@ class Adyen_Payment_Helper_Installments
     	return $value;
     }
 
+
+
+    public function getInstallmentForCreditCardType($ccType) {
+
+        // retrieving quote
+        $quote = (Mage::getModel('checkout/type_onepage') !== false)? Mage::getModel('checkout/type_onepage')->getQuote(): Mage::getModel('checkout/session')->getQuote();
+
+        $currency = $quote->getQuoteCurrencyCode();
+
+        if($quote->isVirtual()) {
+            $address = $this->getBillingAddress();
+        } else {
+            $address = $quote->getShippingAddress();
+        }
+
+        // distract the already included added fee for installment you selected before
+        if($address->getBasePaymentInstallmentFeeAmount() > 0) {
+            $amount = (double) ($quote->getGrandTotal() - $address->getBasePaymentInstallmentFeeAmount());
+        } else {
+            $amount = (double) $quote->getGrandTotal();
+        }
+
+        // installment key where installents are saved in settings
+        $ccTypeInstallments = "installments_".$ccType;
+
+        // check if this type has installments configured
+        $all_installments = $this->getInstallments(null, $ccTypeInstallments);
+
+        if(empty($all_installments)) {
+            // no installments congigure fall back on default
+            $ccTypeInstallments = null;
+        } else {
+            $max_installments = $this->getConfigValue($currency,$amount, null, $ccTypeInstallments);
+        }
+
+        // Fallback to the default installments if creditcard type has no one configured
+        if($ccTypeInstallments == null) {
+            $max_installments = $this->getConfigValue($currency,$amount, null);
+            $all_installments = $this->getInstallments();
+        }
+
+        // result array here
+        for($i=1;$i<=$max_installments;$i++){
+
+            // check if installment has extra interest
+            $key = $i-1;
+            $installment = $all_installments[$key];
+            if(isset($installment[3]) && $installment[3] > 0) {
+                $total_amount_with_interest = $amount + ($amount * ($installment[3] / 100));
+            } else {
+                $total_amount_with_interest = $amount;
+            }
+
+            $partial_amount = ((double)$total_amount_with_interest)/$i;
+            $result[(string)$i] = $i."x ".$currency." ".number_format($partial_amount,2);
+        }
+        return $result;
+    }
+
+
+
+
+
     /**
      * Make value readable by Mage_Adminhtml_Block_System_Config_Form_Field_Array_Abstract
      *

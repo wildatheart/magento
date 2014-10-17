@@ -54,7 +54,7 @@
 .sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block label { display:block; }
 .sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns.three.b label { width:175px;}
 .sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .creditcard-holder-name { margin-top:20px;}
-
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .adyen-oneclick-installments { margin-top:10px;}
 
 
 /* pos redirect page */
@@ -64,3 +64,4 @@
 	#pos-redirect-page .grey-header h1 { padding: 16px 10px; font-family: 'Open Sans', sans-serif; font-size:24px;color:white; }
 #pos-redirect-page .amount-box { width:300px; height:150px; padding-top:75px; margin:50px auto; border:1px solid #797c83; color:#797c83; text-align:center; font-weight:bold; font-size:34px; background-color: #f5f5f5; box-shadow: 0 0 2px 2px #888;}
 #pos-redirect-page #launchlink { margin-top:10px; clear:both; display:block; color:#797C83; text-decoration:none; }
+

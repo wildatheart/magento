@@ -105,6 +105,22 @@
 
                         <div class="creditcard-holder-name"><?php echo $value["card_holderName"]; ?></div>
 
+
+                        <?php if($this->hasInstallments()): ?>
+                            <div id="adyen_oneclick_installment_<?php echo $key;?>" class="adyen-oneclick-installments" style="display:none;">
+                                <label for="<?php echo $_code ?>_installment_<?php echo $key; ?>" class="required"><em>*</em><?php echo $this->__('Installments') ?></label>
+                                <div class="input-box">
+                                    <div class="v-fix">
+                                        <select id="<?php echo $_code ?>_installment_<?php echo $key; ?>" name="payment[installment_<?php echo $key; ?>]" class="adyen-installment number required-entry">
+                                            <?php foreach ($this->getInstallmentForCreditCardType($_bankFile) as $k=>$v): ?>
+                                                <option value="<?php echo $k?$k:'' ?>"><?php echo $v ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif;?>
+
                         <div style="clear:both;"></div>
                     </div>
                     <?php ++$count; ?>
@@ -163,10 +179,14 @@
 
                 // hide all the open blocks
                 hideCvcBlocks();
+                hideInstallmentBlocks();
 
                 // open the selected block
                 var key = this.value;
                 var id = "cvc_block_" + key;
+
+                // open the installment block
+                var installmentId = "adyen_oneclick_installment_" + key;
 
                 // hide changeble card and show static expiration date
                 hideChangableCardExpiry()
@@ -201,6 +221,9 @@
 
                 // show the cvc input field
                 $(id).show();
+
+                // show recurring selectbox
+                $(installmentId).show();
             });
 
             // remove all cvc data-encrypted-name attributes
@@ -239,6 +262,15 @@
             // hide all the cvc blocks for the recurring cards
             function hideCvcBlocks() {
                 $$('.cvc_block').each(
+                    function (e) {
+                        e.setStyle({display:'none'});
+                    }
+                );
+            }
+
+            // hide all the installment block
+            function hideInstallmentBlocks() {
+                $$('.adyen-oneclick-installments').each(
                     function (e) {
                         e.setStyle({display:'none'});
                     }

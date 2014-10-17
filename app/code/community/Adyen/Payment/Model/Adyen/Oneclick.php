@@ -60,6 +60,15 @@ class Adyen_Payment_Model_Adyen_Oneclick extends Adyen_Payment_Model_Adyen_Cc {
             // get the selected recurring card
             $recurringSelectedKey =  $data->getRecurring();
 
+
+            if(Mage::helper('adyen/installments')->isInstallmentsEnabled()) {
+                $installmentReferenceKey = "installment_".$recurringSelectedKey;
+                $info->setAdditionalInformation('number_of_installments', $data->getData($installmentReferenceKey));
+            } else {
+                $info->setAdditionalInformation('number_of_installments', "");
+
+            }
+
             // get cvc code for this creditcard
             $recurringDetailReferenceKey = "recurringDetailReference_".$recurringSelectedKey;
             $cvcKey = "oneclick_cid_".$recurringSelectedKey;
@@ -71,29 +80,39 @@ class Adyen_Payment_Model_Adyen_Oneclick extends Adyen_Payment_Model_Adyen_Cc {
             // save information as additional information so you don't have to add column in table
             $info->setAdditionalInformation('recurring_detail_reference', $recurringDetailReference);
 
+            // save creditcard type
+
+
             if ($this->isCseEnabled()) {
+                $ccType = $data->getData("oneclick_type_" . $recurringSelectedKey);
+                $ccType = Mage::helper('adyen/data')->getMagentoCreditCartType($ccType);
+
+                $info->setCcType($ccType);
                 $info->setAdditionalInformation('encrypted_data', $data->getEncryptedDataOneclick());
             }
             else {
 
-                if($data->getRecurring() != "") {
+                // check if expiry month and year is changed
+                $expiryMonth = $data->getData("oneclick_exp_month" . $recurringSelectedKey);
+                $expiryYear = $data->getData("oneclick_exp_year_" . $recurringSelectedKey);
 
-                    // check if expiry month and year is changed
-                    $expiryMonth = $data->getData("oneclick_exp_month" . $recurringSelectedKey);
-                    $expiryYear = $data->getData("oneclick_exp_year_" . $recurringSelectedKey);
-
-                    // just set default data for info block only
-                    $info->setCcType($data->getData("oneclick_type_" . $recurringSelectedKey))
-                        ->setCcOwner($data->getData("oneclick_owner_" . $recurringSelectedKey))
-                        ->setCcLast4($data->getData("oneclick_last_4_" . $recurringSelectedKey))
-                        ->setCcExpMonth($data->getData("oneclick_exp_month_" . $recurringSelectedKey))
-                        ->setCcExpYear($data->getData("oneclick_exp_year_" . $recurringSelectedKey))
-                        ->setCcCid($data->getData("oneclick_cid_" . $recurringSelectedKey));
-                }
+                // just set default data for info block only
+                $info->setCcType($data->getData("oneclick_type_" . $recurringSelectedKey))
+                    ->setCcOwner($data->getData("oneclick_owner_" . $recurringSelectedKey))
+                    ->setCcLast4($data->getData("oneclick_last_4_" . $recurringSelectedKey))
+                    ->setCcExpMonth($data->getData("oneclick_exp_month_" . $recurringSelectedKey))
+                    ->setCcExpYear($data->getData("oneclick_exp_year_" . $recurringSelectedKey))
+                    ->setCcCid($data->getData("oneclick_cid_" . $recurringSelectedKey));
             }
         } else {
             Mage::throwException(Mage::helper('adyen')->__('Payment Method is complusory in order to process your payment'));
         }
+
+        // recalculate the totals so that extra fee is defined
+        $quote = (Mage::getModel('checkout/type_onepage') !== false)? Mage::getModel('checkout/type_onepage')->getQuote(): Mage::getModel('checkout/session')->getQuote();
+        $quote->setTotalsCollectedFlag(false);
+        $quote->collectTotals();
+
         return $this;
     }
 

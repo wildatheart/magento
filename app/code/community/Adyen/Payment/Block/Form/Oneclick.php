@@ -39,4 +39,14 @@ class Adyen_Payment_Block_Form_Oneclick extends Adyen_Payment_Block_Form_Cc {
     public function isNotRecurring() {
         return  $this->getMethod()->isNotRecurring();
     }
+
+    public function getInstallmentForCreditCardType($ccType) {
+
+        // map $ccType to creditcard type we saved in backend
+
+        $ccType = Mage::helper('adyen/data')->getMagentoCreditCartType($ccType);
+        $result = Mage::helper('adyen/installments')->getInstallmentForCreditCardType($ccType);
+
+        return $result;
+    }
 }

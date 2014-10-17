@@ -112,6 +112,20 @@
                                             }
                                         );
 
+                                        // hide update link
+                                        $$('.update-expiration-date').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                        // hide installment box
+                                        $$('.adyen-oneclick-installments').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
                                     }
 
                                     var method = $('hpp_type_<?php echo $_typeCode?>');

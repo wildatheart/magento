@@ -36,7 +36,7 @@
     <li>
         <label for="<?php echo $_code ?>_cc_type" class="required"><em>*</em><?php echo $this->__('Credit Card Type') ?></label>
         <div class="input-box">
-            <select id="<?php echo $_code ?>_cc_type" <?php echo (!$this->isCseEnabled() ? "name=\"payment[cc_type]\"" : ""); ?> title="<?php echo $this->__('Credit Card Type') ?>" class="required-entry">
+            <select id="<?php echo $_code ?>_cc_type" <?php echo "name=\"payment[cc_type]\""; ?> title="<?php echo $this->__('Credit Card Type') ?>" class="required-entry">
                 <option value=""><?php echo $this->__('--Please Select--') ?></option>
                 <?php $_ccType = $this->getInfoData('cc_type') ?>
                 <?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>

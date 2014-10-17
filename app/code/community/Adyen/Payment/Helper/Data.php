@@ -152,4 +152,26 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
         return number_format($amount, $format, '', '');
     }
 
+    /*
+     * creditcard type that is selected is different from creditcard type that we get back from the request
+     * this function get the magento creditcard type this is needed for getting settings like installments
+     */
+    public function getMagentoCreditCartType($ccType) {
+
+        $ccTypesMapper = array("amex" => "AE",
+                                "visa" => "VI",
+                                "mastercard" => "MC",
+                                "discover" => "DI",
+                                "diners" => "DC",
+                                "maestro" => "MO",
+                                "jcb" => "JC",
+//                                "" => "CB" cart blue is just visa
+        );
+
+        if(isset($ccTypesMapper[$ccType])) {
+            $ccType = $ccTypesMapper[$ccType];
+        }
+
+        return $ccType;
+    }
 }
