@@ -453,10 +453,43 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </cash_express_checkout>
+                        <cash_drawer>
+                            <label>Open Cash Drawer</label>
+                            <comment>Open the Cash drawer if you connect this to your printer</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>39</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><cash_express_checkout>1</cash_express_checkout></depends>
+                        </cash_drawer>
+                        <cash_drawer_printer_ip>
+                            <label>IP address printer</label>
+                            <comment>Enter here the IP address of the printer where the cash drawer is connected to</comment>
+                            <frontend_type>text</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><cash_drawer>1</cash_drawer></depends>
+                        </cash_drawer_printer_ip>
+                        <cash_drawer_code>
+                            <label>Cash Drawer Code</label>
+                            <comment><![CDATA[Add your cash drawer code for example: 27,112,48,55,121 <a href="http://keyhut.com/popopen.htm" target="_blank">see overview codes here</a> ]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>41</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><cash_drawer>1</cash_drawer></depends>
+                        </cash_drawer_code>
                         <allowspecific translate="label">
                             <label>Payment to applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
-                            <sort_order>40</sort_order>
+                            <sort_order>49</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>

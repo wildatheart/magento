@@ -272,6 +272,9 @@
                 <submit_scanner>0</submit_scanner>
                 <express_checkout>0</express_checkout>
                 <cash_express_checkout>0</cash_express_checkout>
+                <cash_drawer>0</cash_drawer>
+                <cash_drawer_printer_ip></cash_drawer_printer_ip>
+                <cash_drawer_code>27,112,48,55,121</cash_drawer_code>
                 <allowspecific>0</allowspecific>
                 <sort_order>80</sort_order>
             </adyen_pos>

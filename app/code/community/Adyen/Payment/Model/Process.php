@@ -178,65 +178,65 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             // check if request is valid
             if($total_result_checksum == $checksum) {
 
-                //get order && payment objects
-                $order = Mage::getModel('sales/order');
-                //$incrementId = $varienObj->getData('merchantReference');
-                $incrementId = $varienObj->getData('originalCustomMerchantReference');
+            //get order && payment objects
+            $order = Mage::getModel('sales/order');
+            //$incrementId = $varienObj->getData('merchantReference');
+            $incrementId = $varienObj->getData('originalCustomMerchantReference');
 
-                //error
-                $orderExist = $this->_incrementIdExist($incrementId);
+            //error
+            $orderExist = $this->_incrementIdExist($incrementId);
 
-                if (empty($orderExist)) {
-                    $this->_writeLog("unknown order : $incrementId");
+            if (empty($orderExist)) {
+                $this->_writeLog("unknown order : $incrementId");
+            } else {
+                $order->loadByIncrementId($incrementId);
+
+                if($result == 'APPROVED') {
+                    // wait for notification to finish the order
+
+                    // set adyen event status on true
+                    $order->setAdyenEventCode(Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED);
+
+                    $comment = Mage::helper('adyen')
+                        ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
+
+                    $order->addStatusHistoryComment($comment, false);
+
+                    try {
+                        $order->save();
+                    } catch (Exception $e) {
+                        Mage::logException($e);
+                    }
                 } else {
-                    $order->loadByIncrementId($incrementId);
 
-                    if($result == 'APPROVED') {
-                        // wait for notification to finish the order
+                    $isBankTransfer = Mage::getModel('adyen/event')
+                        ->isBanktransfer($order->getIncrementId());
+                    //attempt to hold/cancel (exceptional to BankTransfer they stay in previous status/pending)
 
-                        // set adyen event status on true
-                        $order->setAdyenEventCode(Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED);
+                    if (!$isBankTransfer) {
 
                         $comment = Mage::helper('adyen')
                             ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
 
-                        $order->addStatusHistoryComment($comment, false);
+                        $order->addStatusHistoryComment($comment, Mage_Sales_Model_Order::STATE_CANCELED);
 
-                        try {
+                        $order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
+
+                        if (!$order->canCancel()) {
+                            $this->_writeLog('order can not be canceled', $order);
+                            $order->addStatusHistoryComment($helper->__('Order can not be canceled'), Mage_Sales_Model_Order::STATE_CANCELED);
                             $order->save();
-                        } catch (Exception $e) {
-                            Mage::logException($e);
-                        }
-                    } else {
-
-                        $isBankTransfer = Mage::getModel('adyen/event')
-                            ->isBanktransfer($order->getIncrementId());
-                        //attempt to hold/cancel (exceptional to BankTransfer they stay in previous status/pending)
-
-                        if (!$isBankTransfer) {
-
-                            $comment = Mage::helper('adyen')
-                                ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
-
-                            $order->addStatusHistoryComment($comment, Mage_Sales_Model_Order::STATE_CANCELED);
-
-                            $order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
-
-                            if (!$order->canCancel()) {
-                                $this->_writeLog('order can not be canceled', $order);
-                                $order->addStatusHistoryComment($helper->__('Order can not be canceled'), Mage_Sales_Model_Order::STATE_CANCELED);
-                                $order->save();
-
-                            } else {
-                                $order->cancel()->save();
-                            }
 
                         } else {
-                            $this->_addStatusHistoryComment($order, $varienObj, $order->getStatus());
-                            $status = true;
+                            $order->cancel()->save();
                         }
+
+                    } else {
+                        $this->_addStatusHistoryComment($order, $varienObj, $order->getStatus());
+                        $status = true;
                     }
                 }
+            }
         }
         }
         // close the window
@@ -313,6 +313,51 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     ->setOrder($order);
                 $history->save();
 
+
+                if($this->_getConfigData('cash_drawer', 'adyen_pos')) {
+
+                    $printerIp = trim($this->_getConfigData('cash_drawer_printer_ip', 'adyen_pos'));
+
+                    if($printerIp != "") {
+
+                        $drawCodeConfig = trim($this->_getConfigData('cash_drawer_code', 'adyen_pos'));
+
+                        if($drawCodeConfig != "") {
+
+                            // split comm based
+                            $drawCodes = explode(",", $drawCodeConfig);
+
+                            // open the cash drawer
+                            try {
+                                $esc = "\x1b";
+                                $fp = fsockopen($printerIp, 9100);
+                                fwrite($fp, $esc . "@");
+                                $write = "";
+                                $count = 0;
+                                foreach($drawCodes as $drawCode) {
+                                    // first code 27 must be special character to let it work
+                                    if($count == 0 && $drawCode == "27") {
+                                        $write .= $esc;
+                                    } else {
+                                        $write .= chr($drawCode);
+                                    }
+                                    ++$count;
+                                }
+                                // example: fwrite($fp, $esc . chr(112) . chr(48) . chr(55) . chr(121));
+                                fwrite($fp, $write);
+                                // close connection
+                                fclose($fp);
+                            } catch(Exception $e) {
+                                Mage::logException($e);
+                                Mage::throwException($e->getMessage());
+                            }
+                        } else {
+                            Mage::throwException('Cash drawer Code not filled in check your Adyen POS settings');
+                        }
+                    } else {
+                        Mage::throwException('Cash drawer IP not filled in check your Adyen POS settings');
+                    }
+                }
                 return $status;
             }
         }
