@@ -629,6 +629,11 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLED:
                     $this->holdCancelOrder($order, $response);
                     break;
+                case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCEL_OR_REFUND:
+                    // not sure if it cancelled or refund the order
+                    $helper = Mage::helper('adyen');
+                    $order->addStatusHistoryComment($helper->__('Order is cancelled or refunded'));
+                    $order->save();
                 default:
                     //@todo fix me cancel && error here
                     $order->getPayment()->getMethodInstance()->writeLog('notification event not supported!');
