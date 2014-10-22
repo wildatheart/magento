@@ -111,46 +111,48 @@
     <?php endif; ?>
 </ul>
 
-<script type="text/javascript">
+<?php if($this->hasInstallments()): ?>
+    <script type="text/javascript">
 
-    var ChangeCCType= function(event) {
+        var ChangeCCType= function(event) {
 
-        // clear the select box
-        document.getElementById('<?php echo $_code ?>_installments').options.length = 0;
+            // clear the select box
+            document.getElementById('<?php echo $_code ?>_installments').options.length = 0;
 
-        // get the installments for this cardtype
-        var ccType = $('<?php echo $_code?>_cc_type').value;
+            // get the installments for this cardtype
+            var ccType = $('<?php echo $_code?>_cc_type').value;
 
-        var url = '<?php echo $this->getUrl('adyen/GetInstallments'); ?>';
+            var url = '<?php echo $this->getUrl('adyen/GetInstallments'); ?>';
 
-        new Ajax.Request(url, {
-            parameters: {ccType: ccType, isAjax: 1, method: 'POST'},
-            onSuccess: function(transport) {
+            new Ajax.Request(url, {
+                parameters: {ccType: ccType, isAjax: 1, method: 'POST'},
+                onSuccess: function(transport) {
 
-                if(transport.status == 200) {
+                    if(transport.status == 200) {
 
-                    var response = transport.responseText.evalJSON();
+                        var response = transport.responseText.evalJSON();
 
-                    for (var key in response) {
+                        for (var key in response) {
 
-                        // change the installments
-                        var opt = document.createElement('option');
-                        opt.text = response[key]
-                        opt.value = key;
-                        $('<?php echo $_code ?>_installments').options.add(opt);
+                            // change the installments
+                            var opt = document.createElement('option');
+                            opt.text = response[key]
+                            opt.value = key;
+                            $('<?php echo $_code ?>_installments').options.add(opt);
 
+                        }
                     }
+                },
+                onFailure: function(){
+                    alert('<?php echo $this->jsQuoteEscape($this->__('Server Error. Please try again.')) ?>');
                 }
-            },
-            onFailure: function(){
-                alert('<?php echo $this->jsQuoteEscape($this->__('Server Error. Please try again.')) ?>');
-            }
-        });
-    }
-    // event on change Credit Card Type
-    Event.observe($('<?php echo $_code?>_cc_type'), 'change', ChangeCCType);
+            });
+        }
+        // event on change Credit Card Type
+        Event.observe($('<?php echo $_code?>_cc_type'), 'change', ChangeCCType);
 
-</script>
+    </script>
+<?php endif; ?>
 
 <?php if ($this->isCseEnabled()): ?>
     <input type="hidden" id="<?php echo $_code ?>_encrypted_form_expiry_generationtime" value="<?php echo date("c"); ?>" data-encrypted-name="generationtime" />
