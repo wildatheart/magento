@@ -1,0 +1,77 @@
+
+<?php /* @var $this Adyen_Payment_Block_SavedCards */ ?>
+<div class="page-title">
+    <h1><?php echo $this->__('My Saved cards') ?></h1>
+</div>
+
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+
+<div class="saved-cards">
+
+    <div id="oneclick-cse" class="">
+
+    <?php $_listRecurringDetails = $this->getlistRecurringDetails();  ?>
+
+    <?php if(!empty($_listRecurringDetails)): ?>
+
+        <ul id="oneclick_payment_form" class="recurring-creditcards">
+            <?php
+            $count = 0;
+            foreach($_listRecurringDetails as $key => $value):?>
+               <li>
+
+                    <form method="post" action="<?php echo $this->getUrl("adyen/savedCard/"); ?>">
+
+                        <input type="hidden" name="recurringDetailReference" value="<?php echo $value["recurringDetailReference"] ?>" />
+
+
+                        <div class="creditcard-block">
+                            <?php
+                            $_bankFile = $value["variant"];
+                            $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS. $_bankFile ."_small.png";
+
+                            ?>
+                            <?php if (file_exists($_filename)){ ?>
+                                <img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS. $_bankFile . "_small.png") ?>" alt="<?php echo $_bankFile ?>" label="<?php echo $_bankFile ?>" />
+                            <?php } ?>
+
+
+                            <div class="columns three a">
+                                <label><?php echo $this->__('Credit Card Number') ?></label>
+                                <span>****</span> <?php echo $value["card_number"]; ?>
+                            </div>
+
+                            <div class="columns three b">
+                                <label><?php echo $this->__('Expiration Date') ?><a href="#" id="update-expiration-date-<?php echo $key; ?>" class="update-expiration-date" style="display:none;"><?php echo $this->__('(update)') ?></a></label>
+
+                                <div id="static-card-expiry-<?php echo $key; ?>" class="static-card-expiry">
+                                    <?php echo $value["card_expiryMonth"] . " /" . $value["card_expiryYear"]; ?>
+                                </div>
+
+                            </div>
+
+                            <div style="clear:both;"></div>
+
+                            <div class="creditcard-holder-name"><?php echo $value["card_holderName"]; ?></div>
+
+                            <button type="submit" title="Add to Cart" class="button btn-cart btn-delete"><span><span><?php echo $this->__('Remove Cart');?></span></span></button>
+
+                            <div style="clear:both;"></div>
+                        </div>
+                    </form>
+                    <?php ++$count; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p><?php echo $this->__('There are no saved cards for this account.');?></p>
+    <?php endif; ?>
+
+
+
+    </div>
+
+    <div class="buttons-set">
+        <p class="back-link"><a href="<?php echo $this->escapeUrl($this->getBackUrl()) ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+    </div>
+</div>

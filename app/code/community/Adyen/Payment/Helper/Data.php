@@ -27,6 +27,12 @@
  */
 class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
 
+    /**
+     * Zend_Log debug level
+     * @var unknown_type
+     */
+    const DEBUG_LEVEL = 7;
+
     public function getCcTypes() {
         $_types = Mage::getConfig()->getNode('default/adyen/payment/cctypes')->asArray();
         uasort($_types, array('Mage_Payment_Model_Config', 'compareCcTypes'));
@@ -174,4 +180,176 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
 
         return $ccType;
     }
+
+    public function getRecurringCards($merchantAccount, $customerId, $recurringType) {
+
+        // create a arraylist with the cards
+        $recurringCards = array();
+
+        // do not show the oneclick if recurring type is empty or recurring
+        if($recurringType == "ONECLICK" || $recurringType == "ONECLICK,RECURRING" || $recurringType == "RECURRING")
+        {
+            // recurring type is always ONECLICK
+            if($recurringType == "ONECLICK,RECURRING") {
+                $recurringType = "ONECLICK";
+            }
+
+            // rest call to get listrecurring details
+            $request = array(
+                "action" => "Recurring.listRecurringDetails",
+                "recurringDetailsRequest.merchantAccount" => $merchantAccount,
+                "recurringDetailsRequest.shopperReference" => $customerId,
+                "recurringDetailsRequest.recurring.contract" => $recurringType, // i.e.: "ONECLICK" Or "RECURRING"
+            );
+
+            $ch = curl_init();
+
+            $isConfigDemoMode = $this->getConfigDataDemoMode();
+            $wsUsername = $this->getConfigDataWsUserName();
+            $wsPassword = $this->getConfigDataWsPassword();
+
+            if ($isConfigDemoMode)
+                curl_setopt($ch, CURLOPT_URL, "https://pal-test.adyen.com/pal/adapter/httppost");
+            else
+                curl_setopt($ch, CURLOPT_URL, "https://pal-live.adyen.com/pal/adapter/httppost");
+
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC  );
+            curl_setopt($ch, CURLOPT_USERPWD,$wsUsername.":".$wsPassword);
+            curl_setopt($ch, CURLOPT_POST,count($request));
+            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($request));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $result = curl_exec($ch);
+
+            if($result === false) {
+                Mage::log("List recurring is failing error is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+                Mage::throwException(Mage::helper('adyen')->__('List recurring is generating the error see the log'));
+            } else{
+                /**
+                 * The $result contains a JSON array containing
+                 * the available payment methods for the merchant account.
+                 */
+
+                // convert result to utf8 characters
+                $result = utf8_encode(urldecode($result));
+                // convert to array
+                parse_str($result,$result);
+
+                Mage::log("List recurring result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+
+                foreach($result as $key => $value) {
+                    // strip the key
+                    $key = str_replace("recurringDetailsResult_details_", "", $key);
+                    $key2 = strstr($key, '_');
+                    $keyNumber = str_replace($key2, "", $key);
+                    $keyAttribute = substr($key2, 1);
+                    $recurringCards[$keyNumber][$keyAttribute] = $value;
+                }
+                // unset the recurringDetailsResult because this is not a card
+                unset($recurringCards["recurringDetailsResult"]);
+
+                // filter out all non-creditcards
+                foreach($recurringCards as $key => $recurringCard) {
+
+                    if(!(isset($recurringCard["recurringDetailReference"]) && isset($recurringCard["variant"]) && isset($recurringCard["card_number"])
+                        && isset($recurringCard["card_expiryMonth"]) && isset($recurringCard["card_expiryYear"]))) {
+
+                        unset($recurringCards[$key]);
+                    }
+                }
+            }
+        }
+        return $recurringCards;
+    }
+
+    public function removeRecurringCart($merchantAccount, $shopperReference, $recurringDetailReference) {
+
+        // rest call to disable cart
+        $request = array(
+            "action" => "Recurring.disable",
+            "disableRequest.merchantAccount" => $merchantAccount,
+            "disableRequest.shopperReference" => $shopperReference,
+            "disableRequest.recurringDetailReference" => $recurringDetailReference
+        );
+
+        $ch = curl_init();
+
+        $isConfigDemoMode = $this->getConfigDataDemoMode();
+        $wsUsername = $this->getConfigDataWsUserName();
+        $wsPassword = $this->getConfigDataWsPassword();
+
+        if ($isConfigDemoMode)
+            curl_setopt($ch, CURLOPT_URL, "https://pal-test.adyen.com/pal/adapter/httppost");
+        else
+            curl_setopt($ch, CURLOPT_URL, "https://pal-live.adyen.com/pal/adapter/httppost");
+
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC  );
+        curl_setopt($ch, CURLOPT_USERPWD,$wsUsername.":".$wsPassword);
+        curl_setopt($ch, CURLOPT_POST,count($request));
+        curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($request));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+
+        if($result === false) {
+            Mage::log("Disable recurring contract is failing, error is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+            Mage::throwException(Mage::helper('adyen')->__('Disable recurring contract is generating the error see the log'));
+        } else{
+
+            // convert result to utf8 characters
+            $result = utf8_encode(urldecode($result));
+
+            if($result != "disableResult.response=[detail-successfully-disabled]") {
+                Mage::log("Disable contract is not succeeded the response is: " . $result, self::DEBUG_LEVEL, 'http-request.log',true);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Used via Payment method.Notice via configuration ofcourse Y or N
+     * @return boolean true on demo, else false
+     */
+    public function getConfigDataDemoMode() {
+        if ($this->_getConfigData('demoMode') == 'Y') {
+            return true;
+        }
+        return false;
+    }
+
+    public function getConfigDataWsUserName() {
+        if ($this->getConfigDataDemoMode()) {
+            return $this->_getConfigData('ws_username_test');
+        }
+        return $this->_getConfigData('ws_username_live');
+    }
+
+    public function getConfigDataWsPassword() {
+        if ($this->getConfigDataDemoMode()) {
+            return $this->_getConfigData('ws_password_test');
+        }
+        return $this->_getConfigData('ws_password_live');
+    }
+
+    /**
+     * @desc Give Default settings
+     * @example $this->_getConfigData('demoMode','adyen_abstract')
+     * @since 0.0.2
+     * @param string $code
+     */
+    public function _getConfigData($code, $paymentMethodCode = null, $storeId = null) {
+        if (null === $storeId) {
+            $storeId = Mage::app()->getStore()->getStoreId();
+        }
+        if (empty($paymentMethodCode)) {
+            return Mage::getStoreConfig("payment/adyen_abstract/$code", $storeId);
+        }
+        return Mage::getStoreConfig("payment/$paymentMethodCode/$code", $storeId);
+    }
+
 }
