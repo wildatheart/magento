@@ -245,7 +245,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 								function closeWindow() {
 									window.open('', '_self', '');
 									window.close();
-								}
+        }
 								setTimeout(closeWindow, 500);
 		    				</script>
 		    		</body></html>";
@@ -620,6 +620,13 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     $this->setPrePaymentAuthorized($order, $success);
 
                     $this->createInvoice($order, $response);
+
+                    $_paymentCode = $this->_paymentMethodCode($order);
+                    if($payment_method == "c_cash" || ($this->_getConfigData('cash_drawer', 'adyen_pos') && $_paymentCode = "adyen_pos"))
+                    {
+                        $this->createShipment($order);
+                    }
+
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE:
                     $this->setPaymentAuthorized($order, $success, $response);
@@ -862,6 +869,30 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         }
         $order->sendOrderUpdateEmail($_mail);
         $order->save();
+    }
+
+    public function createShipment($order) {
+        // create shipment for cash payment
+        $payment = $order->getPayment()->getMethodInstance();
+        if($order->canShip()) {
+            //                    $itemQty =  $order->getItemsCollection()->count();
+
+            $itemQty = array();
+//            $shipment = Mage::getModel('sales/service_order', $order)->prepareShipment($itemQty);
+            $shipment = $order->prepareShipment($itemQty);
+            if($shipment) {
+                $shipment->register();
+                $shipment->getOrder()->setIsInProcess(true);
+                $comment = Mage::helper('adyen')->__('Shipment created by Adyen');
+                $shipment->addComment($comment);
+                Mage::getModel('core/resource_transaction')
+                                ->addObject($shipment)
+                                ->addObject($shipment->getOrder())
+                                ->save();
+            }
+        } else {
+            $payment->writeLog("Order can't be shipped");
+        }
     }
 
     /**

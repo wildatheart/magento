@@ -271,6 +271,7 @@
                 <enable_scanner>0</enable_scanner>
                 <submit_scanner>0</submit_scanner>
                 <express_checkout>0</express_checkout>
+                <create_shipment>0</create_shipment>
                 <cash_express_checkout>0</cash_express_checkout>
                 <cash_drawer>0</cash_drawer>
                 <cash_drawer_printer_ip></cash_drawer_printer_ip>

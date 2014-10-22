@@ -443,12 +443,22 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </express_checkout>
+                        <create_shipment>
+                            <label>Create Shipment</label>
+                            <comment>If you enable this there will be automatically be created a shipment if the invoice is created</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>38</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </create_shipment>
                         <cash_express_checkout>
                             <label>Cash Express checkout</label>
                             <comment>This will show a checkout buttton on the shopping cart to directly do a Cash payment without going to the checkout steps. Make sure that you have Cash enabled on your skin and HPP payment method is enabled and correctly configured. You must be logged into your magento account on the front-end to see the button</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>38</sort_order>
+                            <sort_order>39</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -458,7 +468,7 @@
                             <comment>Open the Cash drawer if you connect this to your printer</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>39</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -469,7 +479,7 @@
                             <comment>Enter here the IP address of the printer where the cash drawer is connected to</comment>
                             <frontend_type>text</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>40</sort_order>
+                            <sort_order>41</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -480,7 +490,7 @@
                             <comment><![CDATA[Add your cash drawer code for example: 27,112,48,55,121 <a href="http://keyhut.com/popopen.htm" target="_blank">see overview codes here</a> ]]></comment>
                             <frontend_type>text</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>41</sort_order>
+                            <sort_order>42</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
