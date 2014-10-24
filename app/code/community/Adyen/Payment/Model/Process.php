@@ -352,9 +352,11 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                                 Mage::throwException($e->getMessage());
                             }
                         } else {
+                            Mage::log("Cash drawer Code not filled in check your Adyen POS settings", Zend_Log::DEBUG, "adyen_notification.log", true);
                             Mage::throwException('Cash drawer Code not filled in check your Adyen POS settings');
                         }
                     } else {
+                        Mage::log("Cash drawer Code not filled in check your Adyen POS settings", Zend_Log::DEBUG, "adyen_notification.log", true);
                         Mage::throwException('Cash drawer IP not filled in check your Adyen POS settings');
                     }
                 }
