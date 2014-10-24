@@ -30,14 +30,18 @@ class Adyen_Payment_Model_Adyen_Data_ModificationRequest extends Adyen_Payment_M
     public $anyType2anyTypeMap;
     public $authorisationCode;
     public $merchantAccount;
+    public $merchantReference;
     public $modificationAmount;
     public $originalReference;
 
     public function create(Varien_Object $payment, $amount, $order, $merchantAccount, $pspReference = null) {
         $currency = $order->getOrderCurrencyCode();
+        $incrementId = $order->getIncrementId();
+
         $this->anyType2anyTypeMap = null;
         $this->authorisationCode = null;
         $this->merchantAccount = $merchantAccount;
+        $this->reference = $incrementId;
         if($amount) {
             $this->modificationAmount = new Adyen_Payment_Model_Adyen_Data_Amount();
             $this->modificationAmount->value = Mage::helper('adyen')->formatAmount($amount, $currency);
