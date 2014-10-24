@@ -415,6 +415,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $success = (trim($response->getData('success')) == "true") ? true : false;
         $eventData = (!empty($eventCode)) ? $eventCode : $authResult;
         $paymentObj = $order->getPayment();
+        $_paymentCode = $this->_paymentMethodCode($order);
 
         $paymentObj->setLastTransId($incrementId)
             ->setAdyenPaymentMethod($paymentMethod)
@@ -433,7 +434,8 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         //only original here
         if ($eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISED
             || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION
-            || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLED_EXTERNALLY)
+            || $eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLED_EXTERNALLY
+            || ($eventCode == Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE && $_paymentCode == "adyen_pos"))
         {
             $paymentObj->setAdyenPspReference($pspReference);
             if($klarnaReservationNumber != "") {
@@ -589,6 +591,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
 
             $success = (bool) trim($response->getData('success'));
             $payment_method = trim($response->getData('paymentMethod'));
+            $_paymentCode = $this->_paymentMethodCode($order);
             switch ($eventCode) {
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_REFUND:
 
@@ -601,35 +604,18 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_HANDLED_EXTERNALLY:
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_AUTHORISATION:
-                    //pre-authorise if success
-                    $order->sendNewOrderEmail(); // send order email
-
-                    /*
-                     * For AliPay or UnionPay sometimes it first send a AUTHORISATION false notification and then
-                     * a AUTHORISATION true notification. The second time it must revert the cancelled of the first notification before we can
-                     * assign a new status
-                     */
-                    if($success == "true") {
-                        if($payment_method == "alipay" || $payment_method == "unionpay") {
-                            foreach ($order->getAllItems() as $item) {
-                                $item->setQtyCanceled(0);
-                                $item->save();
-                            }
-                        }
+                    // for POS don't do anything on the AUTHORIZATION
+                    if($_paymentCode != "adyen_pos") {
+                        $this->authorizePayment($order, $success, $payment_method, $response);
                     }
-                    $this->setPrePaymentAuthorized($order, $success);
-
-                    $this->createInvoice($order, $response);
-
-                    $_paymentCode = $this->_paymentMethodCode($order);
-                    if($payment_method == "c_cash" || ($this->_getConfigData('cash_drawer', 'adyen_pos') && $_paymentCode = "adyen_pos"))
-                    {
-                        $this->createShipment($order);
-                    }
-
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE:
-                    $this->setPaymentAuthorized($order, $success, $response);
+                    if($_paymentCode != "adyen_pos") {
+                        $this->setPaymentAuthorized($order, $success, $response);
+                    } else {
+                        // FOR POS authorize the payment on the CAPTURE notification
+                        $this->authorizePayment($order, $success, $payment_method, $response);
+                    }
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CAPTURE_FAILED:
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLATION:
@@ -646,6 +632,35 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     $order->getPayment()->getMethodInstance()->writeLog('notification event not supported!');
                     break;
             }
+        }
+    }
+
+    public function authorizePayment($order, $success, $payment_method, $response) {
+
+        //pre-authorise if success
+        $order->sendNewOrderEmail(); // send order email
+
+        /*
+         * For AliPay or UnionPay sometimes it first send a AUTHORISATION false notification and then
+         * a AUTHORISATION true notification. The second time it must revert the cancelled of the first notification before we can
+         * assign a new status
+         */
+        if($success == "true") {
+            if($payment_method == "alipay" || $payment_method == "unionpay") {
+                foreach ($order->getAllItems() as $item) {
+                    $item->setQtyCanceled(0);
+                    $item->save();
+                }
+            }
+        }
+        $this->setPrePaymentAuthorized($order, $success);
+
+        $this->createInvoice($order, $response);
+
+        $_paymentCode = $this->_paymentMethodCode($order);
+        if($payment_method == "c_cash" || ($this->_getConfigData('cash_drawer', 'adyen_pos') && $_paymentCode = "adyen_pos"))
+        {
+            $this->createShipment($order);
         }
     }
 
@@ -740,11 +755,13 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @notice ideal is exception here
      * @since 0.0.9.x
      */
-    public function isAutoCapture($response) {
+    public function isAutoCapture($response, $order) {
         $paymentMethod = trim($response->getData('paymentMethod'));
         $captureMode = trim($this->_getConfigData('capture_mode'));
-        // payment method ideal and cash has direct capture
-        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash' ) === 0 ) {
+        $_paymentCode = $this->_paymentMethodCode($order);
+
+        // payment method ideal, cash or adyen_pos has direct capture
+        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash' ) === 0 || $_paymentCode == "adyen_pos" ) {
             return true;
         }
         if (strcmp($captureMode, 'manual') === 0) {
@@ -837,7 +854,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         }
 
         //capture mode
-        if (!$this->isAutoCapture($response)) {
+        if (!$this->isAutoCapture($response, $order)) {
             $order->addStatusHistoryComment(Mage::helper('adyen')->__('Capture Mode set to Manual'));
             $order->sendOrderUpdateEmail($_mail);
             $order->save();
@@ -886,9 +903,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                 $comment = Mage::helper('adyen')->__('Shipment created by Adyen');
                 $shipment->addComment($comment);
                 Mage::getModel('core/resource_transaction')
-                                ->addObject($shipment)
-                                ->addObject($shipment->getOrder())
-                                ->save();
+                    ->addObject($shipment)
+                    ->addObject($shipment->getOrder())
+                    ->save();
             }
         } else {
             $payment->writeLog("Order can't be shipped");
