@@ -1,7 +1,7 @@
 
 <?php if($this->hasEnableScanner()): ?>
 <div id="adyenCustomScanWrapper">
-    <form id="addToCartBarCode" method='post' action="<?php echo  $this->getUrl("adyen/updateCart/index"); ?>">
+    <form id="addToCartBarCode" method='post' action="<?php echo  $this->getUrl("adyen/updateCart/index", array('_secure'=>true)); ?>">
 
         <h3>Barcode scanner</h3>
 

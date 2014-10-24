@@ -20,7 +20,7 @@
             foreach($_listRecurringDetails as $key => $value):?>
                <li>
 
-                    <form method="post" action="<?php echo $this->getUrl("adyen/savedCard/"); ?>">
+                    <form method="post" action="<?php echo $this->getUrl("adyen/savedCard/", array('_secure'=>true)); ?>">
 
                         <input type="hidden" name="recurringDetailReference" value="<?php echo $value["recurringDetailReference"] ?>" />
 

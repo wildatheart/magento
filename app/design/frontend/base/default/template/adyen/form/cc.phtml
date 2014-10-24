@@ -122,7 +122,7 @@
             // get the installments for this cardtype
             var ccType = $('<?php echo $_code?>_cc_type').value;
 
-            var url = '<?php echo $this->getUrl('adyen/GetInstallments'); ?>';
+            var url = '<?php echo $this->getUrl('adyen/GetInstallments', array('_secure'=>true)); ?>';
 
             new Ajax.Request(url, {
                 parameters: {ccType: ccType, isAjax: 1, method: 'POST'},

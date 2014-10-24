@@ -2,7 +2,7 @@
 <?php if($this->hasExpressCheckout() || $this->hasCashExpressCheckout() ): ?>
 
 <div id="adyen-checkout-wrapper">
-    <form action="<?php echo  $this->getUrl("adyen/checkoutPos"); ?>" method="post">
+    <form action="<?php echo  $this->getUrl("adyen/checkoutPos", array('_secure'=>true)); ?>" method="post">
         <input style="width:250px;" type="text" class="input-text" name="adyenPosEmail" id="adyenPosEmail" value="" size="60"  placeholder="Email" autocapitalize="off"/>
 
         <?php if($this->hasExpressCheckout()): ?>
@@ -13,7 +13,7 @@
 
     </form>
 
-    <form action="<?php echo  $this->getUrl("adyen/checkoutCash"); ?>" method="post">
+    <form action="<?php echo  $this->getUrl("adyen/checkoutCash", array('_secure'=>true)); ?>" method="post">
         <?php if($this->hasCashExpressCheckout()): ?>
             <button id="CheckoutWithCash" style="" type="submit" title="Checkout with Cash" class="button btn-proceed-checkout btn-checkout adyen-checkout-button">
                 <span><span>Checkout with Cash</span></span>
