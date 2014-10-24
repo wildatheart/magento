@@ -625,10 +625,22 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                     $this->holdCancelOrder($order, $response);
                     break;
                 case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCEL_OR_REFUND:
-                    // not sure if it cancelled or refund the order
-                    $helper = Mage::helper('adyen');
-                    $order->addStatusHistoryComment($helper->__('Order is cancelled or refunded'));
-                    $order->save();
+
+                    $resultModification = trim($response->getData('additionalData_modification_action'));
+                    if(isset($resultModification) && $resultModification != "") {
+                        if($resultModification == "cancel") {
+                            $this->holdCancelOrder($order, $response);
+                        } elseif($resultModification == "refund") {
+                            $this->refundOrder($order, $response);
+                            //refund completed
+                            $this->setRefundAuthorized($order, $success);
+                        }
+                    } else {
+                        // not sure if it cancelled or refund the order
+                        $helper = Mage::helper('adyen');
+                        $order->addStatusHistoryComment($helper->__('Order is cancelled or refunded'));
+                        $order->save();
+                    }
                 default:
                     //@todo fix me cancel && error here
                     $order->getPayment()->getMethodInstance()->writeLog('notification event not supported!');
@@ -1019,8 +1031,8 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             case Mage_Sales_Model_Order::STATE_HOLDED:
                 $order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_HOLD, true);
                 if (!$order->canHold()) {
-                    $this->_writeLog('order can not hold', $order);
-                    $order->addStatusHistoryComment($helper->__('Order can not Hold'), Mage_Sales_Model_Order::STATE_HOLDED);
+                    $this->_writeLog('order can not hold or is already on Hold', $order);
+                    $order->addStatusHistoryComment($helper->__('Order can not Hold or is already on Hold'), Mage_Sales_Model_Order::STATE_HOLDED);
                     $order->save();
                     return false;
                 }
@@ -1030,7 +1042,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                 $order->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
                 if (!$order->canCancel()) {
                     $this->_writeLog('order can not be canceled', $order);
-                    $order->addStatusHistoryComment($helper->__('Order can not be canceled'), Mage_Sales_Model_Order::STATE_CANCELED);
+                    $order->addStatusHistoryComment($helper->__('Order can not be canceled or is already canceled'), Mage_Sales_Model_Order::STATE_CANCELED);
                     $order->save();
                     return false;
                 }
