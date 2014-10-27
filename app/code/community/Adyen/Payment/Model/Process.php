@@ -178,42 +178,36 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             // check if request is valid
             if($total_result_checksum == $checksum) {
 
-            //get order && payment objects
-            $order = Mage::getModel('sales/order');
-            //$incrementId = $varienObj->getData('merchantReference');
-            $incrementId = $varienObj->getData('originalCustomMerchantReference');
+                //get order && payment objects
+                $order = Mage::getModel('sales/order');
+                //$incrementId = $varienObj->getData('merchantReference');
+                $incrementId = $varienObj->getData('originalCustomMerchantReference');
 
-            //error
-            $orderExist = $this->_incrementIdExist($incrementId);
+                //error
+                $orderExist = $this->_incrementIdExist($incrementId);
 
-            if (empty($orderExist)) {
-                $this->_writeLog("unknown order : $incrementId");
-            } else {
-                $order->loadByIncrementId($incrementId);
-
-                if($result == 'APPROVED') {
-                    // wait for notification to finish the order
-
-                    // set adyen event status on true
-                    $order->setAdyenEventCode(Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED);
-
-                    $comment = Mage::helper('adyen')
-                        ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
-
-                    $order->addStatusHistoryComment($comment, false);
-
-                    try {
-                        $order->save();
-                    } catch (Exception $e) {
-                        Mage::logException($e);
-                    }
+                if (empty($orderExist)) {
+                    $this->_writeLog("unknown order : $incrementId");
                 } else {
+                    $order->loadByIncrementId($incrementId);
 
-                    $isBankTransfer = Mage::getModel('adyen/event')
-                        ->isBanktransfer($order->getIncrementId());
-                    //attempt to hold/cancel (exceptional to BankTransfer they stay in previous status/pending)
+                    if($result == 'APPROVED') {
+                        // wait for notification to finish the order
 
-                    if (!$isBankTransfer) {
+                        // set adyen event status on true
+                        $order->setAdyenEventCode(Adyen_Payment_Model_Event::ADYEN_EVENT_POSAPPROVED);
+
+                        $comment = Mage::helper('adyen')
+                            ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
+
+                        $order->addStatusHistoryComment($comment, false);
+
+                        try {
+                            $order->save();
+                        } catch (Exception $e) {
+                            Mage::logException($e);
+                        }
+                    } else {
 
                         $comment = Mage::helper('adyen')
                             ->__('%s <br /> Result: %s <br /> paymentMethod: %s', 'Adyen App Result URL Notification:', $result, 'POS');
@@ -230,14 +224,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                         } else {
                             $order->cancel()->save();
                         }
-
-                    } else {
-                        $this->_addStatusHistoryComment($order, $varienObj, $order->getStatus());
-                        $status = true;
                     }
                 }
             }
-        }
         }
         // close the window
         $html = "<html><body>
@@ -507,8 +496,9 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
                 // don't save the order because of interferrence with order status (set by notifications)
                 break;
             case Adyen_Payment_Model_Event::ADYEN_EVENT_CANCELLED:
-                $isBankTransfer = Mage::getModel('adyen/event')
-                    ->isBanktransfer($order->getIncrementId());
+                $paymentMethod = trim($params->getData('paymentMethod'));
+                $isBankTransfer = $this->isBankTransfer($paymentMethod);
+
                 //attempt to hold/cancel (exceptional to BankTransfer they stay in previous status/pending)
                 if (!$isBankTransfer) {
                     $this->_addStatusHistoryComment($order, $params);
@@ -772,10 +762,14 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
     public function isAutoCapture($response, $order) {
         $paymentMethod = trim($response->getData('paymentMethod'));
         $captureMode = trim($this->_getConfigData('capture_mode'));
+        $sepaFlow = trim($this->_getConfigData('capture_mode', 'adyen_sepa'));
         $_paymentCode = $this->_paymentMethodCode($order);
 
+        //check if it is a banktransfer. Banktransfer only a Authorize notification is send.
+        $isBankTransfer = $this->isBankTransfer($paymentMethod);
+
         // payment method ideal, cash or adyen_pos has direct capture
-        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash' ) === 0 || $_paymentCode == "adyen_pos" ) {
+        if (strcmp($paymentMethod, 'ideal') === 0 || strcmp($paymentMethod, 'c_cash' ) === 0 || $_paymentCode == "adyen_pos" || $isBankTransfer == true || ($_paymentCode == "adyen_sepa" && $sepaFlow != "authcap")) {
             return true;
         }
         if (strcmp($captureMode, 'manual') === 0) {
@@ -786,6 +780,14 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
             return false;
         }
         return true;
+    }
+
+    public function isBankTransfer($paymentMethod) {
+        if(strlen($paymentMethod) >= 12 &&  substr($paymentMethod, 0, 12) == "bankTransfer") {
+            $isBankTransfer = true;
+        } else {
+            $isBankTransfer = false;
+        }
     }
 
     /**

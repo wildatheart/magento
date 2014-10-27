@@ -87,22 +87,4 @@ class Adyen_Payment_Model_Event extends Mage_Core_Model_Abstract {
         $originalReference = $this->getResource()->getOriginalPspReference($incrementId);
         return (!empty($originalReference)) ? $originalReference['psp_reference'] : false;
     }
-
-    /**
-     * Detect Bank Transfer
-     * @param type $incrementId
-     * @param type $adyenEventCode
-     * @return boolean true if bankTrasnfer
-     */
-    public function isBanktransfer($incrementId, $adyenEventCode = 'PENDING') {
-        $_incrementId = trim($incrementId);
-        $_adyenEventCode = trim($adyenEventCode);
-        $pendingEvent = $this->getResource()->getBanktransferEvent($_incrementId, $_adyenEventCode);
-        if (empty($pendingEvent))
-            return false;
-        if (!isset($pendingEvent['payment_method']))
-            return false;
-        return strpos($pendingEvent['payment_method'], 'bankTransfer') !== false ? true : false;
-    }
-
 }
