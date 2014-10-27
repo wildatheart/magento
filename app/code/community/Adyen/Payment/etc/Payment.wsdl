@@ -16,6 +16,7 @@
                     <xsd:element minOccurs="0" name="dateOfBirth" nillable="true" type="xsd:dateTime"/>
                     <xsd:element minOccurs="0" name="dccQuote" nillable="true" type="tns:ForexQuote"/>
                     <xsd:element minOccurs="0" name="deliveryAddress" nillable="true" type="ns1:Address"/>
+                    <xsd:element minOccurs="0" name="deliveryDate" nillable="true" type="xsd:dateTime" />
                     <xsd:element minOccurs="0" name="deviceFingerprint" nillable="true" type="xsd:string"/>
                     <xsd:element minOccurs="0" name="elv" nillable="true" type="tns:ELV"/>
                     <xsd:element minOccurs="0" name="fraudOffset" nillable="true" type="xsd:int"/>
@@ -265,6 +266,7 @@
                     <xsd:element minOccurs="0" name="dateOfBirth" nillable="true" type="xsd:dateTime"/>
                     <xsd:element minOccurs="0" name="dccQuote" nillable="true" type="tns:ForexQuote"/>
                     <xsd:element minOccurs="0" name="deliveryAddress" nillable="true" type="ns1:Address"/>
+                    <xsd:element minOccurs="0" name="deliveryDate" nillable="true" type="xsd:dateTime" />
                     <xsd:element minOccurs="0" name="deviceFingerprint" nillable="true" type="xsd:string"/>
                     <xsd:element minOccurs="0" name="elv" nillable="true" type="tns:ELV"/>
                     <xsd:element minOccurs="0" name="fraudOffset" nillable="true" type="xsd:int"/>
@@ -299,6 +301,7 @@
                     <xsd:element minOccurs="0" name="dateOfBirth" nillable="true" type="xsd:dateTime"/>
                     <xsd:element minOccurs="0" name="dccQuote" nillable="true" type="tns:ForexQuote"/>
                     <xsd:element minOccurs="0" name="deliveryAddress" nillable="true" type="ns1:Address"/>
+                    <xsd:element minOccurs="0" name="deliveryDate" nillable="true" type="xsd:dateTime" />
                     <xsd:element minOccurs="0" name="deviceFingerprint" nillable="true" type="xsd:string"/>
                     <xsd:element minOccurs="0" name="fraudOffset" nillable="true" type="xsd:int"/>
                     <xsd:element minOccurs="0" name="installments" nillable="true" type="ns1:Installments"/>
