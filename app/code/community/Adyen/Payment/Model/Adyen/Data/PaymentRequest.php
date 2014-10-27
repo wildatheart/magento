@@ -34,7 +34,6 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
     public $card;
     public $dccQuote;
     public $deliveryAddress;
-    public $deliveryDate;
     public $elv;
     public $fraudOffset;
     public $merchantAccount;
