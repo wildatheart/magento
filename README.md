@@ -3,7 +3,6 @@ magento
 
 Adyen Payment plugin for Magento.
 
-This is the developer branch 2.1.1
 We commit all our new features directly into our GitHub repository.
 But you can also request or suggest new features or code changes yourself!
 
