@@ -450,9 +450,23 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
 
         var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var payment_hpp_type = $RF(form, 'payment[hpp_type]');
-        var payment_recurring_type = $RF(form, 'payment[recurring]');
+        var payment_recurring_type = $RF(form, 'payment[method]');
         var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
         var payment_method = $RF(form, 'payment[method]');
+
+        // save all input and select fields in array so after ajax call you can reset the values
+        var paymentInputFields = {};
+        var inputs = form.querySelectorAll("input,select");
+        for (x = 0 ; x < inputs.length ; x++){
+            inputname = inputs[x].getAttribute("name");
+            if(inputname != null) {
+                if(inputname.startsWith("payment") && inputs[x].type != "hidden") {
+                    var inputname = inputname.replace('payment[','').replace(']','');
+                    paymentInputFields[inputname] = inputs[x].value;
+                }
+            }
+        }
+
         parameters['payment_method'] = payment_method;
         parameters['payment[method]'] = payment_method;
 
@@ -509,6 +523,20 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
                         });
 
                         if($RF(form, 'payment[method]') != null)    {
+
+                            // loop through input fields and reset the values
+                            for (var name in paymentInputFields) {
+
+                                var inputname = "payment[" + name + "]";
+                                var inputElements = document.getElementsByName(inputname);
+                                var inputElement = inputElements[0];
+
+                                if($(inputElement).type && $(inputElement).type.toLowerCase() != 'radio') {
+                                    // element is unique so get first and only item
+                                    inputElements[0].value =  paymentInputFields[name];
+                                }
+                            }
+
                             try    {
                                 var payment_method = $RF(form, 'payment[method]');
                                 $('container_payment_method_' + payment_method).show();
@@ -573,6 +601,19 @@ function get_separate_save_methods_function(url, update_payments)
         var payment_recurring_type = $RF(form, 'payment[recurring]');
         var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
 
+        // save all input and select fields in array so after ajax call you can reset the values
+        var paymentInputFields = {};
+        var inputs = form.querySelectorAll("input,select");
+        for (x = 0 ; x < inputs.length ; x++){
+            inputname = inputs[x].getAttribute("name");
+            if(inputname != null) {
+                if(inputname.startsWith("payment") && inputs[x].type != "hidden") {
+                    var inputname = inputname.replace('payment[','').replace(']','');
+                    paymentInputFields[inputname] = inputs[x].value;
+                }
+            }
+        }
+
         var totals = get_totals_element();
 
         var freeMethod = $('p_method_free');
@@ -627,6 +668,21 @@ function get_separate_save_methods_function(url, update_payments)
                         });
 
                         if($RF($('onestepcheckout-form'), 'payment[method]') != null)    {
+
+
+                            // loop through input fields and reset the values
+                            for (var name in paymentInputFields) {
+
+                                var inputname = "payment[" + name + "]";
+                                var inputElements = document.getElementsByName(inputname);
+                                var inputElement = inputElements[0];
+
+                                if($(inputElement).type && $(inputElement).type.toLowerCase() != 'radio') {
+                                    // element is unique so get first and only item
+                                    inputElements[0].value =  paymentInputFields[name];
+                                }
+                            }
+
                             try    {
                                 var payment_method = $RF(form, 'payment[method]');
                                 $('container_payment_method_' + payment_method).show();
