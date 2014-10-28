@@ -14,7 +14,7 @@ But you can also request or suggest new features or code changes yourself!
 <h2>Support</h2>
 You can create issues on our Magento Repository or if you have some specific problems for your account you can contact <a href="mailto:magento@adyen.com">magento@adyen.com</a>  as well.
 
-<h2>Current Release<h2>
+<h2>Current Release</h2>
 <h3>2.1.1></h3>
 <h4>Features</h4>
 * Make installments possible for the OneClick Payments
