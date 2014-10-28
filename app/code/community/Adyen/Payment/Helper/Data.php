@@ -204,9 +204,9 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
 
             $ch = curl_init();
 
-            $isConfigDemoMode = $this->getConfigDataDemoMode();
-            $wsUsername = $this->getConfigDataWsUserName();
-            $wsPassword = $this->getConfigDataWsPassword();
+            $isConfigDemoMode = $this->getConfigDataDemoMode($storeId = null);
+            $wsUsername = $this->getConfigDataWsUserName($storeId);
+            $wsPassword = $this->getConfigDataWsPassword($storeId);
 
             if ($isConfigDemoMode)
                 curl_setopt($ch, CURLOPT_URL, "https://pal-test.adyen.com/pal/adapter/httppost");
@@ -315,25 +315,25 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
      * Used via Payment method.Notice via configuration ofcourse Y or N
      * @return boolean true on demo, else false
      */
-    public function getConfigDataDemoMode() {
-        if ($this->_getConfigData('demoMode') == 'Y') {
+    public function getConfigDataDemoMode($storeId = null) {
+        if ($this->_getConfigData('demoMode', null, $storeId) == 'Y') {
             return true;
         }
         return false;
     }
 
-    public function getConfigDataWsUserName() {
-        if ($this->getConfigDataDemoMode()) {
-            return $this->_getConfigData('ws_username_test');
+    public function getConfigDataWsUserName($storeId = null) {
+        if ($this->getConfigDataDemoMode($storeId)) {
+            return $this->_getConfigData('ws_username_test', null, $storeId);
         }
-        return $this->_getConfigData('ws_username_live');
+        return $this->_getConfigData('ws_username_live', null, $storeId);
     }
 
-    public function getConfigDataWsPassword() {
-        if ($this->getConfigDataDemoMode()) {
-            return $this->_getConfigData('ws_password_test');
+    public function getConfigDataWsPassword($storeId = null) {
+        if ($this->getConfigDataDemoMode($storeId)) {
+            return $this->_getConfigData('ws_password_test', null, $storeId);
         }
-        return $this->_getConfigData('ws_password_live');
+        return $this->_getConfigData('ws_password_live', null, $storeId);
     }
 
     /**

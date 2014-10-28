@@ -169,10 +169,17 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      */
     protected function _processRequest(Varien_Object $payment, $amount, $request, $pspReference = null) {
         $this->_initOrder();
-        $this->_initService();
-        $merchantAccount = trim($this->_getConfigData('merchantAccount'));
-        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract');
-        $enableMoto = (int) $this->_getConfigData('enable_moto', 'adyen_cc');
+
+        if (Mage::app()->getStore()->isAdmin()) {
+            $storeId = $this->_order->getStoreId();
+        } else {
+            $storeId = null;
+        }
+
+        $this->_initService($storeId);
+        $merchantAccount = trim($this->_getConfigData('merchantAccount', 'adyen_abstract', $storeId));
+        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract', $storeId);
+        $enableMoto = (int) $this->_getConfigData('enable_moto', 'adyen_cc', $storeId);
         $modificationResult = Mage::getModel('adyen/adyen_data_modificationResult');
         $requestData = Mage::getModel('adyen/adyen_data_modificationRequest')
                 ->create($payment, $amount, $this->_order, $merchantAccount, $pspReference);
@@ -346,8 +353,8 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @desc Get SOAP client
      * @return Adyen_Payment_Model_Adyen_Abstract 
      */
-    protected function _initService() {
-        $accountData = $this->getAccountData();
+    protected function _initService($storeId = null) {
+        $accountData = $this->getAccountData($storeId);
         $wsdl = $accountData['url']['wsdl'];
         $location = $accountData['url']['location'];
         $login = $accountData['login'];
@@ -374,7 +381,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @desc soap urls
      * @return string 
      */
-    protected function _getAdyenUrls() {
+    protected function _getAdyenUrls($storeId = null) {
         $test = array(
             'location' => "https://pal-test.adyen.com/pal/servlet/soap/Payment",
             'wsdl' => Mage::getModuleDir('etc', 'Adyen_Payment') . DS . 'Payment.wsdl'
@@ -383,7 +390,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
             'location' => "https://pal-live.adyen.com/pal/servlet/soap/Payment",
             'wsdl' => Mage::getModuleDir('etc', 'Adyen_Payment') . DS . 'Payment.wsdl'
         );
-        if ($this->getConfigDataDemoMode()) {
+        if ($this->getConfigDataDemoMode($storeId)) {
             return $test;
         } else {
             return $live;
@@ -407,10 +414,10 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
     /**
      * Adyen User Account Data
      */
-    public function getAccountData() {
-        $url = $this->_getAdyenUrls();
-        $wsUsername = $this->getConfigDataWsUserName();
-        $wsPassword = $this->getConfigDataWsPassword();
+    public function getAccountData($storeId = null) {
+        $url = $this->_getAdyenUrls($storeId);
+        $wsUsername = $this->getConfigDataWsUserName($storeId);
+        $wsPassword = $this->getConfigDataWsPassword($storeId);
         $account = array(
             'url' => $url,
             'login' => $wsUsername,
@@ -558,16 +565,16 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * Used via Payment method.Notice via configuration ofcourse Y or N
      * @return boolean true on demo, else false
      */
-    public function getConfigDataDemoMode() {
-        return Mage::helper('adyen')->getConfigDataDemoMode();
+    public function getConfigDataDemoMode($storeId = null) {
+        return Mage::helper('adyen')->getConfigDataDemoMode($storeId);
     }
 
-    public function getConfigDataWsUserName() {
-        return Mage::helper('adyen')->getConfigDataWsUserName();
+    public function getConfigDataWsUserName($storeId = null) {
+        return Mage::helper('adyen')->getConfigDataWsUserName($storeId);
     }
 
-    public function getConfigDataWsPassword() {
-        return Mage::helper('adyen')->getConfigDataWsPassword();
+    public function getConfigDataWsPassword($storeId) {
+        return Mage::helper('adyen')->getConfigDataWsPassword($storeId);
     }
 
     /**
