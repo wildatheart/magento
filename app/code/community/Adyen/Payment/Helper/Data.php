@@ -169,8 +169,8 @@ class Adyen_Payment_Helper_Data extends Mage_Payment_Helper_Data {
                                 "mastercard" => "MC",
                                 "discover" => "DI",
                                 "diners" => "DC",
-                                "maestro" => "MO",
-                                "jcb" => "JC",
+                                "maestro" => "SM",
+                                "jcb" => "JCB",
 //                                "" => "CB" cart blue is just visa
         );
 

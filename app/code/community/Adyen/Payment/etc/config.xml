@@ -378,18 +378,18 @@
                         <order>40</order>
                         <is_cvv_required>1</is_cvv_required>
                     </DC>
-                    <MO>
-                        <code>MO</code>
+                    <SM>
+                        <code>SM</code>
                         <name>Maestro</name>
                         <order>60</order>
                         <is_cvv_required>0</is_cvv_required>
-                    </MO>
-                    <JC>
-                        <code>JC</code>
+                    </SM>
+                    <JCB>
+                        <code>JCB</code>
                         <name>JCB</name>
                         <order>70</order>
                         <is_cvv_required>0</is_cvv_required>
-                    </JC>
+                    </JCB>
                     <CB>
                         <code>CB</code>
                         <name>CarteBleue</name>
