@@ -169,10 +169,17 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      */
     protected function _processRequest(Varien_Object $payment, $amount, $request, $pspReference = null) {
         $this->_initOrder();
-        $this->_initService();
-        $merchantAccount = trim($this->_getConfigData('merchantAccount'));
-        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract');
-        $enableMoto = (int) $this->_getConfigData('enable_moto', 'adyen_cc');
+
+        if (Mage::app()->getStore()->isAdmin()) {
+            $storeId = $this->_order->getStoreId();
+        } else {
+            $storeId = null;
+        }
+
+        $this->_initService($storeId);
+        $merchantAccount = trim($this->_getConfigData('merchantAccount', 'adyen_abstract', $storeId));
+        $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract', $storeId);
+        $enableMoto = (int) $this->_getConfigData('enable_moto', 'adyen_cc', $storeId);
         $modificationResult = Mage::getModel('adyen/adyen_data_modificationResult');
         $requestData = Mage::getModel('adyen/adyen_data_modificationRequest')
                 ->create($payment, $amount, $this->_order, $merchantAccount, $pspReference);
@@ -230,71 +237,8 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
         $merchantAccount = trim($this->_getConfigData('merchantAccount'));
         $recurringType = $this->_getConfigData('recurringtypes', 'adyen_abstract');
 
-
-        // do not show the oneclick if recurring type is empty or recurring
-        if($recurringType == "ONECLICK" || $recurringType == "ONECLICK,RECURRING" || $recurringType == "RECURRING")
-        {
-            // recurring type is always ONECLICK
-            if($recurringType == "ONECLICK,RECURRING") {
-                $recurringType = "ONECLICK";
-            }
-
-            // rest call to get listrecurring details
-            $request = array(
-                "action" => "Recurring.listRecurringDetails",
-                "recurringDetailsRequest.merchantAccount" => $merchantAccount,
-                "recurringDetailsRequest.shopperReference" => $customerId,
-                "recurringDetailsRequest.recurring.contract" => $recurringType, // i.e.: "ONECLICK" Or "RECURRING"
-            );
-
-            $ch = curl_init();
-
-            $isConfigDemoMode = $this->getConfigDataDemoMode();
-            $wsUsername = $this->getConfigDataWsUserName();
-            $wsPassword = $this->getConfigDataWsPassword();
-
-            if ($isConfigDemoMode)
-                curl_setopt($ch, CURLOPT_URL, "https://pal-test.adyen.com/pal/adapter/httppost");
-            else
-                curl_setopt($ch, CURLOPT_URL, "https://pal-live.adyen.com/pal/adapter/httppost");
-
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC  );
-            curl_setopt($ch, CURLOPT_USERPWD,$wsUsername.":".$wsPassword);
-            curl_setopt($ch, CURLOPT_POST,count($request));
-            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($request));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-            $result = curl_exec($ch);
-
-            if($result === false) {
-                Mage::log("List recurring is failing error is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
-                Mage::throwException(Mage::helper('adyen')->__('List recurring is generating the error see the log'));
-            } else{
-                /**
-                 * The $result contains a JSON array containing
-                 * the available payment methods for the merchant account.
-                 */
-                parse_str($result,$result);
-                Mage::log("List recurring result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
-
-                // create a arraylist with the cards
-                $recurringCards = array();
-
-                foreach($result as $key => $value) {
-                    // strip the key
-                    $key = str_replace("recurringDetailsResult_details_", "", $key);
-                    $key2 = strstr($key, '_');
-                    $keyNumber = str_replace($key2, "", $key);
-                    $keyAttribute = substr($key2, 1);
-                    $recurringCards[$keyNumber][$keyAttribute] = $value;
-                }
-                // unset the recurringDetailsResult because this is not a card
-                unset($recurringCards["recurringDetailsResult"]);
-
-                return $recurringCards;
-            }
-        }
+        // call to helper
+        return Mage::helper('adyen')->getRecurringCards($merchantAccount, $customerId, $recurringType);
     }
 
     /**
@@ -409,8 +353,8 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @desc Get SOAP client
      * @return Adyen_Payment_Model_Adyen_Abstract 
      */
-    protected function _initService() {
-        $accountData = $this->getAccountData();
+    protected function _initService($storeId = null) {
+        $accountData = $this->getAccountData($storeId);
         $wsdl = $accountData['url']['wsdl'];
         $location = $accountData['url']['location'];
         $login = $accountData['login'];
@@ -437,7 +381,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @desc soap urls
      * @return string 
      */
-    protected function _getAdyenUrls() {
+    protected function _getAdyenUrls($storeId = null) {
         $test = array(
             'location' => "https://pal-test.adyen.com/pal/servlet/soap/Payment",
             'wsdl' => Mage::getModuleDir('etc', 'Adyen_Payment') . DS . 'Payment.wsdl'
@@ -446,7 +390,7 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
             'location' => "https://pal-live.adyen.com/pal/servlet/soap/Payment",
             'wsdl' => Mage::getModuleDir('etc', 'Adyen_Payment') . DS . 'Payment.wsdl'
         );
-        if ($this->getConfigDataDemoMode()) {
+        if ($this->getConfigDataDemoMode($storeId)) {
             return $test;
         } else {
             return $live;
@@ -470,10 +414,10 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
     /**
      * Adyen User Account Data
      */
-    public function getAccountData() {
-        $url = $this->_getAdyenUrls();
-        $wsUsername = $this->getConfigDataWsUserName();
-        $wsPassword = $this->getConfigDataWsPassword();
+    public function getAccountData($storeId = null) {
+        $url = $this->_getAdyenUrls($storeId);
+        $wsUsername = $this->getConfigDataWsUserName($storeId);
+        $wsPassword = $this->getConfigDataWsPassword($storeId);
         $account = array(
             'url' => $url,
             'login' => $wsUsername,
@@ -614,38 +558,23 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
      * @param string $code
      */
     protected function _getConfigData($code, $paymentMethodCode = null, $storeId = null) {
-        if (null === $storeId) {
-            $storeId = $this->getStore();
-        }
-        if (empty($paymentMethodCode)) {
-            return Mage::getStoreConfig("payment/adyen_abstract/$code", $storeId);
-        }
-        return Mage::getStoreConfig("payment/$paymentMethodCode/$code", $storeId);
+        return Mage::helper('adyen')->_getConfigData($code, $paymentMethodCode, $storeId);
     }
 
     /**
      * Used via Payment method.Notice via configuration ofcourse Y or N
      * @return boolean true on demo, else false
      */
-    public function getConfigDataDemoMode() {
-        if ($this->_getConfigData('demoMode') == 'Y') {
-            return true;
-        }
-        return false;
+    public function getConfigDataDemoMode($storeId = null) {
+        return Mage::helper('adyen')->getConfigDataDemoMode($storeId);
     }
 
-    public function getConfigDataWsUserName() {
-        if ($this->getConfigDataDemoMode()) {
-            return $this->_getConfigData('ws_username_test');
-        }
-        return $this->_getConfigData('ws_username_live');
+    public function getConfigDataWsUserName($storeId = null) {
+        return Mage::helper('adyen')->getConfigDataWsUserName($storeId);
     }
 
-    public function getConfigDataWsPassword() {
-        if ($this->getConfigDataDemoMode()) {
-            return $this->_getConfigData('ws_password_test');
-        }
-        return $this->_getConfigData('ws_password_live');
+    public function getConfigDataWsPassword($storeId) {
+        return Mage::helper('adyen')->getConfigDataWsPassword($storeId);
     }
 
     /**

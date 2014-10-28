@@ -33,6 +33,38 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
     protected $_infoBlockType = 'adyen/info_openinvoice';
     protected $_paymentMethod = 'openinvoice';
 
+
+    public function isApplicableToQuote($quote, $checksBitMask)
+    {
+        // different don't show
+        if($this->_getConfigData('different_address_disable', 'adyen_openinvoice')) {
+
+            // get billing and shipping information
+            $quote = $this->getQuote();
+            $billing = $quote->getBillingAddress()->getData();
+            $shipping = $quote->getShippingAddress()->getData();
+
+            // check if the following items are different: street, city, postcode, region, countryid
+            if(isset($billing['street']) && isset($billing['city']) && $billing['postcode'] && isset($billing['region']) && isset($billing['country_id'])) {
+                $billingAddress = array($billing['street'], $billing['city'], $billing['postcode'], $billing['region'],$billing['country_id']);
+            } else {
+                $billingAddress = array();
+            }
+            if(isset($shipping['street']) && isset($shipping['city']) && $shipping['postcode'] && isset($shipping['region']) && isset($shipping['country_id'])) {
+                $shippingAddress = array($shipping['street'], $shipping['city'], $shipping['postcode'], $shipping['region'],$shipping['country_id']);
+            } else {
+                $shippingAddress = array();
+            }
+
+            // if the result are not the same don't show the payment method open invoice
+            $diff = array_diff($billingAddress,$shippingAddress);
+            if(is_array($diff) && !empty($diff)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function assignData($data) {
         if (!($data instanceof Varien_Object)) {
             $data = new Varien_Object($data);
@@ -256,8 +288,8 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         	$additional_data_sign['openinvoicedata.' . $linename . '.currencyCode'] = $currency;
         	$additional_data_sign['openinvoicedata.' . $linename . '.description'] = $item->getName();
         	$additional_data_sign['openinvoicedata.' . $linename . '.itemAmount'] = Mage::helper('adyen')->formatAmount($item->getPrice(), $currency);
-	      	$additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] =  Mage::helper('adyen')->formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount(), $currency);
-        	$additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = (int) $item->getQtyOrdered();
+            $additional_data_sign['openinvoicedata.' . $linename . '.itemVatAmount'] = ($item->getTaxAmount() > 0 && $item->getPriceInclTax() > 0) ? Mage::helper('adyen')->formatAmount($item->getPriceInclTax(), $currency) - Mage::helper('adyen')->formatAmount($item->getPrice(), $currency):Mage::helper('adyen')->formatAmount($item->getTaxAmount(), $currency);
+            $additional_data_sign['openinvoicedata.' . $linename . '.numberOfItems'] = (int) $item->getQtyOrdered();
         	$additional_data_sign['openinvoicedata.' . $linename . '.vatCategory'] = "None";
         }
         
@@ -315,30 +347,17 @@ class Adyen_Payment_Model_Adyen_Openinvoice extends Adyen_Payment_Model_Adyen_Hp
         ksort($additional_data_sign);
 
         // signature is first alphabatical keys seperate by : and then | and then the values seperate by :
-        $sign_additional_data_keys = "";
-        $sign_additional_data_values = "";
         foreach($additional_data_sign as $key => $value) {
-        	
         	// add to fields
         	$adyFields[$key] = $value;
-        	
-        	// create sign
-        	$sign_additional_data_keys .= $key;
-        	$sign_additional_data_values .= $value;
-        	
-			$keys = array_keys($additional_data_sign);
-        	if(end($keys) != $key) {
-        		$sign_additional_data_keys .= ":";
-        		$sign_additional_data_values .= ":";
-        	}
         }
-        
-        $sign_additional_data =  $sign_additional_data_keys . "|" . $sign_additional_data_values;
-       
+
+        $keys = implode(':',array_keys($additional_data_sign));
+        $values = implode(':',$additional_data_sign);
+        $sign_additional_data = trim($keys) . '|' . trim($values);
         $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign_additional_data);
         $adyFields['openinvoicedata.sig'] =  base64_encode(pack('H*', $signMac));
-        
-        
+
         Mage::log($adyFields, self::DEBUG_LEVEL, 'http-request.log');
         
         return $adyFields;

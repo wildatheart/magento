@@ -36,7 +36,7 @@ class Adyen_Payment_Block_Info_Sepa extends Mage_Payment_Block_Info {
     }
 
     public function toPdf() {
-        $this->setTemplate('adyen/info/pdf/sepa.phtml');
+        $this->setTemplate('adyen/pdf/sepa.phtml');
         return $this->toHtml();
     }
 

@@ -106,6 +106,20 @@ $oneMethod = count($methods) <= 1;
                             e.setStyle({display:'none'});
                         }
                     );
+
+                    // hide update link
+                    $$('.update-expiration-date').each(
+                        function (e) {
+                            e.setStyle({display:'none'});
+                        }
+                    );
+
+                    // don't show installment field
+                    $$('.adyen-oneclick-installments').each(
+                        function (e) {
+                            e.setStyle({display:'none'});
+                        }
+                    );
                 }
             }
             payment.switchMethod(method);

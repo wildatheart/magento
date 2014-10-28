@@ -47,15 +47,59 @@
 .sp-methods h3.other-payment { margin-top:15px; }
 .sp-methods #oneclick_payment_form_adyen_oneclick { padding-top:10px; }
 .sp-methods #oneclick_payment_form_adyen_oneclick .recurring-creditcards .recurring_type { float:left; vertical-align: middle; height:120px;}
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block { display:inline-block; border: 1px solid #999; padding:10px; margin-left:10px; min-width: 568px; }
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block img { margin-bottom:10px;}
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns { float:left; margin-right:10px; height:30px;}
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns .update-expiration-date { display:inline; float:none; }
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block label { display:block; }
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns.three.b label { width:175px;}
-.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .creditcard-holder-name { margin-top:20px;}
 
 
+.saved-cards ul li { margin-bottom:10px; }
+.saved-cards .btn-delete  {margin-top:10px;}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block,
+.saved-cards .creditcard-block {
+    display:inline-block;
+    border: 1px solid #999;
+    padding:10px;
+    margin-left:10px;
+    min-width: 568px;
+}
+
+.saved-cards .creditcard-block { min-width:350px;}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block img,
+.saved-cards .creditcard-block img {
+    margin-bottom:10px;
+}
+
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns,
+.saved-cards .creditcard-block .columns {
+    float:left;
+    margin-right:10px;
+    height:30px;
+}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns .update-expiration-date,
+.saved-cards .creditcard-block .creditcard-block .columns .update-expiration-date {
+    display:inline; float:none;
+}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block label,
+.saved-cards .creditcard-block label {
+    display:block;
+}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .columns.three.b label,
+.creditcard-holder-name, .saved-cards .creditcard-block .columns.three.b label {
+    width:175px;
+}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .creditcard-holder-name,
+.saved-cards .creditcard-block .creditcard-holder-name {
+    margin-top:20px;
+}
+
+.sp-methods #oneclick_payment_form_adyen_oneclick .creditcard-block .adyen-oneclick-installments,
+.saved-cards .creditcard-block .adyen-oneclick-installments {
+    margin-top:10px;
+}
 
 /* pos redirect page */
 .redirect-body-adyen { margin:0; padding:0;}
@@ -64,3 +108,4 @@
 	#pos-redirect-page .grey-header h1 { padding: 16px 10px; font-family: 'Open Sans', sans-serif; font-size:24px;color:white; }
 #pos-redirect-page .amount-box { width:300px; height:150px; padding-top:75px; margin:50px auto; border:1px solid #797c83; color:#797c83; text-align:center; font-weight:bold; font-size:34px; background-color: #f5f5f5; box-shadow: 0 0 2px 2px #888;}
 #pos-redirect-page #launchlink { margin-top:10px; clear:both; display:block; color:#797C83; text-decoration:none; }
+

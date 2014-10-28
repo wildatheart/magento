@@ -52,6 +52,7 @@
                                 <tr>
                                     <td width="20px">
                                         <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>"/>
+                                        <input type="hidden" name="payment[hpp_type_label_<?php echo $_typeCode ?>]" value="<?php echo $_typeName; ?>" />
                                     </td>
                                     <?php if (file_exists($filename)): ?>
                                         <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></td>
@@ -106,6 +107,20 @@
 
                                         // hide open cvc field
                                         $$('.cvc_block').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                        // hide update link
+                                        $$('.update-expiration-date').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                        // hide installment box
+                                        $$('.adyen-oneclick-installments').each(
                                             function (e) {
                                                 e.setStyle({display:'none'});
                                             }

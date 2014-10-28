@@ -1,14 +1,27 @@
 
-<?php if($this->hasExpressCheckout()): ?>
+<?php if($this->hasExpressCheckout() || $this->hasCashExpressCheckout() ): ?>
 
-<form action="<?php echo  $this->getUrl("adyen/checkoutPos"); ?>" method="post">
-<input style="width:250px;" type="text" class="input-text" name="adyenPosEmail" id="adyenPosEmail" value="" size="60"  placeholder="Email" autocapitalize="off"/>
+<div id="adyen-checkout-wrapper">
+    <form action="<?php echo  $this->getUrl("adyen/checkoutPos", array('_secure'=>true)); ?>" method="post">
+        <input style="width:250px;" type="text" class="input-text" name="adyenPosEmail" id="adyenPosEmail" value="" size="60"  placeholder="Email" autocapitalize="off"/>
 
-<button id="StartScan" style="" type="submit" title="Start Auto Scanning" class="button btn-proceed-checkout btn-checkout">
-    <span><span>Checkout with POS</span></span>
-</button>
+        <?php if($this->hasExpressCheckout()): ?>
+            <button id="CheckoutWithPos" style="" type="submit" title="Checkout with POS" class="button btn-proceed-checkout btn-checkout adyen-checkout-button">
+                <span><span>Checkout with POS</span></span>
+            </button>
+        <?php endif; ?>
 
-</form>
+    </form>
+
+    <form action="<?php echo  $this->getUrl("adyen/checkoutCash", array('_secure'=>true)); ?>" method="post">
+        <?php if($this->hasCashExpressCheckout()): ?>
+            <button id="CheckoutWithCash" style="" type="submit" title="Checkout with Cash" class="button btn-proceed-checkout btn-checkout adyen-checkout-button">
+                <span><span>Checkout with Cash</span></span>
+            </button>
+        <?php endif; ?>
+    </form>
+</div>
+
 <div>-OR-</div>
 
 <?php endif; ?>

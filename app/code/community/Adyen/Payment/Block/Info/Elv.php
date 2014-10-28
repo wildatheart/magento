@@ -36,7 +36,7 @@ class Adyen_Payment_Block_Info_Elv extends Mage_Payment_Block_Info {
     }
 
     public function toPdf() {
-        $this->setTemplate('adyen/info/pdf/elv.phtml');
+        $this->setTemplate('adyen/pdf/elv.phtml');
         return $this->toHtml();
     }
 

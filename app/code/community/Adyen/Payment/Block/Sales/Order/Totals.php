@@ -30,33 +30,38 @@ class Adyen_Payment_Block_Sales_Order_Totals extends Mage_Sales_Block_Order_Tota
 	protected function _initTotals()
 	{
 		parent::_initTotals();
-		$this->addTotal(
-			new Varien_Object(
-				array(
-					'code'      => 'payment_fee',
-					'strong'    => false,
-					'value'     => $this->getSource()->getPaymentFeeAmount(),
-					'base_value'=> $this->getSource()->getBasePaymentFeeAmount(),
-					'label'     => $this->helper('adyen')->__('Payment Fee'),
-					'area'      => '',
-				)
-			),
-			'subtotal'
-		);
 
-        $this->addTotal(
-            new Varien_Object(
-                array(
-                    'code'      => 'payment_installment_fee',
-                    'strong'    => false,
-                    'value'     => $this->getSource()->getPaymentInstallmentFeeAmount(),
-                    'base_value'=> $this->getSource()->getBasePaymentInstallmentFeeAmount(),
-                    'label'     => $this->helper('adyen')->__('Payment Fee Installments'),
-                    'area'      => '',
-                )
-            ),
-            'subtotal'
-        );
+        if (((float)$this->getSource()->getPaymentFeeAmount()) != 0) {
+            $this->addTotal(
+                new Varien_Object(
+                    array(
+                        'code'      => 'payment_fee',
+                        'strong'    => false,
+                        'value'     => $this->getSource()->getPaymentFeeAmount(),
+                        'base_value'=> $this->getSource()->getBasePaymentFeeAmount(),
+                        'label'     => $this->helper('adyen')->__('Payment Fee'),
+                        'area'      => '',
+                    )
+                ),
+                'subtotal'
+            );
+        }
+
+        if (((float)$this->getSource()->getPaymentInstallmentFeeAmount()) != 0) {
+            $this->addTotal(
+                new Varien_Object(
+                    array(
+                        'code'      => 'payment_installment_fee',
+                        'strong'    => false,
+                        'value'     => $this->getSource()->getPaymentInstallmentFeeAmount(),
+                        'base_value'=> $this->getSource()->getBasePaymentInstallmentFeeAmount(),
+                        'label'     => $this->helper('adyen')->__('Payment Fee Installments'),
+                        'area'      => '',
+                    )
+                ),
+                'subtotal'
+            );
+        }
 		return $this;
 	}
 }

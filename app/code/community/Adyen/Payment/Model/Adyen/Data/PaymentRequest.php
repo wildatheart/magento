@@ -34,7 +34,6 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
     public $card;
     public $dccQuote;
     public $deliveryAddress;
-    public $deliveryDate;
     public $elv;
     public $fraudOffset;
     public $merchantAccount;
@@ -86,8 +85,17 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
 
         // add recurring type for oneclick and recurring
         if($recurringType) {
-            $this->recurring = new Adyen_Payment_Model_Adyen_Data_Recurring();
-            $this->recurring->contract = $recurringType;
+
+            /* if user uncheck the checkbox store creditcard don't set ONECLICK in the recurring contract
+             * for contracttype  oneclick,recurring it means it will use recurring and if contracttype is recurring this can stay on recurring
+             */
+            if($paymentMethod == "cc" && $payment->getAdditionalInformation("store_cc") == "" && $recurringType == "ONECLICK,RECURRING") {
+                $this->recurring = new Adyen_Payment_Model_Adyen_Data_Recurring();
+                $this->recurring->contract = "RECURRING";
+            } else if(!($paymentMethod == "cc" && $payment->getAdditionalInformation("store_cc") == "" && $recurringType != "RECURRING")) {
+                $this->recurring = new Adyen_Payment_Model_Adyen_Data_Recurring();
+                $this->recurring->contract = $recurringType;
+            }
         }
 
         /**
@@ -169,6 +177,7 @@ class Adyen_Payment_Model_Adyen_Data_PaymentRequest extends Adyen_Payment_Model_
                     $this->installments = new Adyen_Payment_Model_Adyen_Data_Installments();
                     $this->installments->value = $payment->getAdditionalInformation('number_of_installments');
                 }
+
                 break;
             case "boleto":
             	$boleto = unserialize($payment->getPoNumber());

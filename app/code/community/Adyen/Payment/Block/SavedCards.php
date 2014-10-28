@@ -25,28 +25,31 @@
  * @property   Adyen B.V
  * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
  */
-class Adyen_Payment_Block_Form_Oneclick extends Adyen_Payment_Block_Form_Cc {
 
-    protected function _construct() {
-        parent::_construct();
-        $this->setTemplate('adyen/form/oneclick.phtml');
-    }
+class Adyen_Payment_Block_SavedCards extends Mage_Core_Block_Template {
+
 
     public function getlistRecurringDetails() {
-        return $this->getMethod()->getlistRecurringDetails();
+
+
+        $storeId = Mage::app()->getStore()->getStoreId();
+        $customer = Mage::registry('current_customer');
+        $customerId = $customer->getId();
+        $merchantAccount = Mage::getStoreConfig("payment/adyen_abstract/merchantAccount", $storeId);
+        $recurringType = Mage::getStoreConfig("payment/adyen_abstract/recurringtypes", $storeId);
+
+        return Mage::helper('adyen')->getRecurringCards($merchantAccount, $customerId, $recurringType);
+
     }
 
-    public function isNotRecurring() {
-        return  $this->getMethod()->isNotRecurring();
+    public function getBackUrl()
+    {
+        if ($this->getRefererUrl()) {
+            return $this->getRefererUrl();
+        }
+        return $this->getUrl('customer/account/', array('_secure'=>true));
     }
 
-    public function getInstallmentForCreditCardType($ccType) {
 
-        // map $ccType to creditcard type we saved in backend
 
-        $ccType = Mage::helper('adyen/data')->getMagentoCreditCartType($ccType);
-        $result = Mage::helper('adyen/installments')->getInstallmentForCreditCardType($ccType);
-
-        return $result;
-    }
 }

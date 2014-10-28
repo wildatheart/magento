@@ -77,23 +77,6 @@ class Adyen_Payment_Model_Mysql4_Adyen_Event extends Mage_Core_Model_Mysql4_Abst
         return $db->fetchOne($sql);
     }    
 
-    /**
-     * Detect BankTransfer
-     * @param type $incrementId
-     * @param type $adyenEventCode
-     * @return type 
-     */
-    public function getBanktransferEvent($incrementId, $adyenEventCode = 'PENDING') {
-        $db = $this->_getReadAdapter();
-        $sql = $db->select()
-                ->from($this->getMainTable(), array('payment_method'))
-                ->where('increment_id = ?', $incrementId)
-                ->where('adyen_event_result = ?',$adyenEventCode)
-        ;
-        $stmt = $db->query($sql);
-        return $stmt->fetch();   
-    }
-    
     public function saveData($obj) {
         $db = $this->_getWriteAdapter();
         $db->insert($this->getMainTable(), $obj->getData());

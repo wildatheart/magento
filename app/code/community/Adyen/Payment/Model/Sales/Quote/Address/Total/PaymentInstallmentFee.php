@@ -47,7 +47,7 @@ class Adyen_Payment_Model_Sales_Quote_Address_Total_PaymentInstallmentFee extend
 
                 $paymentMethod = $quote->getPayment()->getMethod() ;
 
-                if($paymentMethod == "adyen_cc") {
+                if($paymentMethod == "adyen_cc" || $paymentMethod == "adyen_oneclick" ) {
 
                     $info = $payment->getMethodInstance();
 

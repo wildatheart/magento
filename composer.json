@@ -10,8 +10,10 @@
             "email": "support@adyen.com"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
-        "magento-hackathon/magento-composer-installer": "*"
+        "magento-hackathon/magento-composer-installer": "2.*"
+    },
+    "replace": {
+        "connect20/madia_adyen": "1.*"
     }
 }

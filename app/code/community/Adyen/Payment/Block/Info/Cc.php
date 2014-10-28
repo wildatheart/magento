@@ -40,7 +40,7 @@ class Adyen_Payment_Block_Info_Cc extends Mage_Payment_Block_Info_Cc {
     }
 
     public function toPdf() {
-        $this->setTemplate('adyen/info/pdf/cc.phtml');
+        $this->setTemplate('adyen/pdf/cc.phtml');
         return $this->toHtml();
     }
 

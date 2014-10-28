@@ -58,8 +58,14 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         }
         $info = $this->getInfoInstance();
         $hppType = $data->getHppType();
+
+        // get the label name and save it so we can show it in the information tab
+        $hppTypeLabel = "hpp_type_label_";
+        $hppTypeLabelValue = $data->getData($hppTypeLabel . $hppType);
+        $info->setAdditionalInformation('hpp_type_label', $hppTypeLabelValue);
+
         $info->setCcType($hppType)
-             ->setPoNumber($data->getData('hpp_ideal_type')); /* @note misused field */
+            ->setPoNumber($data->getData('hpp_ideal_type')); /* @note misused field */
         $config = Mage::getStoreConfig("payment/adyen_hpp/disable_hpptypes");
         if (empty($hppType) && empty($config)) {
             Mage::throwException(Mage::helper('adyen')->__('Payment Method is complusory in order to process your payment'));
@@ -108,13 +114,13 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $shopperLocale = (!empty($shopperLocale)) ? $shopperLocale : Mage::app()->getLocale()->getLocaleCode();
         $countryCode = trim($this->_getConfigData('countryCode'));
         $countryCode = (!empty($countryCode)) ? $countryCode : false;
-        
-        
+
+
         // if directory lookup is enabled use the billingadress as countrycode
         if($countryCode == false) {
-        	if(is_object($order->getBillingAddress()) && $order->getBillingAddress()->getCountry() != "") {
-        		$countryCode =  $order->getBillingAddress()->getCountry();
-        	}
+            if(is_object($order->getBillingAddress()) && $order->getBillingAddress()->getCountry() != "") {
+                $countryCode =  $order->getBillingAddress()->getCountry();
+            }
         }
 
         $adyFields = array();
@@ -122,7 +128,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $deliveryDays = (!empty($deliveryDays)) ? $deliveryDays : 55;
         $adyFields['merchantAccount'] = $merchantAccount;
         $adyFields['merchantReference'] = $realOrderId;
-        $adyFields['paymentAmount'] = $amount;
+        $adyFields['paymentAmount'] = (int)$amount;
         $adyFields['currencyCode'] = $orderCurrencyCode;
         $adyFields['shipBeforeDate'] = date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("j") + $deliveryDays, date("Y")));
         $adyFields['skinCode'] = $skinCode;
@@ -157,51 +163,51 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         //blocked methods
         $adyFields['blockedMethods'] = "";
 
-  		$openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
+        $openinvoiceType = $this->_getConfigData('openinvoicetypes', 'adyen_openinvoice');
 
-         if($this->_code == "adyen_openinvoice" || $this->getInfoInstance()->getCcType() == "klarna" || $this->getInfoInstance()->getCcType() == "afterpay_default") {
-         	$adyFields['billingAddressType'] = "1";
-         	$adyFields['deliveryAddressType'] = "1";
-         	$adyFields['shopperType'] = "1";
-         } else {
-         	$adyFields['billingAddressType'] = "";
-         	$adyFields['deliveryAddressType'] = "";
-         	$adyFields['shopperType'] = "";
-         }
-     
+        if($this->_code == "adyen_openinvoice" || $this->getInfoInstance()->getCcType() == "klarna" || $this->getInfoInstance()->getCcType() == "afterpay_default") {
+            $adyFields['billingAddressType'] = "1";
+            $adyFields['deliveryAddressType'] = "1";
+            $adyFields['shopperType'] = "1";
+        } else {
+            $adyFields['billingAddressType'] = "";
+            $adyFields['deliveryAddressType'] = "";
+            $adyFields['shopperType'] = "";
+        }
+
         //the data that needs to be signed is a concatenated string of the form data 
         $sign = $adyFields['paymentAmount'] .
-                $adyFields['currencyCode'] .
-                $adyFields['shipBeforeDate'] .
-                $adyFields['merchantReference'] .
-                $adyFields['skinCode'] .
-                $adyFields['merchantAccount'] .
-                $adyFields['sessionValidity'] .
-                $adyFields['shopperEmail'] .
-                $adyFields['shopperReference'] .
-                $adyFields['recurringContract'] .
-                $adyFields['blockedMethods'] .
-                $adyFields['billingAddressType'] .
-                $adyFields['deliveryAddressType'] .
-                $adyFields['shopperType'];
-        
+            $adyFields['currencyCode'] .
+            $adyFields['shipBeforeDate'] .
+            $adyFields['merchantReference'] .
+            $adyFields['skinCode'] .
+            $adyFields['merchantAccount'] .
+            $adyFields['sessionValidity'] .
+            $adyFields['shopperEmail'] .
+            $adyFields['shopperReference'] .
+            $adyFields['recurringContract'] .
+            $adyFields['blockedMethods'] .
+            $adyFields['billingAddressType'] .
+            $adyFields['deliveryAddressType'] .
+            $adyFields['shopperType'];
+
         //Generate HMAC encrypted merchant signature
         $secretWord = $this->_getSecretWord();
         $signMac = Zend_Crypt_Hmac::compute($secretWord, 'sha1', $sign);
         $adyFields['merchantSig'] = base64_encode(pack('H*', $signMac));
-        
-		// get extra fields
+
+        // get extra fields
         $adyFields = Mage::getModel('adyen/adyen_openinvoice')->getOptionalFormFields($adyFields,$this->_order);
-        
+
         //IDEAL
         if (strpos($this->getInfoInstance()->getCcType(),"ideal") !== false) {
             $bankData = $this->getInfoInstance()->getPoNumber();
-            if (!empty($bankData)) {        
+            if (!empty($bankData)) {
                 $id = explode(DS, $bankData);
                 $adyFields['skipSelection'] = 'true';
                 $adyFields['brandCode'] = $this->getInfoInstance()->getCcType();
-                $adyFields['idealIssuerId'] = $id['0'];        
-            }            
+                $adyFields['idealIssuerId'] = $id['0'];
+            }
         }
 
 
@@ -253,8 +259,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                     $url = 'https://test.adyen.com/hpp/pay.shtml';
                 } else {
                     $url = (empty($brandCode)) ?
-                            'https://test.adyen.com/hpp/select.shtml' :
-                            "https://test.adyen.com/hpp/details.shtml?brandCode=$brandCode";
+                        'https://test.adyen.com/hpp/select.shtml' :
+                        "https://test.adyen.com/hpp/details.shtml?brandCode=$brandCode";
                 }
                 break;
             default:
@@ -262,8 +268,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                     $url = 'https://live.adyen.com/hpp/pay.shtml';
                 } else {
                     $url = (empty($brandCode)) ?
-                            'https://live.adyen.com/hpp/select.shtml' :
-                            "https://live.adyen.com/hpp/details.shtml?brandCode=$brandCode";
+                        'https://live.adyen.com/hpp/select.shtml' :
+                        "https://live.adyen.com/hpp/details.shtml?brandCode=$brandCode";
                 }
                 break;
         }
@@ -273,8 +279,8 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $bankData = $this->getInfoInstance()->getPoNumber();
         if ($brandCode == 'ideal' && !empty($bankData)) {
             $idealBankUrl = ($isConfigDemoMode == true) ?
-                            'https://test.adyen.com/hpp/redirectIdeal.shtml' :
-                            'https://live.adyen.com/hpp/redirectIdeal.shtml';
+                'https://test.adyen.com/hpp/redirectIdeal.shtml' :
+                'https://live.adyen.com/hpp/redirectIdeal.shtml';
         }
 
 
@@ -282,7 +288,7 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
     }
 
     public function getFormName() {
-		return "Adyen HPP";
+        return "Adyen HPP";
     }
 
     /**
@@ -323,15 +329,15 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
         if(empty($countryCode)) {
 
-        	// check if billingcountry is filled in
-        	if(is_object(Mage::helper('checkout/cart')->getQuote()->getBillingAddress()) && Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry() != "") {
-        		$countryCode =  Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry();
-        	} else {
-        		$countryCode = ""; // don't set countryCode so you get all the payment methods
-        		// You could do ip lookup but availability and performace is not guaranteed
+            // check if billingcountry is filled in
+            if(is_object(Mage::helper('checkout/cart')->getQuote()->getBillingAddress()) && Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry() != "") {
+                $countryCode =  Mage::helper('checkout/cart')->getQuote()->getBillingAddress()->getCountry();
+            } else {
+                $countryCode = ""; // don't set countryCode so you get all the payment methods
+                // You could do ip lookup but availability and performace is not guaranteed
 //         		$ip = $this->getClientIp();
 //         		$countryCode = file_get_contents('http://api.hostip.info/country.php?ip='.$ip);
-        	}
+            }
         }
 
         // check if cache setting is on
@@ -344,25 +350,26 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
                 return unserialize($data);
             }
         }
+
         // directory lookup to search for available payment methods
         $adyFields = array(
-        		"paymentAmount" => $amount,
-        		"currencyCode" => $orderCurrencyCode,
-        		"merchantReference" => "Get Payment methods",
-        		"skinCode" => $skinCode,
-        		"merchantAccount" => $merchantAccount,
-        		"sessionValidity" => $sessionValidity,
-        		"countryCode" => $countryCode,
-                "shopperLocale" => $countryCode,
-        		"merchantSig" => "",
+            "paymentAmount" => (int)$amount,
+            "currencyCode" => $orderCurrencyCode,
+            "merchantReference" => "Get Payment methods",
+            "skinCode" => $skinCode,
+            "merchantAccount" => $merchantAccount,
+            "sessionValidity" => $sessionValidity,
+            "countryCode" => $countryCode,
+            "shopperLocale" => $countryCode,
+            "merchantSig" => "",
         );
 
         $sign = $adyFields['paymentAmount'] .
-		        $adyFields['currencyCode'] .
-		        $adyFields['merchantReference'] .
-		        $adyFields['skinCode'] .
-		        $adyFields['merchantAccount'] .
-		        $adyFields['sessionValidity'];
+            $adyFields['currencyCode'] .
+            $adyFields['merchantReference'] .
+            $adyFields['skinCode'] .
+            $adyFields['merchantAccount'] .
+            $adyFields['sessionValidity'];
 
         //Generate HMAC encrypted merchant signature
         $secretWord = $this->_getSecretWord();
@@ -378,11 +385,11 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
         $isConfigDemoMode = $this->getConfigDataDemoMode();
         if ($isConfigDemoMode)
-	        curl_setopt($ch, CURLOPT_URL, "https://test.adyen.com/hpp/directory.shtml");
+            curl_setopt($ch, CURLOPT_URL, "https://test.adyen.com/hpp/directory.shtml");
         else
-        	curl_setopt($ch, CURLOPT_URL, "https://live.adyen.com/hpp/directory.shtml");
+            curl_setopt($ch, CURLOPT_URL, "https://live.adyen.com/hpp/directory.shtml");
 
-       	curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST,count($adyFields));
         curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($adyFields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // do not print results if you do curl_exec
@@ -390,48 +397,47 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
         $results = curl_exec($ch);
 
         if($results === false) {
-        	echo "Error: " . curl_error($ch);
-        	Mage::log("Payment methods are not available on this merchantaccount\skin result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
-        	Mage::throwException(Mage::helper('adyen')->__('Payment methods are not available on this merchantaccount\skin'));
+            echo "Error: " . curl_error($ch);
+            Mage::log("Payment methods are not available on this merchantaccount\skin result is: " . curl_error($ch), self::DEBUG_LEVEL, 'http-request.log',true);
+            Mage::throwException(Mage::helper('adyen')->__('Payment methods are not available on this merchantaccount\skin'));
         } else{
-        	/**
-        	 * The $result contains a JSON array containing
-        	 * the available payment methods for the merchant account.
-        	 */
-        	$results_json = json_decode($results);
+            /**
+             * The $result contains a JSON array containing
+             * the available payment methods for the merchant account.
+             */
+            $results_json = json_decode($results);
 
-        	if($results_json == null) {
-        		// no valid json so show the error
-        		echo $results;
-        		Mage::log("Payment methods are empty on this merchantaccount\skin. results_json is incorrect result is:" . $results_json, self::DEBUG_LEVEL, 'http-request.log',true);
-        		Mage::throwException(Mage::helper('adyen')->__('Payment methods are empty on this merchantaccount\skin'));
-        	}
+            if($results_json == null) {
+                // no valid json so show the error
+                Mage::log("Payment methods are empty on this merchantaccount\skin. results_json is incorrect result is:" . $results, self::DEBUG_LEVEL, 'http-request.log',true);
+                Mage::throwException(Mage::helper('adyen')->__('Payment methods are empty on this merchantaccount\skin' . $results));
+            }
 
-        	$payment_methods = $results_json->paymentMethods;
+            $payment_methods = $results_json->paymentMethods;
 
-        	$result_array = array();
-        	foreach($payment_methods as $payment_method) {
+            $result_array = array();
+            foreach($payment_methods as $payment_method) {
 
-        		// if openinvoice is activated don't show this in HPP options
-        		if(Mage::getStoreConfig("payment/adyen_openinvoice/active")) {
-        			if(Mage::getStoreConfig("payment/adyen_openinvoice/openinvoicetypes") == $payment_method->brandCode) {
-        				continue;
-        			}
-        		}
+                // if openinvoice is activated don't show this in HPP options
+                if(Mage::getStoreConfig("payment/adyen_openinvoice/active")) {
+                    if(Mage::getStoreConfig("payment/adyen_openinvoice/openinvoicetypes") == $payment_method->brandCode) {
+                        continue;
+                    }
+                }
 
-				$result_array[$payment_method->brandCode]['name'] = $payment_method->name;
+                $result_array[$payment_method->brandCode]['name'] = $payment_method->name;
 
-				if(isset($payment_method->issuers)) {
-					// for ideal go through the issuers
-					if(count($payment_method->issuers) > 0)
-					{
-						foreach($payment_method->issuers as $issuer) {
-							$result_array[$payment_method->brandCode]['issuers'][$issuer->issuerId] = $issuer->name;
-						}
-					}
-					ksort($result_array[$payment_method->brandCode]['issuers']); // sort on key
-				}
-        	}
+                if(isset($payment_method->issuers)) {
+                    // for ideal go through the issuers
+                    if(count($payment_method->issuers) > 0)
+                    {
+                        foreach($payment_method->issuers as $issuer) {
+                            $result_array[$payment_method->brandCode]['issuers'][$issuer->issuerId] = $issuer->name;
+                        }
+                    }
+                    ksort($result_array[$payment_method->brandCode]['issuers']); // sort on key
+                }
+            }
         }
 
         // if cache is on cache this result
@@ -445,29 +451,29 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
     public function getHppOptionsDisabled() {
         return Mage::getStoreConfig("payment/adyen_hpp/disable_hpptypes");
     }
-    
+
     // Function to get the client ip address
-	public function getClientIp() {
-		
-		$ipaddress = '';
-	    
-	    if (isset($_SERVER['HTTP_CLIENT_IP']))
-	        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
-	    else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-	        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-	    else if(isset($_SERVER['HTTP_X_FORWARDED']))
-	        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
-	    else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
-	        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
-	    else if(isset($_SERVER['HTTP_FORWARDED']))
-	        $ipaddress = $_SERVER['HTTP_FORWARDED'];
-	    else if(isset($_SERVER['REMOTE_ADDR']))
-	        $ipaddress = $_SERVER['REMOTE_ADDR'];
-	    else
-	        $ipaddress = '';
-	 
-	    return $ipaddress;
-	}
+    public function getClientIp() {
+
+        $ipaddress = '';
+
+        if (isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else
+            $ipaddress = '';
+
+        return $ipaddress;
+    }
 
 
 }

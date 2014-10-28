@@ -94,7 +94,7 @@
     				
     				function checkStatus() {
 	    				$.ajax({
-						    url: "'. $this->getUrl('adyen/process/getOrderStatus') . '",
+						    url: "'. $this->getUrl('adyen/process/getOrderStatus', array('_secure'=>true)) . '",
 						    type: "POST",
 						    data: "merchantReference='.$adyFields['merchantReference'] .'",
 						    success: function(data) {

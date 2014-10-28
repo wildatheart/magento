@@ -28,6 +28,25 @@
 -->
 <layout version="0.1.0">
 
+    <customer_account>
+        <reference name="customer_account_navigation" >
+            <action method="addLink" translate="label"><name>saved_cards</name><path>adyen/savedCard/</path><label>My saved cards</label></action>
+        </reference>
+    </customer_account>
+
+    <adyen_savedcard_index>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
+        </reference>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="adyen/savedCards" name="adyen.savedCards" template="adyen/savedCards.phtml"/>
+        </reference>
+    </adyen_savedcard_index>
+
     <adyen_updatecart_index>
         <update handle="checkout_cart_index" />
     </adyen_updatecart_index>
@@ -45,8 +64,24 @@
         <reference name="head">
             <action method="addJs"><script>adyen/payment/elv.js</script></action>
             <action method="addCss"><stylesheet>css/adyenstyle.css</stylesheet></action>
+            <block type="core/text" name="newmodule.diners.validation">
+                <action method="setText">
+                    <text>
+                        <![CDATA[<script type="text/javascript">
+                            Validation.creditCartTypes.set('DC', [new RegExp('^3(?:0[0-5]|[68][0-9])[0-9]{11}$'), new RegExp('^[0-9]{3}$'), true]);
+                            Validation.creditCartTypes.set('CB', [new RegExp('^4[0-9]{12}([0-9]{3})?$'), new RegExp('^[0-9]{3}$'), true]);
+                        </script>]]>
+                    </text>
+                </action>
+            </block>
         </reference>
     </checkout_onepage_index>
+
+    <checkout_onepage_paymentmethod>
+        <reference name="root">
+            <action method="setTemplate"><template>adyen/checkout/onepage/payment/methods.phtml</template></action>
+        </reference>
+    </checkout_onepage_paymentmethod>
 
     <onestepcheckout_index_index>
         <reference name="head">
@@ -71,4 +106,6 @@
             <block type="adyen/checkout_success" name="adyen.checkout.success" template="adyen/checkout/success.phtml"/>
         </reference>
     </checkout_multishipping_success>
+
+
 </layout>

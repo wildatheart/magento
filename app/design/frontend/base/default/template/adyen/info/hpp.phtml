@@ -25,11 +25,15 @@
  * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
  */
 ?>
+<?php $disabled = $this->getMethod()->getHppOptionsDisabled();?>
+<?php if($disabled): ?>
 <?php echo $this->htmlEscape($this->getMethod()->getTitle()) ?><br/>
+<?php endif; ?>
+
 <?php if ($_info = $this->getInfo()): ?>
     <?php $paymentMethod = $_info->getCcType() ?>
     <?php if (!empty($paymentMethod)): ?>
-        <?php echo $this->__('Payment Method: %s', $this->htmlEscape($paymentMethod)) ?><br/>
+        <?php echo $this->__('Payment Method: %s', $this->htmlEscape($_info->getAdditionalInformation('hpp_type_label'))) ?><br/>
     <?php endif; ?>        
     <?php if (strpos($paymentMethod, "ideal") !== false): ?>            
         <?php $bankData = $_info->getPoNumber(); ?>

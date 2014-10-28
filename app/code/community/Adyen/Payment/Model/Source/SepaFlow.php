@@ -25,28 +25,13 @@
  * @property   Adyen B.V
  * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
  */
-class Adyen_Payment_Block_Form_Oneclick extends Adyen_Payment_Block_Form_Cc {
+class Adyen_Payment_Model_Source_SepaFlow {
 
-    protected function _construct() {
-        parent::_construct();
-        $this->setTemplate('adyen/form/oneclick.phtml');
+    public function toOptionArray() {
+        return array(
+            array('value' => 'sales', 'label' => 'Sales'),
+            array('value' => 'authcap', 'label' => 'Auth/Cap'),
+        );
     }
 
-    public function getlistRecurringDetails() {
-        return $this->getMethod()->getlistRecurringDetails();
-    }
-
-    public function isNotRecurring() {
-        return  $this->getMethod()->isNotRecurring();
-    }
-
-    public function getInstallmentForCreditCardType($ccType) {
-
-        // map $ccType to creditcard type we saved in backend
-
-        $ccType = Mage::helper('adyen/data')->getMagentoCreditCartType($ccType);
-        $result = Mage::helper('adyen/installments')->getInstallmentForCreditCardType($ccType);
-
-        return $result;
-    }
 }
