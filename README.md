@@ -15,7 +15,7 @@ But you can also request or suggest new features or code changes yourself!
 You can create issues on our Magento Repository or if you have some specific problems for your account you can contact <a href="mailto:magento@adyen.com">magento@adyen.com</a>  as well.
 
 <h2>Current Release</h2>
-<h3>2.1.1></h3>
+<h3>2.1.1</h3>
 <h4>Features</h4>
 * Make installments possible for the OneClick Payments
 * Added cash express checkout button on the shopping card for easy pay with cash
@@ -47,7 +47,7 @@ You can create issues on our Magento Repository or if you have some specific pro
 * Fixed that Ajax calls now support the HTTPS protocol
 
 <h2>Previous Releases</h2>
-<h3>2.1.0></h3>
+<h3>2.1.0</h3>
 <h4>Features & Fixes</h4>
  * Show OneClick payments in Magento checkout
  * New API payment method SEPA
@@ -71,7 +71,7 @@ You can create issues on our Magento Repository or if you have some specific pro
  * Add after pay logo in magento checkout
  * Plugin version number and links for setting up now visible in the Adyen General settings sections
 
-<h3>2.0.3></h3>
+<h3>2.0.3</h3>
 <h4>Features & Fixes</h4>
  
  * HPP payment method selection now automatically loaded from the selected skin (Adyen calls this directory lookup)
@@ -81,7 +81,7 @@ You can create issues on our Magento Repository or if you have some specific pro
  * Possible to make Cash payments
 
 
-<h3>1.0.0.8></h3>
+<h3>1.0.0.8</h3>
 <h4>Features and Fixes:</h4>
  * Recurring contract default is ONECLICK and fully changeable
  * OpenInvoice payment method supports afterpay and Klarna
@@ -95,7 +95,7 @@ You can create issues on our Magento Repository or if you have some specific pro
  * Payment to applicable countries now available for all payment methods
  * Fixed time-out in notification (removed the filelock system). 
 
-<h3>1.0.0.7></h3>
+<h3>1.0.0.7</h3>
 
 <h4>Features:</h4>
  * CC with client side encryption
