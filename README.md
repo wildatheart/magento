@@ -1,7 +1,7 @@
 magento
 =======
 
-Adyen Payment plugin for Magento.
+This is the Adyen Payment plugin for Magento. The plugin supports the Magento Community and Enterprise edition.
 
 We commit all our new features directly into our GitHub repository.
 But you can also request or suggest new features or code changes yourself!
