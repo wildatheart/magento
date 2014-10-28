@@ -7,8 +7,8 @@ We commit all our new features directly into our GitHub repository.
 But you can also request or suggest new features or code changes yourself!
 
 <h2>Setup Module</h2>
-<a href="http://vimeo.com/94005128">Click here to see the video how to setup your adyen magento module and adyen backoffice</a><br />
-<a href="http://vimeo.com/94005128">Click here to download the manual how to setup your adyen magento module and adyen backoffice</a>
+<a href="http://vimeo.com/94005128">Click here to see the video how to setup your Adyen Magento module and the Adyen backoffice</a><br />
+<a href="http://vimeo.com/94005128">Click here to download the manual how to setup your Adyen Magento module and the Adyen backoffice</a>
 
 <h2>Support</h2>
 You can create issues on our Magento Repository or if you have some specific problems for your account you can contact <a href="mailto:magento@adyen.com">magento@adyen.com</a>  as well.
