@@ -55,39 +55,37 @@
                                         <input type="hidden" name="payment[hpp_type_label_<?php echo $_typeCode ?>]" value="<?php echo $_typeName; ?>" />
                                     </td>
                                     <?php if (file_exists($filename)): ?>
-                                        <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></td>
+                                        <td width="80px"><label for="hpp_type_<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></label></td>
                                     <?php endif ?>
 
                                     <?php if ($_typeName == "pm.c_cash.buttonName"):
                                             $_typeName = "Cash";
                                     endif; ?>
-                                    <td><?php echo $this->__($_typeName) ?></td>
+                                    <td><label for="hpp_type_<?php echo $_typeCode ?>"><?php echo $this->__($_typeName) ?></label></td>
 
                                     <?php if ($_typeCode == 'ideal' && !empty($_type['issuers'])): ?>
                                     <td class="payment_form_ideal">
-                                        <fieldset class="form-list">
-                                            <ul id="payment_form_ideal" style="display:none">
+                                        <fieldset class="form-list" id="payment_form_ideal" style="display:none">
+                                            <?php
+                                            foreach ($_type['issuers'] as $_issueId => $_IssueLabel): ?>
                                                 <?php
-                                                foreach ($_type['issuers'] as $_issueId => $_IssueLabel): ?>
-                                                    <?php
-                                                           $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
-                                                           $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
-                                                           if (empty($_issueId) || empty($_IssueLabel)) continue;
-                                                    ?>
-                                                    <table class="banks">
-                                                        <tr>
-                                                            <td width="20px">
-                                                                <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>
-                                                            </td>
-                                                            <?php if (file_exists($_filename)): ?>
-                                                                <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></td>
-                                                            <?php else: ?>
-                                                                <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
-                                                            <?php endif; ?>
-                                                        </tr>
-                                                    </table>
-                                                <?php endforeach ?>
-                                            </ul>
+                                                       $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
+                                                       $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
+                                                       if (empty($_issueId) || empty($_IssueLabel)) continue;
+                                                ?>
+                                                <table class="banks">
+                                                    <tr>
+                                                        <td width="20px">
+                                                            <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>
+                                                        </td>
+                                                        <?php if (file_exists($_filename)): ?>
+                                                            <td width="80px"><label for="hpp_ideal_type_<?php echo $_issueId ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></label></td>
+                                                        <?php else: ?>
+                                                            <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
+                                                        <?php endif; ?>
+                                                    </tr>
+                                                </table>
+                                            <?php endforeach ?>
                                         </fieldset>
                                     </td>
                                     <?php endif; ?>
@@ -154,5 +152,5 @@
                 <?php  echo $this->__('You will be redirected to Adyen website when you place an order.') ?>
             </li>
         <?php endif; ?>
-    </ul>    
+    </ul>
 </fieldset>
