@@ -860,7 +860,6 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         $eventCode = trim($response->getData('eventCode'));
         $reason = trim($response->getData('reason'));
         $invoiceAutoMail = (bool) $this->_getConfigData('send_invoice_update_mail');
-        $_status = $this->_getConfigData('order_status');
         $_mail = (bool) $this->_getConfigData('send_update_mail');
         $value = trim($response->getData('value'));
 
