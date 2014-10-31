@@ -677,6 +677,13 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
         if ($success && !empty($order)) {
 
             $status = $this->_getConfigData('payment_authorized');
+            // virtual order can have different status
+            if($order->getIsVirtual()) {
+                $virtual_status = $this->_getConfigData('payment_authorized_virtual');
+                if($virtual_status != "") {
+                    $status = $virtual_status;
+                }
+            }
 
             // check for boleto if payment is totally paid
             if($order->getPayment()->getMethod() == "adyen_boleto") {

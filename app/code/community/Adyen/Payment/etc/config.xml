@@ -237,8 +237,8 @@
                 <ws_password_live></ws_password_live>
                 <demoMode>N</demoMode>
                 <order_status>processing</order_status>
-                <payment_pending>pending</payment_pending>
                 <payment_authorized>processing</payment_authorized>
+                <payment_authorized_virtual>complete</payment_authorized_virtual>
                 <capture_mode>auto</capture_mode>
                 <recurringtypes>ONECLICK</recurringtypes>
             </adyen_abstract>
@@ -255,8 +255,6 @@
                 <ws_username_live></ws_username_live>
                 <ws_password_live></ws_password_live>
                 <order_status>processing</order_status>
-                <payment_pending>pending</payment_pending>
-                <payment_authorized>processing</payment_authorized>
                 <allowspecific>0</allowspecific>
                 <disable_hpptypes>0</disable_hpptypes>
                 <sort_order>30</sort_order>
