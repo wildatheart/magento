@@ -612,34 +612,4 @@ abstract class Adyen_Payment_Model_Adyen_Abstract extends Mage_Payment_Model_Met
         return Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE;
     }
 
-    /**
-     * @todo deprecates these use $this->_getConfigData($code,'paymentCode')
-     * @desc No reason of doing this!!!
-     */
-    public function getConfigDataMerchantAccount() {
-        return $this->_getConfigData('merchantAccount');
-    }
-
-    public function getConfigDataPaymentAuthorizedStatus() {
-        return $this->_getConfigData('payment_authorized');
-    }
-
-    public function getConfigDataMailAuthorizedUpdate() {
-        return $this->_getConfigData('mail_authorized');
-    }
-
-    public function getConfigDataCancelPendingCron() {
-        return $this->_getConfigData('cancel_pending_cron');
-    }
-
-    public function getConfigDataHppSecretTest() {
-        die("getConfigDataHppSecretTest in Adyen_Payment_Model_Adyen_Abstract");
-        return $this->_getConfigData('secret_wordt');
-    }
-
-    public function getConfigDataHppSecretLive() {
-        die("getConfigDataHppSecretLive in Adyen_Payment_Model_Adyen_Abstract");
-        return $this->_getConfigData('secret_wordp');
-    }
-
 }
