@@ -34,71 +34,69 @@
 
     <ul id="payment_form_<?php echo $_code ?>" style="display:none">
         <li>
-            <?php echo $this->__('You will be redirected to Adyen website when you place an order.') ?> 
+            <?php echo $this->__('You will be redirected to Adyen website when you place an order.') ?>
         </li>
         <?php if(empty($disabled) && !empty($enabledTypes)): ?>
         <li>
             <label for="<?php echo $_code ?>_hpp_type" class="required"><em>*</em><?php echo $this->__('Hosted Payment Type') ?></label>
             <div class="input-box required-entry">
                 <?php foreach ($enabledTypes as $_typeCode=>$_typeName): ?>
-                <?php $filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_typeCode.png" ?>                          
+                <?php $filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_typeCode.png" ?>
                         <table>
                             <tr>
                                 <td width="20px">
-                                    <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>" onclick="enableOptions('<?php echo $_typeCode ?>')"/>                                    
+                                    <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>" onclick="enableOptions('<?php echo $_typeCode ?>')"/>
                                 </td>
                                 <?php if (file_exists($filename)): ?>
-                                    <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></td>
+                                    <td width="80px"><label for="hpp_type_<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></label></td>
                                 <?php endif ?>
 
-                                <td><?php echo $this->__($_typeName) ?></td>
-                                
+                                <td><label for="hpp_type_<?php echo $_typeCode ?>"><?php echo $this->__($_typeName) ?></label></td>
+
                                 <?php if ($_typeCode == 'ideal' && !empty($idealList)): ?>
                                 <td class="payment_form_ideal">
-                                    <fieldset class="form-list">
-                                        <ul id="payment_form_ideal" style="display:none">
-                                            <?php /* ?>
-                                            <li>
-                                                <label for="<?php echo $_code ?>_hpp_type_option" class="required"><?php echo $this->__('Select your bank') ?></label> 
-                                            </li>
-                                            <?php */ ?>
-                                            <?php foreach ($idealList as $issuer): ?>                                                 
-                                                <?php $issuer = explode(DS, $issuer);
-                                                       $_issueId = (isset($issuer[0])) ? $issuer[0] : false;
-                                                       $_IssueLabel = (isset($issuer[1])) ? $issuer[1] : false;
-                                                       $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
-                                                       $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
-                                                       if (empty($_issueId) || empty($_IssueLabel)) continue;
-                                                ?>         
-                                                <table class="banks">
-                                                    <tr>
-                                                        <td width="20px">
-                                                            <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>                                                            
-                                                        </td>
-                                                        <?php if (file_exists($_filename)): ?>
-                                                            <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></td>
-                                                        <?php else: ?>
-                                                            <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
-                                                        <?php endif; ?>
-                                                    </tr>		
-                                                </table>                 
-                                            <?php endforeach ?>                               
-                                        </ul>
-                                    </fieldset>  
+                                    <fieldset class="form-list" id="payment_form_ideal" style="display:none">
+                                        <?php /* ?>
+                                        <li>
+                                            <label for="<?php echo $_code ?>_hpp_type_option" class="required"><?php echo $this->__('Select your bank') ?></label>
+                                        </li>
+                                        <?php */ ?>
+                                        <?php foreach ($idealList as $issuer): ?>
+                                            <?php $issuer = explode(DS, $issuer);
+                                                   $_issueId = (isset($issuer[0])) ? $issuer[0] : false;
+                                                   $_IssueLabel = (isset($issuer[1])) ? $issuer[1] : false;
+                                                   $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
+                                                   $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
+                                                   if (empty($_issueId) || empty($_IssueLabel)) continue;
+                                            ?>
+                                            <table class="banks">
+                                                <tr>
+                                                    <td width="20px">
+                                                        <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>
+                                                    </td>
+                                                    <?php if (file_exists($_filename)): ?>
+                                                        <td width="80px"><label for="hpp_ideal_type_<?php echo $_issueId ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></label></td>
+                                                    <?php else: ?>
+                                                        <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
+                                                    <?php endif; ?>
+                                                </tr>
+                                            </table>
+                                        <?php endforeach ?>
+                                    </fieldset>
                                 </td>
-                                <?php endif; ?>                                
-                            </tr>		
-                        </table>                
+                                <?php endif; ?>
+                            </tr>
+                        </table>
                         <script type="text/javascript">
                         //<![CDATA[
-                            function enableOptions(code) {                               
-                                if (code == 'ideal') {                                    
+                            function enableOptions(code) {
+                                if (code == 'ideal') {
                                     $('payment_form_ideal').show();
                                 } else {
                                     $('payment_form_ideal').hide();
                                 }
-                            }                            
-                            <?php /*                        
+                            }
+                            <?php /*
                             var IdealChecked= function() {
                                 var method = $('hpp_type_<?php echo $_typeCode?>');
                                 if (method.value == 'ideal') {
@@ -115,4 +113,4 @@
             </div>
         </li>
         <?php endif; ?>
-    </ul>    
+    </ul>
