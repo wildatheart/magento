@@ -189,7 +189,7 @@ class Adyen_Payment_Helper_Installments
         $currency = $quote->getQuoteCurrencyCode();
 
         if($quote->isVirtual()) {
-            $address = $this->getBillingAddress();
+            $address = $quote->getBillingAddress();
         } else {
             $address = $quote->getShippingAddress();
         }
