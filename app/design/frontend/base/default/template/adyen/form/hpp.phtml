@@ -47,16 +47,14 @@
                 <div class="input-box required-entry">
                     <?php foreach ($enabledTypes as $_typeCode=>$_type): ?>
                     <?php $_typeName = $_type['name']; ?>
-                    <?php $filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_typeCode.png" ?>
+                    <?php $filename = $this->getSkinUrl('images'.DS.'adyen'.DS. $_typeCode . ".png"); ?>
                             <table>
                                 <tr>
                                     <td width="20px">
                                         <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>"/>
                                         <input type="hidden" name="payment[hpp_type_label_<?php echo $_typeCode ?>]" value="<?php echo $_typeName; ?>" />
                                     </td>
-                                    <?php if (file_exists($filename)): ?>
-                                        <td width="80px"><label for="hpp_type_<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></label></td>
-                                    <?php endif ?>
+                                    <td width="80px"><label for="hpp_type_<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></label></td>
 
                                     <?php if ($_typeName == "pm.c_cash.buttonName"):
                                             $_typeName = "Cash";
@@ -70,7 +68,7 @@
                                             foreach ($_type['issuers'] as $_issueId => $_IssueLabel): ?>
                                                 <?php
                                                        $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
-                                                       $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
+                                                       $_filename = $this->getSkinUrl('images'.DS.'adyen'.DS. $_bankFile . ".png");
                                                        if (empty($_issueId) || empty($_IssueLabel)) continue;
                                                 ?>
                                                 <table class="banks">
@@ -78,11 +76,7 @@
                                                         <td width="20px">
                                                             <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>
                                                         </td>
-                                                        <?php if (file_exists($_filename)): ?>
                                                             <td width="80px"><label for="hpp_ideal_type_<?php echo $_issueId ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></label></td>
-                                                        <?php else: ?>
-                                                            <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
-                                                        <?php endif; ?>
                                                     </tr>
                                                 </table>
                                             <?php endforeach ?>
