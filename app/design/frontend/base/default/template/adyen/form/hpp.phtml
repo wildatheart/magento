@@ -29,15 +29,17 @@
 
 <?php $disabled = $this->getHppOptionsDisabled();?>
 
-<fieldset class="">
+<?php $id = ($disabled) ? "" : "adyen_hpp_enable_fields"; ?>
+<fieldset id="<?php echo $id; ?>" class="">
     <?php $hidePaymentMethod = ($disabled) ? ' style="display: none;"' : '';?>
     <?php
 
     // use a different name if hpp options is in the checkout, then this form must always be visable so change the id from basic to let this ignore in the switchMethod javascript call of Magento
-    $paymentmethodId = ($disabled) ? "payment_form_" : "hpp_payment_form_";
+//    $paymentmethodId = ($disabled) ? "payment_form_" : "hpp_payment_form_";
+
 
     ?>
-    <ul id="<?php echo $paymentmethodId . $_code ?>"<?php echo $hidePaymentMethod; ?>>
+    <ul id="<?php echo "payment_form_" . $_code; ?>"<?php echo $hidePaymentMethod; ?>>
         <?php
         if(empty($disabled)):
             $enabledTypes = $this->getHppAvailableTypes();
