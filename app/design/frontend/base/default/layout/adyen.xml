@@ -43,7 +43,7 @@
             <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
         </reference>
         <reference name="my.account.wrapper">
-            <block type="adyen/savedCards" name="adyen.savedCards" template="adyen/savedCards.phtml"/>
+            <block type="adyen/savedCards" name="adyen.savedCards" template="adyen/saved_cards.phtml"/>
         </reference>
     </adyen_savedcard_index>
 
@@ -53,10 +53,10 @@
 
     <checkout_cart_index>
         <reference name="top.container">
-            <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scanProduct.phtml"/>
+            <block type="adyen/scanProduct" name="adyen.scanProduct" template="adyen/scan_product.phtml"/>
         </reference>
         <reference name="checkout.cart.methods">
-            <block type="adyen/posExpressCheckout" before="-" name="adyen.pos.express.checkout" template="adyen/posExpressCheckout.phtml"/>
+            <block type="adyen/posExpressCheckout" before="-" name="adyen.pos.express.checkout" template="adyen/pos_express_checkout.phtml"/>
         </reference>
     </checkout_cart_index>
 
