@@ -32,13 +32,7 @@
 <?php $id = ($disabled) ? "" : "adyen_hpp_enable_fields"; ?>
 <fieldset id="<?php echo $id; ?>" class="">
     <?php $hidePaymentMethod = ($disabled) ? ' style="display: none;"' : '';?>
-    <?php
 
-    // use a different name if hpp options is in the checkout, then this form must always be visable so change the id from basic to let this ignore in the switchMethod javascript call of Magento
-//    $paymentmethodId = ($disabled) ? "payment_form_" : "hpp_payment_form_";
-
-
-    ?>
     <ul id="<?php echo "payment_form_" . $_code; ?>"<?php echo $hidePaymentMethod; ?>>
         <?php
         if(empty($disabled)):
@@ -81,6 +75,15 @@
                                                             <td width="80px"><label for="hpp_ideal_type_<?php echo $_issueId ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></label></td>
                                                     </tr>
                                                 </table>
+                                                <script type="text/javascript">
+                                                    $("hpp_ideal_type_<?php echo $_issueId; ?>").observe("click", function (e) {
+                                                        // set ideal as payment method
+                                                        $('hpp_type_ideal').checked = true;
+                                                        // set the adyen_hpp payment method
+                                                        $('p_method_adyen_hpp').checked = true;
+                                                        payment.switchMethod("adyen_hpp");
+                                                    });
+                                                </script>
                                             <?php endforeach ?>
                                         </fieldset>
                                     </td>
@@ -123,13 +126,9 @@
                                     }
 
                                     var method = $('hpp_type_<?php echo $_typeCode?>');
-
                                     // set the adyen_hpp payment method
                                     $('p_method_adyen_hpp').checked = true;
-
                                     payment.switchMethod("adyen_hpp");
-
-
                                     if (method.value == 'ideal') {
                                         $('payment_form_ideal').show();
                                     } else {
