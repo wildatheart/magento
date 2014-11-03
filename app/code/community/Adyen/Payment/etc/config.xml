@@ -424,8 +424,8 @@
                 </boletotypes>
                 <openinvoicetypes>
                     <afterpay>
-                        <code>openinvoice</code>
-                        <name>AfterPay</name>
+                        <code>afterpay_default</code>
+                        <name>AfterPay Netherlands</name>
                         <order>10</order>
                     </afterpay>
                     <klarna>
