@@ -328,8 +328,8 @@ function get_save_methods_function(url, update_payments)
                         payment_methods.replace(data.payment_method);
 
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp')); // for Adyen onchange oneclick method reload
+                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick')); // for Adyen onchange oneclick method reload
 
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
@@ -517,8 +517,8 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
 
                     if(update_payments){
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(set_methods_url));
-                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp')); // for Adyen onchange oneclick method reload
+                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_recurring')); // for Adyen onchange oneclick method reload
 
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
@@ -582,7 +582,7 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
     }
 }
 
-function get_separate_save_methods_function(url, update_payments)
+function get_separate_save_methods_function(url, update_payments, payment_method_override)
 {
     if(typeof update_payments == 'undefined')    {
         var update_payments = false;
@@ -600,11 +600,11 @@ function get_separate_save_methods_function(url, update_payments)
         var form = $('onestepcheckout-form');
         var shipping_method = $RF(form, 'shipping_method');
         var payment_method = $RF(form, 'payment[method]');
-        var payment_hpp_type = $RF(form, 'payment[hpp_type]');
-        if(payment_hpp_type) {
-            payment_method = "adyen_hpp";
+        if(payment_method_override != undefined) {
+            payment_method = payment_method_override;
         }
 
+        var payment_hpp_type = $RF(form, 'payment[hpp_type]');
         var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var payment_recurring_type = $RF(form, 'payment[recurring]');
         var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
@@ -667,8 +667,8 @@ function get_separate_save_methods_function(url, update_payments)
                         payment_methods.replace(data.payment_method);
 
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick')); // for Adyen onchange oneclick method reload
                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
                                 new Effect.Fade(item);

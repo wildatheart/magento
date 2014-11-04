@@ -234,87 +234,87 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
     <?php if($this->settings['enable_discount']): ?>
         <div class="onestepcheckout-coupons">
-            <div id="coupon-notice" style="display: none;"></div>
-            <?php $_couponcode = $this->getQuote()->getCouponCode(); ?>
-            <label for="id_couponcode"><?php echo $this->__('Coupon code:'); ?></label><br/>
-            <input class="input-text" type="text" name="onestepcheckout-couponcode" id="id_couponcode" value="<?php echo Mage::helper('core')->escapeHtml($_couponcode); ?>" />
-            <br/>
-            <button id="onestepcheckout-coupon-add" class="form-button-alt button" type="button"><span><span><?php echo $this->__('Apply Coupon'); ?></span></span></button>
-            <button id="onestepcheckout-coupon-remove" class="form-button-alt button" type="button" style="<?php if($_couponcode == '') { echo 'display: none;'; } ?>"><span><span><?php echo $this->__('Cancel Coupon'); ?></span></span></button>
-            <script>
-                Event.observe(window, 'load', function() {
-                    $('onestepcheckout-coupon-add').observe('click', function(e)    {
+        <div id="coupon-notice" style="display: none;"></div>
+        <?php $_couponcode = $this->getQuote()->getCouponCode(); ?>
+        <label for="id_couponcode"><?php echo $this->__('Coupon code:'); ?></label><br/>
+        <input class="input-text" type="text" name="onestepcheckout-couponcode" id="id_couponcode" value="<?php echo Mage::helper('core')->escapeHtml($_couponcode); ?>" />
+        <br/>
+        <button id="onestepcheckout-coupon-add" class="form-button-alt button" type="button"><span><span><?php echo $this->__('Apply Coupon'); ?></span></span></button>
+        <button id="onestepcheckout-coupon-remove" class="form-button-alt button" type="button" style="<?php if($_couponcode == '') { echo 'display: none;'; } ?>"><span><span><?php echo $this->__('Cancel Coupon'); ?></span></span></button>
+        <script>
+        Event.observe(window, 'load', function() {
+            $('onestepcheckout-coupon-add').observe('click', function(e)    {
 
-                        var coupon = $('id_couponcode').getValue();
-                        var couponNotice = $('coupon-notice');
+                var coupon = $('id_couponcode').getValue();
+                var couponNotice = $('coupon-notice');
 
-                        couponNotice.hide();
+                couponNotice.hide();
 
-                        if(coupon == '')  {
-                            alert('<?php echo $this->__('Please enter a valid coupon code.'); ?>');
-                            return;
-                        }
+                if(coupon == '')  {
+                    alert('<?php echo $this->__('Please enter a valid coupon code.'); ?>');
+                    return;
+                }
 
-                        var url = '<?php echo $this->getUrl('onestepcheckout/ajax/add_coupon', array('_secure'=>true)); ?>';
-                        var parameters = {code: coupon};
-                        var shipping_methods = $$('dl.shipment-methods').first();
+                var url = '<?php echo $this->getUrl('onestepcheckout/ajax/add_coupon', array('_secure'=>true)); ?>';
+                var parameters = {code: coupon};
+                var shipping_methods = $$('dl.shipment-methods').first();
 
                 var form = $('onestepcheckout-form');
                 var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
                 var payment_hpp_type = $RF(form, 'payment[hpp_type]');
                 var payment_recurring_type = $RF(form, 'payment[recurring]');
                 var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
-                        var payment_methods = $$('div.payment-methods').first();
+                var payment_methods = $$('div.payment-methods').first();
 
-                        var summary = $$('div.onestepcheckout-summary').first();
+                var summary = $$('div.onestepcheckout-summary').first();
 
-                        if(shipping_methods){
-                            shipping_methods.update('<div class="loading-ajax">&nbsp;</div>');
-                        }
+                if(shipping_methods){
+                    shipping_methods.update('<div class="loading-ajax">&nbsp;</div>');
+                }
 
-                        if(payment_methods){
-                            payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
-                        }
+                if(payment_methods){
+                    payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
+                }
 
-                        summary.update('<div class="loading-ajax">&nbsp;</div>');
+                summary.update('<div class="loading-ajax">&nbsp;</div>');
 
-                        new Ajax.Request(url, {
-                            method: 'post',
-                            parameters: parameters,
-                            onSuccess: function(transport) {
-                                if(transport.status == 200) {
+                new Ajax.Request(url, {
+                    method: 'post',
+                    parameters: parameters,
+                    onSuccess: function(transport) {
+                        if(transport.status == 200) {
 
-                                    var response = transport.responseText.evalJSON();
+                            var response = transport.responseText.evalJSON();
 
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
-                                    var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
+                            var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
+                            var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
 
-                                    if(shipping_methods){
-                                        shipping_methods.hide();
-                                        shipping_methods.update(response.shipping_method);
-                                        shipping_methods.show();
-                                        $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
-                                        $$('dl.shipment-methods input').invoke('observe', 'click', function() {
-                                            $$('div.onestepcheckout-shipment-method-error').each(function(item) {
-                                                new Effect.Fade(item);
-                                            });
-                                        });
-                                    }
+                            if(shipping_methods){
+                                shipping_methods.hide();
+                                shipping_methods.update(response.shipping_method);
+                                shipping_methods.show();
+                                $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
+                                $$('dl.shipment-methods input').invoke('observe', 'click', function() {
+                                    $$('div.onestepcheckout-shipment-method-error').each(function(item) {
+                                        new Effect.Fade(item);
+                                    });
+                                });
+                            }
 
-                                    if(payment_methods){
-                                        payment_methods.hide();
-                                        payment_methods.replace(response.payment_method);
-                                        payment_methods.show();
+                            if(payment_methods){
+                                payment_methods.hide();
+                                payment_methods.replace(response.payment_method);
+                                payment_methods.show();
 
-                                        paymentContainer = $('container_payment_method_' + payment.currentMethod)
-                                        paymentForm = $('payment_form_' + payment.currentMethod)
+                                paymentContainer = $('container_payment_method_' + payment.currentMethod)
+                                paymentForm = $('payment_form_' + payment.currentMethod)
                                 var payment_method = $RF(form, 'payment[method]');
 
-                                        if(paymentContainer != null){
-                                            paymentContainer.show();
-                                        }
-                                        if(paymentForm != null){
-                                            paymentForm.show();
+                                if(paymentContainer != null){
+                                    paymentContainer.show();
+                                }
+                                if(paymentForm != null){
+                                    paymentForm.show();
                                 } else if(payment_method == "adyen_hpp") { // check if payment type is hpp (this has other id so should come in else )
                                     // set sub payment method back
                                     $('hpp_type_'+payment_hpp_type).checked = true;
@@ -338,132 +338,132 @@ $helper = Mage::helper('onestepcheckout/checkout');
                                     $(cvc_block).show();
                                 }
 
-                                        $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
-                                        $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
-                                            $$('div.onestepcheckout-payment-method-error').each(function(item) {
-                                                new Effect.Fade(item);
-                                            });
-                                        });
-                                    }
-
-                                    summary.hide();
-                                    summary.update(response.summary);
-                                    summary.show();
-
-                                    if(response.success) {
-
-                                        couponNotice.update(response.message);
-                                        couponNotice.removeClassName('error-msg');
-                                        couponNotice.addClassName('success-msg');
-                                        couponNotice.show();
-                                        /* Show remove button */
-                                        $('onestepcheckout-coupon-remove').show();
-                                    }
-                                    else    {
-
-                                        couponNotice.update(response.message);
-                                        couponNotice.removeClassName('success-msg');
-                                        couponNotice.addClassName('error-msg');
-                                        couponNotice.show();
-                                        /* Hide remove button */
-                                        $('onestepcheckout-coupon-remove').hide();
-                                    }
-                                }
+                                $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
+                                $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
+                                $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
+                                    $$('div.onestepcheckout-payment-method-error').each(function(item) {
+                                        new Effect.Fade(item);
+                                    });
+                                });
                             }
-                        });
-                    });
 
-                    $('onestepcheckout-coupon-remove').observe('click', function(e) {
+                            summary.hide();
+                            summary.update(response.summary);
+                            summary.show();
 
-                        var coupon = $('id_couponcode').getValue();
-                        var couponNotice = $('coupon-notice');
+                            if(response.success) {
 
-                        couponNotice.hide();
-
-                        var url = '<?php echo $this->getUrl('onestepcheckout/ajax/add_coupon', array('_secure'=>true)); ?>';
-                        var parameters = {code: coupon, remove: '1'};
-                        var shipping_methods = $$('dl.shipment-methods').first();
-                        var payment_methods = $$('div.payment-methods').first();
-                        var summary = $$('div.onestepcheckout-summary').first();
-
-                        if(shipping_methods){
-                            shipping_methods.update('<div class="loading-ajax">&nbsp;</div>');
-                        }
-
-                        if(payment_methods){
-                            payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
-                        }
-                        summary.update('<div class="loading-ajax">&nbsp;</div>');
-
-                        new Ajax.Request(url, {
-                            method: 'post',
-                            parameters: parameters,
-                            onSuccess: function(transport)  {
-                                if(transport.status == 200) {
-                                    var response = transport.responseText.evalJSON();
-
-                                    if(response.success){
-                                        $('id_couponcode').setValue('')
-                                        $('onestepcheckout-coupon-remove').hide();
-                                    }
-
-                                    var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
-                                    var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
-
-                                    if(shipping_methods){
-                                        shipping_methods.hide();
-                                        shipping_methods.update(response.shipping_method);
-                                        shipping_methods.show();
-                                        $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
-                                        $$('dl.shipment-methods input').invoke('observe', 'click', function() {
-                                            $$('div.onestepcheckout-shipment-method-error').each(function(item) {
-                                                new Effect.Fade(item);
-                                            });
-                                        });
-                                    }
-
-                                    if(payment_methods){
-                                        payment_methods.hide();
-                                        payment_methods.replace(response.payment_method);
-                                        payment_methods.show();
-
-                                        paymentContainer = $('container_payment_method_' + payment.currentMethod)
-                                        paymentForm = $('payment_form_' + payment.currentMethod)
-
-                                        if(paymentContainer != null){
-                                            paymentContainer.show();
-                                        }
-
-                                        if(paymentForm != null){
-                                            paymentForm.show();
-                                        }
-                                        $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
-                                        $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
-                                            $$('div.onestepcheckout-payment-method-error').each(function(item) {
-                                                new Effect.Fade(item);
-                                            });
-                                        });
-                                    }
-
-                                    summary.hide();
-                                    summary.update(response.summary);
-                                    summary.show();
-
-                                    couponNotice.hide();
-                                    couponNotice.update(response.message);
-                                    couponNotice.removeClassName('error-msg');
-                                    couponNotice.addClassName('success-msg');
-                                    couponNotice.show();
-                                }
+                                couponNotice.update(response.message);
+                                couponNotice.removeClassName('error-msg');
+                                couponNotice.addClassName('success-msg');
+                                couponNotice.show();
+                                /* Show remove button */
+                                $('onestepcheckout-coupon-remove').show();
                             }
-                        });
-                    });
+                            else    {
+
+                                couponNotice.update(response.message);
+                                couponNotice.removeClassName('success-msg');
+                                couponNotice.addClassName('error-msg');
+                                couponNotice.show();
+                                /* Hide remove button */
+                                $('onestepcheckout-coupon-remove').hide();
+                            }
+                        }
+                    }
                 });
-            </script>
+            });
+
+            $('onestepcheckout-coupon-remove').observe('click', function(e) {
+
+                var coupon = $('id_couponcode').getValue();
+                var couponNotice = $('coupon-notice');
+
+                couponNotice.hide();
+
+                var url = '<?php echo $this->getUrl('onestepcheckout/ajax/add_coupon', array('_secure'=>true)); ?>';
+                var parameters = {code: coupon, remove: '1'};
+                var shipping_methods = $$('dl.shipment-methods').first();
+                var payment_methods = $$('div.payment-methods').first();
+                var summary = $$('div.onestepcheckout-summary').first();
+
+                if(shipping_methods){
+                    shipping_methods.update('<div class="loading-ajax">&nbsp;</div>');
+                }
+
+                if(payment_methods){
+                    payment_methods.update('<div class="loading-ajax">&nbsp;</div>');
+                }
+                summary.update('<div class="loading-ajax">&nbsp;</div>');
+
+                new Ajax.Request(url, {
+                    method: 'post',
+                    parameters: parameters,
+                    onSuccess: function(transport)  {
+                        if(transport.status == 200) {
+                            var response = transport.responseText.evalJSON();
+
+                            if(response.success){
+                                $('id_couponcode').setValue('')
+                                $('onestepcheckout-coupon-remove').hide();
+                            }
+
+                            var url = '<?php echo $this->getUrl('onestepcheckout/ajax/set_methods_separate', array('_secure'=>true)); ?>';
+                            var update_payments = <?php echo $this->settings['enable_update_payment_on_shipping'] ? 'true' : 'false'; ?>;
+
+                            if(shipping_methods){
+                                shipping_methods.hide();
+                                shipping_methods.update(response.shipping_method);
+                                shipping_methods.show();
+                                $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
+                                $$('dl.shipment-methods input').invoke('observe', 'click', function() {
+                                    $$('div.onestepcheckout-shipment-method-error').each(function(item) {
+                                        new Effect.Fade(item);
+                                    });
+                                });
+                            }
+
+                            if(payment_methods){
+                                payment_methods.hide();
+                                payment_methods.replace(response.payment_method);
+                                payment_methods.show();
+
+                                paymentContainer = $('container_payment_method_' + payment.currentMethod)
+                                paymentForm = $('payment_form_' + payment.currentMethod)
+
+                                if(paymentContainer != null){
+                                    paymentContainer.show();
+                                }
+
+                                if(paymentForm != null){
+                                    paymentForm.show();
+                                }
+                                $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
+                                $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
+                                $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
+                                    $$('div.onestepcheckout-payment-method-error').each(function(item) {
+                                        new Effect.Fade(item);
+                                    });
+                                });
+                            }
+
+                            summary.hide();
+                            summary.update(response.summary);
+                            summary.show();
+
+                            couponNotice.hide();
+                            couponNotice.update(response.message);
+                            couponNotice.removeClassName('error-msg');
+                            couponNotice.addClassName('success-msg');
+                            couponNotice.show();
+                        }
+                    }
+                });
+            });
+        });
+        </script>
         </div>
     <?php endif; ?>
 
@@ -542,8 +542,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
                                             paymentForm.show();
                                         }
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
                                                 new Effect.Fade(item);
@@ -617,8 +617,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
                                     if(payment_methods){
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
                                                 new Effect.Fade(item);
@@ -1101,8 +1101,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
             $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
             $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-            $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-            $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+            $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+            $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
 
             $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                 $$('div.onestepcheckout-payment-method-error').each(function(item) {

@@ -542,8 +542,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
                                             paymentForm.show();
                                         }
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
                                                 new Effect.Fade(item);
@@ -617,8 +617,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
                                     if(payment_methods){
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+                                        $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+                                        $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
                                         $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                                             $$('div.onestepcheckout-payment-method-error').each(function(item) {
                                                 new Effect.Fade(item);
@@ -1101,8 +1101,8 @@ $helper = Mage::helper('onestepcheckout/checkout');
 
             $$('dl.shipment-methods input').invoke('observe', 'click', get_separate_save_methods_function(url, update_payments));
             $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', get_separate_save_methods_function(url));
-            $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange hpp method reload
-            $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url)); // for Adyen onchange oneclick method reload
+            $$('div.payment-methods input[name="payment[hpp_type]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_hpp' )); // for Adyen onchange hpp method reload
+            $$('div.payment-methods input[name="payment[recurring]"]').invoke('observe', 'click', get_separate_save_methods_function(url, 'undefined', 'adyen_oneclick' )); // for Adyen onchange hpp method reload
 
             $$('div.payment-methods input[name="payment\[method\]"]').invoke('observe', 'click', function() {
                 $$('div.onestepcheckout-payment-method-error').each(function(item) {
