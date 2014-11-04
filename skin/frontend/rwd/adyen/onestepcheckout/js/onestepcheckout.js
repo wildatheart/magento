@@ -450,9 +450,13 @@ function get_save_billing_function(url, set_methods_url, update_payments, trigge
 
         var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var payment_hpp_type = $RF(form, 'payment[hpp_type]');
+        if(payment_hpp_type) {
+            payment_method = "adyen_hpp";
+        }
         var payment_recurring_type = $RF(form, 'payment[method]');
         var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
         var payment_method = $RF(form, 'payment[method]');
+
 
         // save all input and select fields in array so after ajax call you can reset the values
         var paymentInputFields = {};
@@ -597,6 +601,10 @@ function get_separate_save_methods_function(url, update_payments)
         var shipping_method = $RF(form, 'shipping_method');
         var payment_method = $RF(form, 'payment[method]');
         var payment_hpp_type = $RF(form, 'payment[hpp_type]');
+        if(payment_hpp_type) {
+            payment_method = "adyen_hpp";
+        }
+
         var payment_hpp_ideal_type = $RF(form, 'payment[hpp_ideal_type]');
         var payment_recurring_type = $RF(form, 'payment[recurring]');
         var payment_recurring_type_cvc = $('adyen_oneclick_oneclick_cid_'+payment_recurring_type);
