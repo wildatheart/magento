@@ -409,8 +409,9 @@ class Adyen_Payment_Model_Adyen_Hpp extends Adyen_Payment_Model_Adyen_Abstract {
 
             if($results_json == null) {
                 // no valid json so show the error
-                Mage::log("Payment methods are empty on this merchantaccount\skin. results_json is incorrect result is:" . $results, self::DEBUG_LEVEL, 'http-request.log',true);
-                Mage::throwException(Mage::helper('adyen')->__('Payment methods are empty on this merchantaccount\skin' . $results));
+                Mage::log("Payment methods are empty on this merchantaccount with the selected skin,hmac,amount,country check if these settings are correct results_json result is:" . $results, self::DEBUG_LEVEL, 'http-request.log',true);
+                // return empty array
+                return array();
             }
 
             $payment_methods = $results_json->paymentMethods;
