@@ -1109,13 +1109,7 @@ class Adyen_Payment_Model_Process extends Mage_Core_Model_Abstract {
      * @param string $code
      */
     protected function _getConfigData($code, $paymentMethodCode = null, $storeId = null) {
-        if (null === $storeId) {
-            $storeId = Mage::app()->getStore()->getId();
-        }
-        if (empty($paymentMethodCode)) {
-            return Mage::getStoreConfig("payment/adyen_abstract/$code", $storeId);
-        }
-        return Mage::getStoreConfig("payment/$paymentMethodCode/$code", $storeId);
+        return Mage::helper('adyen')->_getConfigData($code, $paymentMethodCode, $storeId);
     }
 
     public function getConfigData($code, $paymentMethodCode = null, $storeId = null) {
