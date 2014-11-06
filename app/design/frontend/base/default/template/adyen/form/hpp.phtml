@@ -27,86 +27,125 @@
 ?>
 <?php $_code = $this->getMethodCode() ?>
 
-<?php $disabled = $this->hppOptionsDisabled(); ?>
-<?php $enabledTypes = $this->getHppAvailableTypes(); ?>
-<?php //$idealList = $this->getIdealAvailableTypes();?>
+<?php $disabled = $this->getHppOptionsDisabled();?>
 
+<?php $id = ($disabled) ? "" : "adyen_hpp_enable_fields"; ?>
+<fieldset id="<?php echo $id; ?>" class="">
+    <?php $hidePaymentMethod = ($disabled) ? ' style="display: none;"' : '';?>
 
+    <ul id="<?php echo "payment_form_" . $_code; ?>"<?php echo $hidePaymentMethod; ?>>
+        <?php
+        if(empty($disabled)):
+            $enabledTypes = $this->getHppAvailableTypes();
+            if(!empty($enabledTypes)):
+        ?>
+            <li>
+                <div class="input-box required-entry">
+                    <?php foreach ($enabledTypes as $_typeCode=>$_type): ?>
+                    <?php $_typeName = $_type['name']; ?>
+                    <?php $filename = $this->getSkinUrl('images'.DS.'adyen'.DS. $_typeCode . ".png"); ?>
+                            <table>
+                                <tr>
+                                    <td width="20px">
+                                        <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>"/>
+                                        <input type="hidden" name="payment[hpp_type_label_<?php echo $_typeCode ?>]" value="<?php echo $_typeName; ?>" />
+                                    </td>
+                                    <td width="80px"><label for="hpp_type_<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></label></td>
 
-<fieldset class="form-list">
-    <ul id="payment_form_<?php echo $_code ?>" style="display:none">
-        <li>
-            <?php  echo $this->__('You will be redirected to Adyen website when you place an order.') ?> 
-        </li>
-        <?php if(empty($disabled) && !empty($enabledTypes)): ?>
-        <li>
-            <label for="<?php echo $_code ?>_hpp_type" class="required"><em>*</em><?php echo $this->__('Hosted Payment Type') ?></label>
-            <div class="input-box required-entry">
-                <?php foreach ($enabledTypes as $_typeCode=>$_type): ?>
-                <?php $_typeName = $_type['name']; ?>
-                <?php $filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_typeCode.png" ?>                          
-                        <table>
-                            <tr>
-                                <td width="20px">
-                                    <input type="radio" id="hpp_type_<?php echo $_typeCode ?>" name="payment[hpp_type]" value="<?php echo $_typeCode ?>"/>                                    
-                                </td>
-                                <?php if (file_exists($filename)): ?>
-                                    <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_typeCode.png") ?>" alt="<?php echo $_typeName ?>" /></td>
-                                <?php endif ?>
-								
-								<?php if ($_typeName == "pm.c_cash.buttonName"):	
-										$_typeName = "Cash";
-								endif; ?>
-                                <td><?php echo $this->__($_typeName) ?></td>
-                                
-                                <?php if ($_typeCode == 'ideal' && !empty($_type['issuers'])): ?>
-                                <td class="payment_form_ideal">
-                                    <fieldset class="form-list">
-                                        <ul id="payment_form_ideal" style="display:none">
-                                            <?php 
-                                            foreach ($_type['issuers'] as $_issueId => $_IssueLabel): ?>                                                 
+                                    <?php if ($_typeName == "pm.c_cash.buttonName"):
+                                            $_typeName = "Cash";
+                                    endif; ?>
+                                    <td><label for="hpp_type_<?php echo $_typeCode ?>"><?php echo $this->__($_typeName) ?></label></td>
+
+                                    <?php if ($_typeCode == 'ideal' && !empty($_type['issuers'])): ?>
+                                    <td class="payment_form_ideal">
+                                        <fieldset class="form-list" id="payment_form_ideal" style="display:none">
+                                            <?php
+                                            foreach ($_type['issuers'] as $_issueId => $_IssueLabel): ?>
                                                 <?php
                                                        $_bankFile = strtoupper(str_replace(" ", '', $_IssueLabel));
-                                                       $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS."$_bankFile.png";
+                                                       $_filename = $this->getSkinUrl('images'.DS.'adyen'.DS. $_bankFile . ".png");
                                                        if (empty($_issueId) || empty($_IssueLabel)) continue;
-                                                ?>         
+                                                ?>
                                                 <table class="banks">
                                                     <tr>
                                                         <td width="20px">
-                                                            <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>                                                            
+                                                            <input type="radio" id="hpp_ideal_type_<?php echo $_issueId ?>" name="payment[hpp_ideal_type]" value="<?php echo $_issueId .DS. $_IssueLabel ?>"/>
                                                         </td>
-                                                        <?php if (file_exists($_filename)): ?>
-                                                            <td width="80px"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></td>
-                                                        <?php else: ?>
-                                                            <td width="80px" class="label_hpp_ideal_type"><label width="80px" for="ideal_type_label_<?php echo $_issueId ?>"><?php echo $_IssueLabel ?></label></td>
-                                                        <?php endif; ?>
-                                                    </tr>		
-                                                </table>                 
-                                            <?php endforeach ?>                               
-                                        </ul>
-                                    </fieldset>  
-                                </td>
-                                <?php endif; ?>                                
-                            </tr>		
-                        </table>                
-                        <script type="text/javascript">
-                        //<![CDATA[
-                                           
-                            var IdealChecked= function() {
-                                var method = $('hpp_type_<?php echo $_typeCode?>');
-                                if (method.value == 'ideal') {
-                                    $('payment_form_ideal').show();
-                                } else {
-                                    $('payment_form_ideal').hide();
-                                }
-                            };
-                            Event.observe($('hpp_type_<?php echo $_typeCode?>'), 'change', IdealChecked);
-                         
-                        //]]>
-                        </script>
-                <?php endforeach ?>
-            </div>
-        </li>
+                                                            <td width="80px"><label for="hpp_ideal_type_<?php echo $_issueId ?>"><img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS."$_bankFile.png") ?>" alt="<?php echo $_IssueLabel ?>" label="<?php echo $_IssueLabel ?>" /></label></td>
+                                                    </tr>
+                                                </table>
+                                                <script type="text/javascript">
+                                                    $("hpp_ideal_type_<?php echo $_issueId; ?>").observe("click", function (e) {
+                                                        // set ideal as payment method
+                                                        $('hpp_type_ideal').checked = true;
+                                                        // set the adyen_hpp payment method
+                                                        $('p_method_adyen_hpp').checked = true;
+                                                        payment.switchMethod("adyen_hpp");
+                                                    });
+                                                </script>
+                                            <?php endforeach ?>
+                                        </fieldset>
+                                    </td>
+                                    <?php endif; ?>
+                                </tr>
+                            </table>
+                            <script type="text/javascript">
+                            //<![CDATA[
+
+                                var IdealChecked= function() {
+
+                                    // uncheck hpp_oneclick if exists
+                                    if($('oneclick_payment_form_adyen_oneclick'))
+                                    {
+                                        var form = $('oneclick_payment_form_adyen_oneclick');
+                                        var elements = form.getElementsByTagName('input');
+                                        for (var i=0; i<elements.length; i++) elements[i].checked = false;
+
+                                        // hide open cvc field
+                                        $$('.cvc_block').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                        // hide update link
+                                        $$('.update-expiration-date').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                        // hide installment box
+                                        $$('.adyen-oneclick-installments').each(
+                                            function (e) {
+                                                e.setStyle({display:'none'});
+                                            }
+                                        );
+
+                                    }
+
+                                    var method = $('hpp_type_<?php echo $_typeCode?>');
+                                    // set the adyen_hpp payment method
+                                    $('p_method_adyen_hpp').checked = true;
+                                    payment.switchMethod("adyen_hpp");
+                                    if (method.value == 'ideal') {
+                                        $('payment_form_ideal').show();
+                                    } else {
+                                        $('payment_form_ideal').hide();
+                                    }
+                                };
+                                Event.observe($('hpp_type_<?php echo $_typeCode?>'), 'change', IdealChecked);
+                            //]]>
+                            </script>
+                    <?php endforeach ?>
+                </div>
+            </li>
+            <?php endif; ?>
+        <?php else: ?>
+            <li>
+                <?php  echo $this->__('You will be redirected to Adyen website when you place an order.') ?>
+            </li>
         <?php endif; ?>
-    </ul>    
+    </ul>
 </fieldset>

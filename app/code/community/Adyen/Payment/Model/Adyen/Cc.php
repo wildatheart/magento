@@ -31,7 +31,7 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
     protected $_formBlockType = 'adyen/form_cc';
     protected $_infoBlockType = 'adyen/info_cc';
     protected $_paymentMethod = 'cc';
-	
+
     /**
      * 1)Called everytime the adyen_cc is called or used in checkout
      * @description Assign data to info model instance
@@ -40,12 +40,20 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
      * @return  Mage_Payment_Model_Info
      */
     public function assignData($data) {
+
         if (!($data instanceof Varien_Object)) {
             $data = new Varien_Object($data);
         }        
         $info = $this->getInfoInstance();
-        
+
+        // set number of installements
+        $info->setAdditionalInformation('number_of_installments', $data->getAdditionalData());
+
+        // save value remember details checkbox
+        $info->setAdditionalInformation('store_cc', $data->getStoreCc());
+
         if ($this->isCseEnabled()) {
+            $info->setCcType($data->getCcType());
             $info->setAdditionalInformation('encrypted_data', $data->getEncryptedData());
         }
         else {
@@ -58,43 +66,60 @@ class Adyen_Payment_Model_Adyen_Cc extends Adyen_Payment_Model_Adyen_Abstract {
                  ->setCcCid($data->getCcCid())
                  ->setPoNumber($data->getAdditionalData());
         }
-        
+
+        // recalculate the totals so that extra fee is defined
+        $quote = (Mage::getModel('checkout/type_onepage') !== false)? Mage::getModel('checkout/type_onepage')->getQuote(): Mage::getModel('checkout/session')->getQuote();
+        $quote->setTotalsCollectedFlag(false);
+        $quote->collectTotals();
+        // not needed
+//        $quote->save();
+
+
         return $this;
     }
-    
-    public function getPossibleInstallments(){
+
+    public function getPossibleInstallments() {
         // retrieving quote
         $quote = (Mage::getModel('checkout/type_onepage') !== false)? Mage::getModel('checkout/type_onepage')->getQuote(): Mage::getModel('checkout/session')->getQuote();
-        
-        $amount = (double) $quote->getGrandTotal();
-        $currency = $quote->getQuoteCurrencyCode();
-        
-        $max_installments = Mage::helper('adyen/installments')->getConfigValue($currency,$amount);
-        
-        $result = array();
-        for($i=1;$i<=$max_installments;$i++){
-            $partial_amount = ((double)$amount)/$i;
-            $result[(string)$i] = $i."x ".$currency." ".number_format($partial_amount,2);
+
+        // get selected payment method for now
+        $payment = $quote->getPayment();
+
+        $ccType = null;
+        if($payment && !empty($payment)) {
+            if($payment->getMethod()) {
+                $info = $payment->getMethodInstance();
+
+                $instance = $info->getInfoInstance();
+                $ccType = $instance->getCcType();
+            }
         }
-    
+
+        $result = Mage::helper('adyen/installments')->getInstallmentForCreditCardType($ccType);
+
         return $result;
     }
-    
+
     /**
      * @desc Called just after asssign data
      */
     public function prepareSave() {
         parent::prepareSave();
     }
-    
+
     /**
      * @desc Helper functions to get config data
      */
     public function isCseEnabled() {
         return Mage::getStoreConfig("payment/adyen_cc/cse_enabled");
     }
+
     public function getCsePublicKey() {
         return trim(Mage::getStoreConfig("payment/adyen_cc/cse_publickey"));
+    }
+
+    public function getRecurringType() {
+        return trim(Mage::getStoreConfig("payment/adyen_abstract/recurringtypes"));
     }
 	
     /**

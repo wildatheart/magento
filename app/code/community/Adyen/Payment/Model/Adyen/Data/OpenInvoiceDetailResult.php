@@ -50,29 +50,44 @@ class Adyen_Payment_Model_Adyen_Data_OpenInvoiceDetailResult extends Adyen_Payme
         }
         
         //discount cost
-        $cost = new Varien_Object();
-        $cost->setName(Mage::helper('adyen')->__('Total Discount'));
-        $cost->setPrice($order->getDiscountAmount());
-        $cost->setQtyOrdered(1);
-        $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
-        $count++;
+        if($order->getDiscountAmount() > 0 || $order->getDiscountAmount() < 0)
+        {
+            $cost = new Varien_Object();
+            $cost->setName(Mage::helper('adyen')->__('Total Discount'));
+            $cost->setPrice($order->getDiscountAmount());
+            $cost->setQtyOrdered(1);
+            $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
+            $count++;
+        }
         
         //shipping cost
-        $cost = new Varien_Object();
-        $cost->setName($order->getShippingDescription());
-        $cost->setPrice($order->getShippingAmount());
-        $cost->setTaxAmount($order->getShippingTaxAmount());
-        $cost->setQtyOrdered(1);
-        $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
-        $count++;
+        if($order->getShippingAmount() > 0 || $order->getShippingTaxAmount() > 0)
+        {
+            $cost = new Varien_Object();
+            $cost->setName($order->getShippingDescription());
+            $cost->setPrice($order->getShippingAmount());
+            $cost->setTaxAmount($order->getShippingTaxAmount());
+            $cost->setQtyOrdered(1);
+            $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
+            $count++;
+        }
+
+        if($order->getPaymentFeeAmount() > 0) {
+            $cost = new Varien_Object();
+            $cost->setName(Mage::helper('adyen')->__('Payment Fee'));
+            $cost->setPrice($order->getPaymentFeeAmount());
+            $cost->setQtyOrdered(1);
+            $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
+            $count++;
+        }
         
-        //tax costs
-        $cost = new Varien_Object();
-        $cost->setName(Mage::helper('adyen')->__('Tax'));
-        $cost->setPrice($order->getTaxAmount());
-        $cost->setQtyOrdered(1);
-        $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
-        $count++;
+        // Klarna wants tax cost provided in the lines of the products so overal tax cost is not needed anymore
+//        $cost = new Varien_Object();
+//        $cost->setName(Mage::helper('adyen')->__('Tax'));
+//        $cost->setPrice($order->getTaxAmount());
+//        $cost->setQtyOrdered(1);
+//        $lines[] = Mage::getModel('adyen/adyen_data_invoiceRow')->create($cost, $count, $order);
+//        $count++;
         
         /**
          * Refund line, heads up $lines is overwritten!

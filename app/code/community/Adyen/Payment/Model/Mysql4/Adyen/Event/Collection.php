@@ -25,12 +25,11 @@
  * @property   Adyen B.V
  * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
  */
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->getLang() ?>" lang="<?php echo $this->getLang() ?>">
-<head>
-</head>
-<body>
-    <?php echo $this->getChildHtml('content') ?>
-</body>
-</html>
+class Adyen_Payment_Model_Mysql4_Adyen_Event_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
+{
+    protected function _construct()
+    {
+        $this->_init('adyen/adyen_event');
+        $this->setItemObjectClass('adyen/event');
+    }
+}

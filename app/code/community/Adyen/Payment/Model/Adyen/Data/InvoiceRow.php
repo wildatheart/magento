@@ -36,10 +36,14 @@ class Adyen_Payment_Model_Adyen_Data_InvoiceRow extends Adyen_Payment_Model_Adye
     public $vatCategory;
 
     public function create($item, $count, $order) {
-        $this->currency = $order->getOrderCurrencyCode();
+        $currency = $order->getOrderCurrencyCode();
+        $this->currency = $currency;
         $this->description = $item->getName();
-        $this->itemPrice = $this->_formatAmount($item->getPrice());
-        $this->itemVAT = $this->_formatAmount(($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?$item->getPriceInclTax() - $item->getPrice():$item->getTaxAmount());
+        $this->itemPrice = Mage::helper('adyen')->formatAmount($item->getPrice(), $currency);
+        $this->itemVAT = ($item->getTaxAmount()>0 && $item->getPriceInclTax()>0)?
+            Mage::helper('adyen')->formatAmount($item->getPriceInclTax(), $currency) -
+            Mage::helper('adyen')->formatAmount($item->getPrice(), $currency):
+            Mage::helper('adyen')->formatAmount($item->getTaxAmount(), $currency);
         $this->lineReference = $count;
         $this->numberOfItems = (int) $item->getQtyOrdered();
         $this->vatCategory = "None";

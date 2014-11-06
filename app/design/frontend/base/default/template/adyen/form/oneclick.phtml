@@ -1,0 +1,382 @@
+<?php
+/**
+ * Adyen Payment Module
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * @category	Adyen
+ * @package	Adyen_Payment
+ * @copyright	Copyright (c) 2011 Adyen (http://www.adyen.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/**
+ * @category   Payment Gateway
+ * @package    Adyen_Payment
+ * @author     Adyen
+ * @property   Adyen B.V
+ * @copyright  Copyright (c) 2014 Adyen BV (http://www.adyen.com)
+ */
+?>
+<?php $_code=$this->getMethodCode() ?>
+
+
+<div id="oneclick-cse" class="">
+
+    <?php $_listRecurringDetails = $this->getlistRecurringDetails();  ?>
+
+    <?php if(!empty($_listRecurringDetails)): ?>
+
+        <h3><?php echo $this->__('Pay using previously stored details') ?></h3>
+        <ul id="oneclick_payment_form_<?php echo $_code ?>" class="recurring-creditcards">
+            <?php
+                $count = 0;
+                foreach($_listRecurringDetails as $key => $value):?>
+                <?php if(isset($value["recurringDetailReference"]) && isset($value["variant"]) && isset($value["card_number"]) && isset($value["card_expiryMonth"]) && isset($value["card_expiryYear"])): ?>
+                <li>
+                    <input id="recurring_type_<?php echo $key; ?>" class="recurring_type" type="radio" name="payment[recurring]" value="<?php echo $key; ?>" />
+                    <input type="hidden" name="payment[recurringDetailReference_<?php echo $key; ?>]" value="<?php echo $value["recurringDetailReference"] ?>" />
+
+                    <input type="hidden" name="payment[oneclick_owner_<?php echo $key; ?>]" value="<?php echo $value["card_holderName"] ?>" />
+                    <input type="hidden" name="payment[oneclick_type_<?php echo $key; ?>]" value="<?php echo $value["variant"] ?>" />
+                    <input type="hidden" name="payment[oneclick_last_4_<?php echo $key; ?>]" value="<?php echo $value["card_number"] ?>" />
+
+                    <input type="hidden" id="card_expiry_month_<?php echo $key; ?>" name="card_expiry_month_<?php echo $key; ?>" value="<?php echo $value["card_expiryMonth"] ?>" />
+                    <input type="hidden" id="card_expiry_year_<?php echo $key; ?>" name="card_expiry_year_<?php echo $key; ?>" value="<?php echo $value["card_expiryYear"] ?>" />
+
+                    <div class="creditcard-block">
+                        <?php
+                        $_bankFile = $value["variant"];
+                        $_filename = Mage::getBaseDir().DS.'skin'.DS.'frontend'.DS.'base'.DS.'default'.DS.'images'.DS.'adyen'.DS. $_bankFile ."_small.png";
+
+                        ?>
+                        <?php if (file_exists($_filename)){ ?>
+                            <img src="<?php echo $this->getSkinUrl('images'.DS.'adyen'.DS. $_bankFile . "_small.png") ?>" alt="<?php echo $_bankFile ?>" label="<?php echo $_bankFile ?>" />
+                        <?php } ?>
+
+
+                        <div class="columns three a">
+                            <label><?php echo $this->__('Credit Card Number') ?></label>
+                            <span>****</span> <?php echo $value["card_number"]; ?>
+                        </div>
+
+                        <div class="columns three b">
+                            <label><?php echo $this->__('Expiration Date') ?><a href="#" id="update-expiration-date-<?php echo $key; ?>" class="update-expiration-date" style="display:none;"><?php echo $this->__('(update)') ?></a></label>
+
+                            <div id="static-card-expiry-<?php echo $key; ?>" class="static-card-expiry">
+                                <?php echo $value["card_expiryMonth"] . " /" . $value["card_expiryYear"]; ?>
+                            </div>
+                            <div id="changable-card-expiry-<?php echo $key; ?>" class="changable-card-expiry" style="display:none;">
+                                <select id="<?php echo $_code ?>_expiration_<?php echo $key; ?>" <?php echo (!$this->isCseEnabled() ? "name=\"payment[oneclick_exp_month_".$key."]\"" : ""); ?> class="month validate-oneclick-exp required-entry">
+                                    <?php foreach ($this->getCcMonths() as $k=>$v): ?>
+                                        <option value="<?php echo $k?$k:'' ?>"<?php if($k==$value["card_expiryMonth"]): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+                                    <?php endforeach ?>
+                                </select>
+
+                                <select id="<?php echo $_code ?>_expiration_yr_<?php echo $key; ?>" <?php echo (!$this->isCseEnabled() ? "name=\"payment[oneclick_exp_year_".$key."]\"" : ""); ?> class="year required-entry">
+                                    <?php foreach ($this->getCcYears() as $k=>$v): ?>
+                                        <option value="<?php echo $k?$k:'' ?>"<?php if($k==$value["card_expiryYear"]): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+                                    <?php endforeach ?>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <?php if($this->isNotRecurring()): ?>
+                        <div class="columns three c">
+                            <label><?php echo $this->__('Card Verification Number') ?></label>
+                            <?php if($this->hasVerification()): ?>
+                                <div style="display:none;" class="cvc_block" id="cvc_block_<?php echo $key;?>">
+                                    <input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv required-entry" id="<?php echo $_code ?>_oneclick_cid_<?php echo $key; ?>" <?php echo (!$this->isCseEnabled() ? "name=\"payment[oneclick_cid_".$key."]\"" : ""); ?> value="" />
+                                    <a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <div style="clear:both;"></div>
+
+                        <div class="creditcard-holder-name"><?php echo $value["card_holderName"]; ?></div>
+
+
+                        <?php if($this->hasInstallments()): ?>
+                            <div id="adyen_oneclick_installment_<?php echo $key;?>" class="adyen-oneclick-installments" style="display:none;">
+                                <label for="<?php echo $_code ?>_installment_<?php echo $key; ?>" class="required"><em>*</em><?php echo $this->__('Installments') ?></label>
+                                <div class="input-box">
+                                    <div class="v-fix">
+                                        <select id="<?php echo $_code ?>_installment_<?php echo $key; ?>" name="payment[installment_<?php echo $key; ?>]" class="adyen-installment number required-entry">
+                                            <?php foreach ($this->getInstallmentForCreditCardType($_bankFile) as $k=>$v): ?>
+                                                <option value="<?php echo $k?$k:'' ?>"><?php echo $v ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif;?>
+
+                        <div style="clear:both;"></div>
+                    </div>
+                    <?php ++$count; ?>
+                </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </ul>
+
+        <h3 class="other-payment"><?php echo $this->__('Or pay using one of the methods below') ?></h3>
+
+        <script type="text/javascript">
+
+            // update-expiration-date action
+            $$('.update-expiration-date').each(function(element) {
+                element.observe('click', updateExpirationDate);
+            });
+
+            // show the expiration month and year
+            function updateExpirationDate(event) {
+
+                // hide the link
+                this.hide();
+
+                // show expiration month and year
+                var id = this.id.replace("update-expiration-date-", "");
+                var changableId = "changable-card-expiry-" + id;
+                var staticId = "static-card-expiry-" + id;
+
+                // show changeble card expiry
+                $(staticId).hide();
+                $(changableId).show();
+
+                event.preventDefault();
+            }
+
+            // change selection of recurring card
+            $$(".recurring_type").invoke('observe', 'change', function() {
+
+                // set the adyen_oneclick payment method
+                $('p_method_adyen_oneclick').checked = true;
+                payment.switchMethod("adyen_oneclick");
+
+                // always enable adyen_hpp
+                if ($('payment_form_adyen_hpp')){
+                    var form = $('payment_form_adyen_hpp');
+                    form.style.display = '';
+                    var elements = form.getElementsByTagName('input');
+                    for (var i=0; i<elements.length; i++) elements[i].disabled = false;
+                    var elements = form.getElementsByTagName('select');
+                    for (var i=0; i<elements.length; i++) elements[i].disabled = false;
+                }
+
+                // uncheck hpp_method if exists
+                if($('adyen_hpp_enable_fields'))
+                {
+                    var form = $('adyen_hpp_enable_fields');
+                    var elements = form.getElementsByTagName('input');
+                    for (var i=0; i<elements.length; i++) elements[i].checked = false;
+                }
+
+                // remove all the data-encrypted-name="cvc" for CSE
+                removeAllAttributeCvc();
+
+                // remove all the data-encrypted-name="expiryMonth" and data-encrypted-name="expiryYear" for CSE
+                removeAllAttributeExpiryMonthAndYear();
+
+                // hide all the open blocks
+                hideCvcBlocks();
+                hideInstallmentBlocks();
+
+                // open the selected block
+                var key = this.value;
+                var id = "cvc_block_" + key;
+
+                // open the installment block
+                var installmentId = "adyen_oneclick_installment_" + key;
+
+                // hide changeble card and show static expiration date
+                hideChangableCardExpiry()
+
+                // show static version of expiry month and year when switching creditcard
+                showStaticCardExpiry();
+
+                // hide the update expiration date link for recurring cards
+                hideExpirationDate();
+
+                // show current recurring block update link
+                var updateLink = "update-expiration-date-"+key;
+                $(updateLink).setStyle({
+                    display: 'inline'
+                });
+
+                // set data-encrypted-name="cvc" to this element
+                var cvv = "adyen_oneclick_oneclick_cid_"+key;
+                var expiryMonth = "adyen_oneclick_expiration_" + key;
+                var expiryYear = "adyen_oneclick_expiration_yr_"+key;
+
+                // reset the custom input datemonth and dateyear by the static version (could be changed by customer)
+                var card_expiry_month = 'card_expiry_month_'+key;
+                var card_expiry_year = 'card_expiry_year_'+key;
+                $(expiryMonth).value = $(card_expiry_month).value;
+                $(expiryYear).value = $(card_expiry_year).value;
+
+                // only set data-encrypted-name="expiryMonth" and data-encrypted-name="expiryYear" for the selected card
+                $(expiryMonth).setAttribute('data-encrypted-name-oneclick', "expiryMonth");
+                $(expiryYear).setAttribute('data-encrypted-name-oneclick', "expiryYear");
+                $(cvv).setAttribute('data-encrypted-name-oneclick', "cvc");
+
+                // show the cvc input field
+                $(id).show();
+
+                // show recurring selectbox
+                $(installmentId).show();
+            });
+
+            // remove all cvc data-encrypted-name attributes
+            // and uncheck HPP payment method selection
+            function removeAllAttributeCvc() {
+
+                var form = $('adyen_hpp_enable_fields');
+                if(form)
+                {
+                    var elements = form.getElementsByTagName('input');
+                    for (var i=0; i<elements.length; i++) elements[i].checked = false;
+                }
+
+                $$('.cvv').each(
+                    function (e) {
+                        e.removeAttribute("data-encrypted-name-oneclick");
+                    }
+                );
+            }
+
+            // remove all the data-encrypted-name="expiryMonth" and data-encrypted-name="expiryYear" for CSE
+            function removeAllAttributeExpiryMonthAndYear() {
+                $$('.month').each(
+                    function (e) {
+                        e.removeAttribute("data-encrypted-name-oneclick");
+                    }
+                );
+
+                $$('.year').each(
+                    function (e) {
+                        e.removeAttribute("data-encrypted-name-oneclick");
+                    }
+                );
+            }
+
+            // hide all the cvc blocks for the recurring cards
+            function hideCvcBlocks() {
+                $$('.cvc_block').each(
+                    function (e) {
+                        e.setStyle({display:'none'});
+                    }
+                );
+            }
+
+            // hide all the installment block
+            function hideInstallmentBlocks() {
+                $$('.adyen-oneclick-installments').each(
+                    function (e) {
+                        e.setStyle({display:'none'});
+                    }
+                );
+            }
+
+            function hideChangableCardExpiry() {
+                $$('.changable-card-expiry').each(
+                    function (e) {
+                        e.setStyle({display:'none'});
+                    }
+                );
+            }
+
+            // show the non changable card expiry month and ydaear
+            function showStaticCardExpiry() {
+                $$('.static-card-expiry').each(
+                    function (e) {
+                        e.setStyle({display:'block'});
+                    }
+                );
+            }
+
+            // hide the update expiration date link for recurring cards
+            function hideExpirationDate() {
+                $$('.update-expiration-date').each(
+                    function (e) {
+                        e.hide();
+                    }
+                );
+            }
+        </script>
+    <?php endif; ?>
+
+<?php if ($this->isCseEnabled()): ?>
+    <input type="hidden" id="<?php echo $_code ?>_encrypted_form_expiry_generationtime" value="<?php echo date("c"); ?>" data-encrypted-name-oneclick="generationtime" />
+    <input type="hidden" id="adyen-cse-form" />
+    <script type="text/javascript">
+        //<![CDATA[
+        var cse_form = document.getElementById('adyen-cse-form').form;
+        var cse_key = <?php echo json_encode($this->getCsePublicKey()); ?>;
+        var cse_options_oneclick = {
+            name:  'payment[encrypted_data_oneclick]',
+            force: true,
+            dataEncryptedName: "data-encrypted-name-oneclick"
+        };
+        var cseOneClick = function() {
+            if (payment.currentMethod && payment.currentMethod == '<?php echo $_code ?>') {
+                try {
+                    adyen.encrypt.createEncryptedForm(cse_form, cse_key, cse_options_oneclick);
+                } catch (e) {
+                    var encryptionFailed = true;
+                }
+                var encryptedForm = document.getElementById(cse_options_oneclick.name);
+                if (encryptionFailed || !encryptedForm || encryptedForm.value.length == 0) {
+                    alert("Warning: Adyen Client Side Encryption cannot succeed.");
+                }
+            }
+        }
+        var cse_oneclick_initialize = function() {
+            if (typeof adyen === 'undefined') {
+                js = document.createElement("script");
+                js.type = "text/javascript";
+                js.src = "<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS); ?>adyen/payment/adyen.encrypt.js";
+                document.body.appendChild(js);
+            }
+            if (typeof payment.save !== 'undefined') {
+                payment.save = payment.save.wrap(function(originalSaveMethod) {
+                    cseOneClick.call(this);
+                    originalSaveMethod();
+                });
+            }
+            if (typeof checkout.save !== 'undefined') {
+                checkout.save = checkout.save.wrap(function(originalSaveMethod) {
+                    cseOneClick.call(this);
+                    originalSaveMethod();
+                });
+            }
+
+            // Fix for the onestepcheckout plugins
+            if($('onestepcheckout-place-order')) {
+                $('onestepcheckout-place-order').observe('click', function(e) {
+                    cseOneClick.call(this);
+                });
+            }
+        }
+
+        if (document.readyState === "complete") {
+            cse_oneclick_initialize();
+        }
+        else {
+            Event.observe(window, 'load', cse_oneclick_initialize);
+        }
+        //]]>
+    </script>
+<?php endif;?>
+
+
+</div>

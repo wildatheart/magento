@@ -29,7 +29,7 @@
 <config>
     <modules>
         <Adyen_Payment>
-            <version>2.0.0</version>
+            <version>2.1.2.0</version>
         </Adyen_Payment>
     </modules>
     <global>
@@ -80,14 +80,81 @@
             <adyen>
                 <class>Adyen_Payment_Block</class>
             </adyen>
+            <adminhtml>
+                <rewrite>
+                    <sales_order_totals>Adyen_Payment_Block_Adminhtml_Sales_Order_Totals</sales_order_totals>
+                    <sales_order_invoice_totals>Adyen_Payment_Block_Adminhtml_Sales_Order_Invoice_Totals</sales_order_invoice_totals>
+                    <sales_order_creditmemo_totals>Adyen_Payment_Block_Adminhtml_Sales_Order_Creditmemo_Totals</sales_order_creditmemo_totals>
+                </rewrite>
+            </adminhtml>
+            <sales>
+                <rewrite>
+                    <order_totals>Adyen_Payment_Block_Sales_Order_Totals</order_totals>
+                </rewrite>
+            </sales>
         </blocks>
         <payment>
             <groups>
                 <adyen>Adyen</adyen>
             </groups>
-        </payment>        
+        </payment>
+        <fieldsets>
+            <sales_convert_quote_address>
+                <payment_fee_amount><to_order>*</to_order></payment_fee_amount>
+                <base_payment_fee_amount><to_order>*</to_order></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_order>*</to_order></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_order>*</to_order></base_payment_installment_fee_amount>
+            </sales_convert_quote_address>
+            <sales_convert_order>
+                <payment_fee_amount><to_invoice>*</to_invoice></payment_fee_amount>
+                <base_payment_fee_amount><to_invoice>*</to_invoice></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_invoice>*</to_invoice></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_invoice>*</to_invoice></base_payment_installment_fee_amount>
+                <payment_fee_amount><to_cm>*</to_cm></payment_fee_amount>
+                <base_payment_fee_amount><to_cm>*</to_cm></base_payment_fee_amount>
+                <payment_installment_fee_amount><to_invoice>*</to_invoice></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_invoice>*</to_invoice></base_payment_installment_fee_amount>
+                <payment_installment_fee_amount><to_cm>*</to_cm></payment_installment_fee_amount>
+                <base_payment_installment_fee_amount><to_cm>*</to_cm></base_payment_installment_fee_amount>
+            </sales_convert_order>
+        </fieldsets>
+        <sales>
+            <quote>
+                <totals>
+                    <payment_fee>
+                        <class>adyen/sales_quote_address_total_paymentFee</class>
+                        <after>subtotal,discount</after>
+                        <before>grand_total,tax</before>
+                    </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/sales_quote_address_total_paymentInstallmentFee</class>
+                        <after>grand_total</after>
+                    </payment_installment_fee>
+                </totals>
+            </quote>
+            <order_invoice>
+                <totals>
+                    <payment_fee>
+                        <class>adyen/total_paymentFee_invoice</class>
+                    </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/total_paymentInstallmentFee_invoice</class>
+                    </payment_installment_fee>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <payment_fee>
+                        <class>adyen/total_paymentFee_creditmemo</class>
+                    </payment_fee>
+                    <payment_installment_fee>
+                        <class>adyen/total_paymentInstallmentFee_creditmemo</class>
+                    </payment_installment_fee>
+                </totals>
+            </order_creditmemo>
+        </sales>
     </global>
-    
+
     <frontend>
         <secure_url>
             <adyen_process>/adyen/process</adyen_process>
@@ -118,7 +185,7 @@
             </updates>
         </layout>
     </frontend>
-    
+
     <adminhtml>
         <layout>
             <updates>
@@ -145,14 +212,14 @@
                     </adyen_manual_online_capture>
                 </observers>
             </sales_order_invoice_pay>
-            <sales_order_creditmemo_refund>
+            <sales_order_payment_cancel>
                 <observers>
-                    <adyen_online_refund>
+                    <adyen_payment>
                         <class>adyen/observer</class>
-                        <method>refund</method>
-                    </adyen_online_refund>
+                        <method>salesOrderPaymentCancel</method>
+                    </adyen_payment>
                 </observers>
-            </sales_order_creditmemo_refund>                      
+            </sales_order_payment_cancel>
         </events>
     </adminhtml>
     <default>
@@ -170,12 +237,12 @@
                 <ws_password_live></ws_password_live>
                 <demoMode>N</demoMode>
                 <order_status>processing</order_status>
-                <payment_pending>pending</payment_pending>
                 <payment_authorized>processing</payment_authorized>
+                <payment_authorized_virtual>complete</payment_authorized_virtual>
                 <capture_mode>auto</capture_mode>
-                <recurringtypes>ONECLICK</recurringtypes>      		
+                <recurringtypes>ONECLICK</recurringtypes>
             </adyen_abstract>
-            <adyen_hpp>
+            <adyen_hpp translate="title" module="adyen">
                 <customer_id backend_model="adminhtml/system_config_backend_encrypted"/>
                 <currency>EUR</currency>
                 <model>adyen/adyen_hpp</model>
@@ -188,18 +255,27 @@
                 <ws_username_live></ws_username_live>
                 <ws_password_live></ws_password_live>
                 <order_status>processing</order_status>
-                <payment_pending>pending</payment_pending>
-                <payment_authorized>processing</payment_authorized>
                 <allowspecific>0</allowspecific>
                 <disable_hpptypes>0</disable_hpptypes>
+                <sort_order>30</sort_order>
+                <cache_directory_lookup>0</cache_directory_lookup>
+                <return_url_in_request>0</return_url_in_request>
             </adyen_hpp>
-            <adyen_pos>
-            	<active>0</active>
-            	<model>adyen/adyen_pos</model>
-            	<title>Adyen POS</title>
-            	<recurringtypes>ONECLICK</recurringtypes>
-            	<comment>sdf</comment>
-            	<allowspecific>0</allowspecific>
+            <adyen_pos translate="title" module="adyen">
+                <active>0</active>
+                <model>adyen/adyen_pos</model>
+                <title>Adyen POS</title>
+                <recurringtypes>ONECLICK</recurringtypes>
+                <enable_scanner>0</enable_scanner>
+                <submit_scanner>0</submit_scanner>
+                <express_checkout>0</express_checkout>
+                <create_shipment>0</create_shipment>
+                <cash_express_checkout>0</cash_express_checkout>
+                <cash_drawer>0</cash_drawer>
+                <cash_drawer_printer_ip></cash_drawer_printer_ip>
+                <cash_drawer_code>27,112,48,55,121</cash_drawer_code>
+                <allowspecific>0</allowspecific>
+                <sort_order>80</sort_order>
             </adyen_pos>
             <adyen_openinvoice translate="title" module="adyen">
                 <active>0</active>
@@ -208,7 +284,11 @@
                 <order_status>pending</order_status>
                 <title>Adyen Open Invoice</title>
                 <openinvoicetypes>openinvoice</openinvoicetypes>
-            </adyen_openinvoice>  
+                <gender_show>0</gender_show>
+                <dob_show>0</dob_show>
+                <different_address_disable>0</different_address_disable>
+                <sort_order>40</sort_order>
+            </adyen_openinvoice>
             <adyen_cc translate="title" module="adyen">
                 <active>0</active>
                 <model>adyen/adyen_cc</model>
@@ -219,28 +299,50 @@
                 <enable_installments>0</enable_installments>
                 <cse_enabled>0</cse_enabled>
                 <cse_public_key></cse_public_key>
+                <enable_moto>0</enable_moto>
                 <account_id>99999</account_id>
                 <trxuser_id>99999</trxuser_id>
                 <trxuser_password>0</trxuser_password>
                 <adminaction_password>5cfgRT34xsdedtFLdfHxj7tfwx24fe</adminaction_password>
                 <wsdl>https://pal-test.adyen.com/pal/Payment.wsdl</wsdl>
+                <sort_order>20</sort_order>
             </adyen_cc>
+            <adyen_oneclick translate="title" module="adyen">
+                <active>0</active>
+                <model>adyen/adyen_oneclick</model>
+                <group>adyen</group>
+                <order_status>processing</order_status>
+                <title>Adyen OneClick</title>
+                <sort_order>1</sort_order>
+            </adyen_oneclick>
             <adyen_elv translate="title" module="adyen">
                 <active>0</active>
                 <model>adyen/adyen_elv</model>
                 <group>adyen</group>
                 <order_status>processing</order_status>
                 <title>Adyen ELV</title>
-            </adyen_elv>             
+                <sort_order>50</sort_order>
+            </adyen_elv>
             <adyen_boleto translate="title" module="adyen">
-            	<active>0</active>
+                <active>0</active>
                 <model>adyen/adyen_boleto</model>
                 <group>adyen</group>
                 <order_status>processing</order_status>
                 <title>Adyen Boleto</title>
                 <delivery_days>5</delivery_days>
-            </adyen_boleto>        
-        </payment>  
+                <sort_order>70</sort_order>
+            </adyen_boleto>
+            <adyen_sepa translate="title" module="adyen">
+                <active>0</active>
+                <model>adyen/adyen_sepa</model>
+                <group>adyen</group>
+                <order_status>processing</order_status>
+                <title>Adyen SEPA</title>
+                <sort_order>60</sort_order>
+                <validate_iban>0</validate_iban>
+                <flow>sales</flow>
+            </adyen_sepa>
+        </payment>
         <adyen>
             <payment>
                 <cctypes>
@@ -274,24 +376,18 @@
                         <order>40</order>
                         <is_cvv_required>1</is_cvv_required>
                     </DC>
-                    <SS>
-                        <code>SS</code>
-                        <name>Switch/Solo</name>
-                        <order>50</order>
-                        <is_cvv_required>1</is_cvv_required>
-                    </SS>
-                    <MO>
-                        <code>MO</code>
+                    <SM>
+                        <code>SM</code>
                         <name>Maestro</name>
                         <order>60</order>
                         <is_cvv_required>0</is_cvv_required>
-                    </MO>
-                    <JC>
-                        <code>JC</code>
+                    </SM>
+                    <JCB>
+                        <code>JCB</code>
                         <name>JCB</name>
                         <order>70</order>
                         <is_cvv_required>0</is_cvv_required>
-                    </JC>
+                    </JCB>
                     <CB>
                         <code>CB</code>
                         <name>CarteBleue</name>
@@ -300,12 +396,12 @@
                     </CB>
                 </cctypes>
                 <boletotypes>
-                	<boletobancario_hsbc>
+                    <boletobancario_hsbc>
                         <code>boletobancario_hsbc</code>
                         <name>boletobancario_hsbc</name>
                         <order>0</order>
                     </boletobancario_hsbc>
-                	 <boletobancario_itau>
+                    <boletobancario_itau>
                         <code>boletobancario_itau</code>
                         <name>boletobancario_itau</name>
                         <order>0</order>
@@ -327,40 +423,46 @@
                     </boletobancario_bancodobrasil>
                 </boletotypes>
                 <openinvoicetypes>
-                	<afterpay>
-                        <code>openinvoice</code>
-                        <name>AfterPay</name>
+                    <afterpay>
+                        <code>afterpay_default</code>
+                        <name>AfterPay Netherlands</name>
                         <order>10</order>
                     </afterpay>
-                	<klarna>
+                    <klarna>
                         <code>klarna</code>
                         <name>Klarna</name>
                         <order>20</order>
                     </klarna>
                 </openinvoicetypes>
                 <recurringtypes>
-                	<none>
-                		<code></code>
-                		<name>NONE</name>
-                		<order>10</order>
-                	</none>
-                	<oneclick>
-                		<code>ONECLICK</code>
+                    <none>
+                        <code></code>
+                        <name>NONE</name>
+                        <order>10</order>
+                    </none>
+                    <oneclick>
+                        <code>ONECLICK</code>
                         <name>ONECLICK</name>
                         <order>20</order>
-                	</oneclick>
-                	<recurring>
-                		<code>RECURRING</code>
+                    </oneclick>
+                    <recurring>
+                        <code>RECURRING</code>
                         <name>RECURRING</name>
                         <order>30</order>
-                	</recurring>
-                	<oneclickrecurring>
-                		<code>ONECLICK,RECURRING</code>
+                    </recurring>
+                    <oneclickrecurring>
+                        <code>ONECLICK,RECURRING</code>
                         <name>ONECLICK,RECURRING</name>
                         <order>40</order>
-                	</oneclickrecurring>
+                    </oneclickrecurring>
                 </recurringtypes>
-            </payment> 
-        </adyen>     
+            </payment>
+        </adyen>
+        <sales>
+            <totals_sort>
+                <payment_fee>15</payment_fee>
+                <payment_installment_fee>16</payment_installment_fee>
+            </totals_sort>
+        </sales>
     </default>
 </config>

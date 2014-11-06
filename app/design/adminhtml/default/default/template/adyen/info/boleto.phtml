@@ -47,4 +47,7 @@
 	<?php echo Mage::helper('adyen')->__('Firstname: %s', $this->htmlEscape($boleto['firstname'])) ?><br/>
 	<?php echo Mage::helper('adyen')->__('Lastname: %s', $this->htmlEscape($boleto['lastname'])) ?><br/>
 	<?php echo Mage::helper('adyen')->__('Boleto PDf: <a target="_blank" href="%s" title="Boleto PDF">Download</a>', $this->getInfo()->getOrder()->getAdyenBoletoPdf()) ?><br/>
+    <?php if($_info->getAdyenBoletoPaidAmount() != null && $_info->getAdyenBoletoPaidAmount() != ""): ?>
+        <?php echo Mage::helper('adyen')->__('Paid amount: %s', $this->htmlEscape($_info->getAdyenBoletoPaidAmount())) ?> <br/>
+    <?php endif; ?>
 <?php endif;?>

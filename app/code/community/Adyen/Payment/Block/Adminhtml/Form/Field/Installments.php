@@ -47,11 +47,15 @@ class Adyen_Payment_Block_Adminhtml_Form_Field_Installments extends Mage_Adminht
     			'style' => 'width:100px',
     	));
         $this->addColumn('installment_boundary', array(
-            'label' => Mage::helper('adyen')->__('Minor Units (incl.)'),
+            'label' => Mage::helper('adyen')->__('Amount (incl.)'),
             'style' => 'width:100px',
         ));
         $this->addColumn('installment_frequency', array(
             'label' => Mage::helper('adyen')->__('Maximum Number of Installments'),
+            'style' => 'width:100px',
+        ));
+        $this->addColumn('installment_interest', array(
+            'label' => Mage::helper('adyen')->__('Interest Rate (%)'),
             'style' => 'width:100px',
         ));
         $this->_addAfter = false;

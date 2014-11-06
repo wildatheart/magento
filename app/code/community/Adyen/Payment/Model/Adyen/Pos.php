@@ -85,7 +85,7 @@ class Adyen_Payment_Model_Adyen_Pos extends Adyen_Payment_Model_Adyen_Abstract {
         $order = $this->_order;
         $realOrderId = $order->getRealOrderId();
         $orderCurrencyCode = $order->getOrderCurrencyCode();
-        $amount = $this->_formatAmount($order->getGrandTotal(),(($orderCurrencyCode=='IDR')?0:2));
+        $amount = Mage::helper('adyen')->formatAmount($order->getGrandTotal(),$orderCurrencyCode);
         $customerId = $order->getCustomerId();
         $customerEmail = $order->getCustomerEmail();
 
